@@ -1,6 +1,6 @@
 export type PageRoute = 
   | 'home' 
-  | 'baustellenzubehoor' 
+  | 'baustellenzubehoer' 
   | 'interior' 
   | 'porcelain' 
   | 'mosaics' 
@@ -19,6 +19,7 @@ export interface ConstructionCategory {
   title: string;
   description: string;
   products: ConstructionProduct[];
+  bannerImage?: string;
 }
 
 export interface InteriorProduct {
