@@ -16,13 +16,13 @@ export const constructionCategories: ConstructionCategory[] = [
         name: "System-Keile",
         description: "Robuste und mehrfach wiederverwendbare Keile für gleichmäßigen Anpressdruck.",
         application: "Ergonomische Druckverteilung",
-        image: "/images/nivellier-keile-real-fixed.png"
+        image: "/images/nivellier-keile-real.jpg.png"
       },
       {
         name: "Dreh-Schraubsystem",
         description: "Wiederverwendbares Nivelliersystem mit Drehkappen für kantenfreie Naturstein- und Keramikarbeiten.",
         application: "Stufenlose Regulierung per Hand, zangenfrei",
-        image: "/images/fliesen-schraubsystem-real-fixed.png"
+        image: "/images/fliesen-schraubsystem-real.jpg.png"
       },
       {
         name: "Industrie-Fugenkreuze",
@@ -41,7 +41,7 @@ export const constructionCategories: ConstructionCategory[] = [
   {
     title: "Bewehrung & Betonbau",
     description: "Zugelassene Systemkomponenten für Schalungsbau, Betonarbeiten und Bewehrungsschutz.",
-    bannerImage: "/images/bewehrung-betonbau-banner.png",
+    bannerImage: "/images/01_BAUSTELLENZUBEHOER.jpg",
     products: [
       {
         name: "Abstands-Turm",

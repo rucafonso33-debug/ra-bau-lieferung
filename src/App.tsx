@@ -149,8 +149,8 @@ export default function App() {
                 Home
               </button>
               <button 
-                onClick={() => handleNavigation('baustellenzubehoer')}
-                className={`px-3 py-2 rounded-md transition-all ${currentPage === 'baustellenzubehoer' ? 'bg-[#004b87] text-white' : 'hover:bg-zinc-100 hover:text-zinc-900'}`}
+                onClick={() => handleNavigation('baustellenzubehoor')}
+                className={`px-3 py-2 rounded-md transition-all ${currentPage === 'baustellenzubehoor' ? 'bg-[#004b87] text-white' : 'hover:bg-zinc-100 hover:text-zinc-900'}`}
               >
                 Baustellenzubehör
               </button>
@@ -227,8 +227,8 @@ export default function App() {
               Home (Startseite)
             </button>
             <button 
-              onClick={() => handleNavigation('baustellenzubehoer')}
-              className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentPage === 'baustellenzubehoer' ? 'bg-[#004b87] text-white' : 'text-zinc-700 hover:bg-zinc-50'}`}
+              onClick={() => handleNavigation('baustellenzubehoor')}
+              className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentPage === 'baustellenzubehoor' ? 'bg-[#004b87] text-white' : 'text-zinc-700 hover:bg-zinc-50'}`}
             >
               Baustellenzubehör
             </button>
@@ -356,12 +356,12 @@ export default function App() {
                 
                 {/* 1. Baustellenzubehör */}
                 <div 
-                  onClick={() => handleNavigation('baustellenzubehoer')}
+                  onClick={() => handleNavigation('baustellenzubehoor')}
                   className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden flex flex-col justify-between cursor-pointer hover:border-[#004b87] hover:shadow-lg transition-all group hover:-translate-y-1 duration-300"
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/construction-site-rebar-crane.jpg" 
+                      src="/images/01_BAUSTELLENZUBEHOER.jpg" 
                       alt="Baustellenzubehör" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -392,7 +392,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/cat-feinsteinzeug-real.jpg" 
+                      src="/images/02_MOSAIKE.jpg" 
                       alt="Feinsteinzeug" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -423,7 +423,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/cat-mosaike-beige-real.jpg" 
+                      src="/images/03_PREMIUM_MOSAIKE.jpg" 
                       alt="Premium Mosaike" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -454,7 +454,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/cat-vinylboden-real.jpg" 
+                      src="/images/04_SPC_VINYLBOEDEN.jpg" 
                       alt="SPC-Vinylböden" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -485,7 +485,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/cat-sanitaer-swiss-real.jpg" 
+                      src="/images/05_SANITAERLOESUNGEN.jpg" 
                       alt="Sanitärlösungen" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -671,7 +671,7 @@ export default function App() {
 
 
       {/* -------------------- BAUSTELLENZUBEHÖR PAGE -------------------- */}
-      {currentPage === 'baustellenzubehoer' && (
+      {currentPage === 'baustellenzubehoor' && (
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
@@ -694,7 +694,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-12 xl:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-zinc-200/40">
                   <img 
-                    src="/images/construction-site-rebar-crane.jpg" 
+                    src="/images/01_BAUSTELLENZUBEHOER.jpg" 
                     alt="Baustellenzubehör Premium Visual" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -747,9 +747,9 @@ export default function App() {
                       ) : category.title === "Fliesen-Nivelliersysteme" ? (
                         <div className="absolute inset-0 flex">
                           <img src="/images/fliesen-clips.png" className="w-1/4 object-cover object-center opacity-60 mix-blend-multiply" alt="Clips" referrerPolicy="no-referrer" />
-                          <img src="/images/nivellier-keile-real-fixed.png" className="w-1/4 object-cover object-center opacity-60 mix-blend-multiply border-l border-white/20" alt="Keile" referrerPolicy="no-referrer" />
+                          <img src="/images/nivellier-keile-real.jpg.png" className="w-1/4 object-cover object-center opacity-60 mix-blend-multiply border-l border-white/20" alt="Keile" referrerPolicy="no-referrer" />
                           <img src="/images/fugenkreuze.jpg" className="w-1/4 object-cover object-center opacity-60 mix-blend-multiply border-l border-white/20" alt="Fugenkreuze" referrerPolicy="no-referrer" />
-                          <img src="/images/fliesen-schraubsystem-real-fixed.png" className="w-1/4 object-cover object-center opacity-60 mix-blend-multiply border-l border-white/20" alt="Schraubsystem" referrerPolicy="no-referrer" />
+                          <img src="/images/fliesen-schraubsystem-real.jpg.png" className="w-1/4 object-cover object-center opacity-60 mix-blend-multiply border-l border-white/20" alt="Schraubsystem" referrerPolicy="no-referrer" />
                         </div>
                       ) : (
                         <img 
@@ -895,7 +895,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/travertino-60x120.png" 
+                    src="/images/02_MOSAIKE.jpg" 
                     alt="Porcelain Tiles Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -923,7 +923,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/beige-stone-mosaic.png" 
+                    src="/images/03_PREMIUM_MOSAIKE.jpg" 
                     alt="Premium Mosaics Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -951,7 +951,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/light-oak-spc.png" 
+                    src="/images/04_SPC_VINYLBOEDEN.jpg" 
                     alt="SPC Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -979,7 +979,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/minimalist-bathroom.png" 
+                    src="/images/05_SANITAERLOESUNGEN.jpg" 
                     alt="Bathroom Solutions Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -990,7 +990,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="p-6 flex-grow flex flex-col justify-between">
-                  <p className="text-stone-500 text-xs sm:text-sm font-normal leading-relaxed mb-6 font-sans">
+                  <p className="text-[#555] text-xs sm:text-sm font-normal leading-relaxed mb-6 font-sans">
                     Waschtische, Duschtassen und moderne Armaturen. Bad-Lösungen direkt für Ihr Projekt. Alles für den professionellen Einbau.
                   </p>
                   <button className="flex items-center gap-1.5 font-bold uppercase text-xs tracking-wider text-[#004b87] transition-colors group-hover:translate-x-1 transition-transform">
@@ -1053,7 +1053,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/cat-feinsteinzeug-real.jpg" 
+                    src="/images/02_MOSAIKE.jpg" 
                     alt="Porcelain Tiles Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1186,7 +1186,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/cat-mosaike-beige-real.jpg" 
+                    src="/images/03_PREMIUM_MOSAIKE.jpg" 
                     alt="Premium Mosaics Showroom Landscape" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1319,7 +1319,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/cat-vinylboden-real.jpg" 
+                    src="/images/04_SPC_VINYLBOEDEN.jpg" 
                     alt="SPC/Vinyl Flooring Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1448,7 +1448,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/cat-sanitaer-swiss-real.jpg" 
+                    src="/images/05_SANITAERLOESUNGEN.jpg" 
                     alt="Bathroom Solutions Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1920,7 +1920,7 @@ export default function App() {
             <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-1">
               <button onClick={() => handleNavigation('home')} className="hover:text-zinc-400">Home</button>
               <span>•</span>
-              <button onClick={() => handleNavigation('baustellenzubehoer')} className="hover:text-zinc-400">Baustellenzubehör</button>
+              <button onClick={() => handleNavigation('baustellenzubehoor')} className="hover:text-zinc-400">Baustellenzubehör</button>
               <span>•</span>
               <button onClick={() => handleNavigation('interior')} className="hover:text-zinc-400">Innenausbau</button>
               <span>•</span>

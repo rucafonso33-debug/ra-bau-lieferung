@@ -1,6 +1,6 @@
 export type PageRoute = 
   | 'home' 
-  | 'baustellenzubehoer' 
+  | 'baustellenzubehoor' 
   | 'interior' 
   | 'porcelain' 
   | 'mosaics' 
