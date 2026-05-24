@@ -41,7 +41,7 @@ export const constructionCategories: ConstructionCategory[] = [
   {
     title: "Bewehrung & Betonbau",
     description: "Zugelassene Systemkomponenten für Schalungsbau, Betonarbeiten und Bewehrungsschutz.",
-    bannerImage: "/images/01_BAUSTELLENZUBEHOER.jpg",
+    bannerImage: "/images/01_BAUSTELLENZUBEHOER.png",
     products: [
       {
         name: "Abstands-Turm",

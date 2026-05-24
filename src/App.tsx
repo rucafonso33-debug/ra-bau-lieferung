@@ -361,7 +361,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/01_BAUSTELLENZUBEHOER.jpg" 
+                      src="/images/01_BAUSTELLENZUBEHOER.png" 
                       alt="Baustellenzubehör" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -392,7 +392,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/02_MOSAIKE.jpg" 
+                      src="/images/02_MOSAIKE.png" 
                       alt="Feinsteinzeug" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -423,7 +423,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/03_PREMIUM_MOSAIKE.jpg" 
+                      src="/images/03_PREMIUM_MOSAIKE.png" 
                       alt="Premium Mosaike" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -454,7 +454,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/04_SPC_VINYLBOEDEN.jpg" 
+                      src="/images/04_SPC_VINYLBOEDEN.png" 
                       alt="SPC-Vinylböden" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -485,7 +485,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/05_SANITAERLOESUNGEN.jpg" 
+                      src="/images/05_SANITAERLOESUNGEN.png" 
                       alt="Sanitärlösungen" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -694,7 +694,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-12 xl:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-zinc-200/40">
                   <img 
-                    src="/images/01_BAUSTELLENZUBEHOER.jpg" 
+                    src="/images/01_BAUSTELLENZUBEHOER.png" 
                     alt="Baustellenzubehör Premium Visual" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -895,7 +895,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/02_MOSAIKE.jpg" 
+                    src="/images/02_MOSAIKE.png" 
                     alt="Porcelain Tiles Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -923,7 +923,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/03_PREMIUM_MOSAIKE.jpg" 
+                    src="/images/03_PREMIUM_MOSAIKE.png" 
                     alt="Premium Mosaics Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -951,7 +951,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/04_SPC_VINYLBOEDEN.jpg" 
+                    src="/images/04_SPC_VINYLBOEDEN.png" 
                     alt="SPC Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -979,7 +979,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/05_SANITAERLOESUNGEN.jpg" 
+                    src="/images/05_SANITAERLOESUNGEN.png" 
                     alt="Bathroom Solutions Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -1053,7 +1053,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/02_MOSAIKE.jpg" 
+                    src="/images/02_MOSAIKE.png" 
                     alt="Porcelain Tiles Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1186,7 +1186,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/03_PREMIUM_MOSAIKE.jpg" 
+                    src="/images/03_PREMIUM_MOSAIKE.png" 
                     alt="Premium Mosaics Showroom Landscape" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1319,7 +1319,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/04_SPC_VINYLBOEDEN.jpg" 
+                    src="/images/04_SPC_VINYLBOEDEN.png" 
                     alt="SPC/Vinyl Flooring Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1448,7 +1448,7 @@ export default function App() {
                 </div>
                 <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/05_SANITAERLOESUNGEN.jpg" 
+                    src="/images/05_SANITAERLOESUNGEN.png" 
                     alt="Bathroom Solutions Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
