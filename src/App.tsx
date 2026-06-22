@@ -106,7 +106,6 @@ export default function App() {
             _subject: "Neue Materialanfrage von der Website!",
             _template: "table",
             email: formData.email,
-            _replyto: formData.email,
             Firmenname: formData.company,
             Ansprechpartner: formData.contactName,
             Telefon: formData.phone,
