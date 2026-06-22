@@ -41,6 +41,7 @@ export default function App() {
 
   // Form State
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     company: '',
     contactName: '',
@@ -86,13 +87,42 @@ export default function App() {
     });
   };
 
-  const submitContactForm = (e: React.FormEvent) => {
+  const submitContactForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.contactName || !formData.email) {
       alert("Bitte füllen Sie mindestens Name und E-Mail aus.");
       return;
     }
-    setFormSubmitted(true);
+    
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/rodrigo@ra-bau-lieferung.com", {
+        method: "POST",
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            _subject: "Neue Materialanfrage von der Website!",
+            Firmenname: formData.company,
+            Ansprechpartner: formData.contactName,
+            Telefon: formData.phone,
+            Email: formData.email,
+            Interessen: formData.interests.join(", "),
+            Nachricht: formData.message
+        })
+      });
+      
+      if (response.ok) {
+        setFormSubmitted(true);
+      } else {
+        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+      }
+    } catch (error) {
+      alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -1646,7 +1676,7 @@ export default function App() {
 
                     {/* Email Link */}
                     <a 
-                      href="mailto:rucafonso33@gmail.com"
+                      href="mailto:rodrigo@ra-bau-lieferung.com"
                       className="flex items-center justify-between p-3.5 bg-zinc-50 hover:bg-zinc-100 text-zinc-950 rounded-xl transition-all border border-zinc-200 group"
                     >
                       <div className="flex items-center gap-3">
@@ -1655,7 +1685,7 @@ export default function App() {
                         </div>
                         <div className="text-left">
                           <span className="text-xs font-bold block text-zinc-500 tracking-wider uppercase leading-none">E-Mail schicken</span>
-                          <span className="text-base font-black tracking-tight text-zinc-800">rucafonso33@gmail.com</span>
+                          <span className="text-base font-black tracking-tight text-zinc-800">rodrigo@ra-bau-lieferung.com</span>
                         </div>
                       </div>
                       <ChevronRight className="w-5 h-5 text-yellow-500 group-hover:translate-x-1 transition-transform" />
@@ -1858,10 +1888,11 @@ export default function App() {
                     {/* Submission Button */}
                     <button 
                       type="submit" 
-                      className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-zinc-950 py-4 rounded-xl font-black text-sm uppercase tracking-wider transition-colors shadow-md"
+                      disabled={isSubmitting}
+                      className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-zinc-950 py-4 rounded-xl font-black text-sm uppercase tracking-wider transition-colors shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <Send className="w-4 h-4 text-zinc-900" />
-                      <span>Anfrage absenden</span>
+                      <Send className={`w-4 h-4 text-zinc-900 ${isSubmitting ? 'animate-pulse' : ''}`} />
+                      <span>{isSubmitting ? 'Wird gesendet...' : 'Anfrage absenden'}</span>
                     </button>
 
                   </form>
@@ -1900,8 +1931,8 @@ export default function App() {
               <a href={`tel:${cleanNumber}`} className="flex items-center gap-2 hover:text-yellow-500 transition-colors text-lg font-black text-white">
                 {whatsappNumber}
               </a>
-              <a href="mailto:rucafonso33@gmail.com" className="flex items-center gap-2 hover:text-yellow-500 transition-colors text-sm">
-                rucafonso33@gmail.com
+              <a href="mailto:rodrigo@ra-bau-lieferung.com" className="flex items-center gap-2 hover:text-yellow-500 transition-colors text-sm">
+                rodrigo@ra-bau-lieferung.com
               </a>
             </div>
 
