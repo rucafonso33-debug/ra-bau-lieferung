@@ -104,10 +104,12 @@ export default function App() {
         },
         body: JSON.stringify({
             _subject: "Neue Materialanfrage von der Website!",
+            _template: "table",
+            email: formData.email,
             Firmenname: formData.company,
             Ansprechpartner: formData.contactName,
             Telefon: formData.phone,
-            Email: formData.email,
+            "Kunden-Email": formData.email,
             Interessen: formData.interests.join(", "),
             Nachricht: formData.message
         })
