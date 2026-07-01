@@ -93,31 +93,43 @@ export const interiorCategories: InteriorCategory[] = [
         name: "Travertino-Struktur",
         spec: "Premium Rektifiziert | Erstklassige Haptik",
         details: "Mustergültige, überzeugend echte Travertin-Optik in warmen Sandtönen mit perfekt rektifizierten Kanten.",
-        image: "/images/travertino-60x120.png"
+        image: "/images/travertino-60x120.png",
+        brand: "Gresco"
       },
       {
         name: "Naturstein-Design Beige",
         spec: "Rutschfestigkeit R10/B | Frostbeständig",
         details: "Dauerhaft strapazierfähige Materialoberfläche mit der echten Strukturtiefe und Haptik von geschnittenem Naturstein.",
-        image: "/images/stone-look-60x60.png"
+        image: "/images/stone-look-60x60.png",
+        brand: "Recer"
       },
       {
         name: "Sichtbeton-Optik Matt",
         spec: "Rektifizierte Präzision | Moderner Loft-Stil",
         details: "Minimalistische Sichtbeton-Ästhetik für großflächige, feine Fugenbilder an Boden und Wand.",
-        image: "/images/concrete-look-120x120.png"
+        image: "/images/concrete-look-120x120.png",
+        brand: "Gresco"
       },
       {
         name: "Edelholz-Keramikbelag",
         spec: "Rutschklasse R9 • Rektifiziert",
         details: "Die authentische, lebendige Wärme und Maserung von Holz, kombiniert mit der Beständigkeit von Feinsteinzeug.",
-        image: "/images/wood-look-porcelain.png"
+        image: "/images/wood-look-porcelain.png",
+        brand: "Recer"
       },
       {
         name: "Marmor-Struktur Softmatt",
         spec: "Seidenmatte Veredelung | Homogene Oberfläche",
-        details: "Hochelegante Marmor-Optik with weichem, seidenmattem Finish. Nahezu fugenlose Verlegung dank extrem enger Maßtoleranzen.",
-        image: "/images/marble-look-soft-matte.png"
+        details: "Hochelegante Marmor-Optik mit weichem, seidenmattem Finish. Nahezu fugenlose Verlegung dank extrem enger Maßtoleranzen.",
+        image: "/images/marble-look-soft-matte.png",
+        brand: "Rubicer"
+      },
+      {
+        name: "Gresco Terrassenplatte Outdoor",
+        spec: "Feinsteinzeug 20mm | R11 Rutschfest | Frostsicher",
+        details: "Extrem widerstandsfähige Feinsteinzeug-Terrassenplatte in strukturierter Natursteinoptik für Balkone, Terrassen und Aussenbereiche.",
+        image: "/images/stone-look-60x60.png",
+        brand: "Gresco"
       }
     ]
   },
@@ -130,25 +142,29 @@ export const interiorCategories: InteriorCategory[] = [
         name: "Klassisches Steinmosaik Beige",
         spec: "Netzgeklebt | Handverlesener Steinschliff",
         details: "Feinsinnig nuancierte Natursteinstruktur, perfekt geeignet für bodengleiche, rutschhemmende Duschen.",
-        image: "/images/beige-stone-mosaic.png"
+        image: "/images/beige-stone-mosaic.png",
+        brand: "Recer"
       },
       {
         name: "Travertin-Mosaikfliesen",
         spec: "Klassisches Format | Warm-Beige Nuance",
         details: "Antikisierter Travertin-Eindruck im klassischen Mosaik-Raster für warme, architektonisch anspruchsvolle Wände.",
-        image: "/images/travertine-look-mosaics.png"
+        image: "/images/travertine-look-mosaics.png",
+        brand: "Gresco"
       },
       {
         name: "Riegelmosaik Matt",
         spec: "Symmetrisches Stäbchen-Design",
         details: "Die moderne, vertikal gestaltete Stabstruktur für skandinavisch inspirierte Küchen- und Badezimmerrückwände.",
-        image: "/images/kitkat-mosaic.png"
+        image: "/images/kitkat-mosaic.png",
+        brand: "Recer"
       },
       {
         name: "Naturstein-Mosaik Premium",
         spec: "Polierte Oberfläche | Edelmatt veredelt",
         details: "Organische Formvollendung und bestechende Tiefenoptik für exklusive Wellness-Oasen und Luxus-Nassbereiche.",
-        image: "/images/natural-stone-mosaics.png"
+        image: "/images/natural-stone-mosaics.png",
+        brand: "Rubicer"
       }
     ]
   },
@@ -161,25 +177,36 @@ export const interiorCategories: InteriorCategory[] = [
         name: "SPC Eiche Hell",
         spec: "Integrierter Trittschall | Extrem Strapazierfähig",
         details: "Lichtdurchflutetes, nordisches Eichenfurnier-Design mit widerstandsfähiger, kratzfester Nutzkantenversiegelung.",
-        image: "/images/light-oak-spc.png"
+        image: "/images/light-oak-spc.png",
+        brand: "Corkart"
       },
       {
         name: "SPC Eiche Beige-Matt",
         spec: "Synchrongeprägte Premium-Maserung",
         details: "Wohnliche, beige-braune Eichenoptik mit synchrongeprägter Premium-Maserung für fühlbare Holzhaptik.",
-        image: "/images/beige-oak-matte-spc.png"
+        image: "/images/beige-oak-matte-spc.png",
+        brand: "Corkart"
       },
       {
         name: "SPC Steinstruktur Grauguss",
         spec: "Großformat-Fliesenoptik | Gelenkschonend",
         details: "Großformatige SPC-Fliesen in cooler Gussbeton-Ästhetik bei angenehmer, gelenkschonender Fußwärme.",
-        image: "/images/stone-look-spc.png"
+        image: "/images/stone-look-spc.png",
+        brand: "Rubicer"
       },
       {
         name: "SPC Akustik-Klickboden",
         spec: "Hervorragende Trittschallreduktion • Hochformstabil",
         details: "Zukunftsweisender Vinylboden für exzellente Raumakustik. Optimal für Hotelbauten und gehobene Mietobjekte.",
-        image: "/images/acoustic-spc-flooring.png"
+        image: "/images/acoustic-spc-flooring.png",
+        brand: "Corkart"
+      },
+      {
+        name: "Corkart Kork-Comfortparkett",
+        spec: "Comfort Concept | Akustik & Wärme | Ökologisch",
+        details: "Nachhaltiger, hochelastischer Komfortboden aus echtem Kork. Bietet hervorragende Raumakustik, Gelenkschonung und angenehme Fusswärme.",
+        image: "/images/04_SPC_VINYLBOEDEN.png",
+        brand: "Corkart"
       }
     ]
   },
@@ -192,25 +219,36 @@ export const interiorCategories: InteriorCategory[] = [
         name: "Ultraschlanke Duschwanne",
         spec: "Feine Schieferstruktur | Ultraschlaches Profil",
         details: "Bodengleiche, ungemein robuste Mineralguss-Duschwanne für barrierefreie, elegante Walk-In Architekturen.",
-        image: "/images/slim-shower-tray.png"
+        image: "/images/slim-shower-tray.png",
+        brand: "Moovlux"
       },
       {
         name: "Modularer Waschtisch",
         spec: "Echtholz-Furnier | Push-to-Open Auszüge",
         details: "Schwebendes High-End-Badmöbel mit eleganten Schattenfugen und integriertem Feuchtigkeitsschutz.",
-        image: "/images/minimalist-bathroom.png"
+        image: "/images/modern-washbasins.png",
+        brand: "Accua Banho"
       },
       {
         name: "Aufsatzwaschbecken Feinkeramik",
         spec: "Dünnwandige Keramik | Nano-Präzisionsglasur",
         details: "Formvollendetes, geometrisches Aufsatzwaschbecken für mondäne, anmutige Master-Badezimmer.",
-        image: "/images/modern-washbasins.png"
+        image: "/images/minimalist-bathroom.png",
+        brand: "Roca"
       },
       {
-        name: "Accessoires Mattschwarz",
-        spec: "Kratzresistentes PVD-Finish",
-        details: "Premium Armaturen, Design-Siphons und korrosionsfreie Accessoires für starke, elegante Akzente im modernen Bad.",
-        image: "/images/matte-black-details.png"
+        name: "Roca Avant Wand-WC / Kompakt",
+        spec: "Rimless • Sanftes Bidet-Duschsystem",
+        details: "Hygienisches, spülrandloses Premium Dusch-WC mit integrierter Warmwasser-Reinigungsfunktion, Lufttrocknung und Soft-Close-Automatik.",
+        image: "/images/05_SANITAERLOESUNGEN.png",
+        brand: "Roca"
+      },
+      {
+        name: "Ramon Soler Alexia Armatur",
+        spec: "Waschtischmischer | Matt-Schwarz PVD-Finish",
+        details: "Präzisions-Mischbatterie mit Keramikkartusche und integriertem Wasser-Sparventil in edler Matt-Schwarzer Ausführung.",
+        image: "/images/matte-black-details.png",
+        brand: "Ramon Soler"
       }
     ]
   }

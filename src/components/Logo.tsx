@@ -13,7 +13,7 @@ export const Logo: React.FC<LogoProps> = ({ className = "", invert = false }) =>
     <div className={`flex items-center select-none ${className}`}>
       <svg 
         viewBox="0 0 350 100" 
-        className="h-10 sm:h-12 md:h-[50px] w-auto transition-all" 
+        className="h-8 sm:h-12 md:h-[50px] w-auto transition-all" 
         fill="none" 
         style={{ contentVisibility: 'auto' }}
         xmlns="http://www.w3.org/2000/svg"

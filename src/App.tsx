@@ -25,9 +25,17 @@ import {
   User,
   Send,
   HelpCircle,
-  Info
+  Info,
+  Trash2,
+  Plus,
+  Minus,
+  Calendar,
+  ClipboardList,
+  Check,
+  FileText,
+  AlertCircle
 } from 'lucide-react';
-import { PageRoute } from './types';
+import { PageRoute, QuoteItem } from './types';
 import { constructionCategories, interiorCategories } from './data';
 import { Logo } from './components/Logo';
 
@@ -50,6 +58,148 @@ export default function App() {
     message: '',
     interests: [] as string[]
   });
+
+  // Quote State
+  const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
+  const [quoteSubmitted, setQuoteSubmitted] = useState(false);
+  const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [quoteFormData, setQuoteFormData] = useState({
+    company: '',
+    contactName: '',
+    phone: '',
+    email: '',
+    deliveryAddress: '',
+    deliveryTimeframe: '1-month', // 'asap', '1-month', '2-3-months', 'flexible'
+    generalNotes: ''
+  });
+
+  // Validation & Error States
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+
+  // Custom Item Adding State (Internal to the planner view)
+  const [customItemName, setCustomItemName] = useState('');
+  const [customItemQty, setCustomItemQty] = useState('10');
+  const [customItemUnit, setCustomItemUnit] = useState('m²');
+  const [customItemNotes, setCustomItemNotes] = useState('');
+  const [catalogMode, setCatalogMode] = useState<'zubehoor' | 'innenausbau'>('zubehoor');
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3500);
+  };
+
+  const addToQuote = (product: { name: string; spec: string; brand?: string; image: string }) => {
+    setQuoteItems(prev => {
+      const existingIdx = prev.findIndex(item => item.name === product.name);
+      if (existingIdx > -1) {
+        const currentItem = prev[existingIdx];
+        const numQty = parseFloat(currentItem.quantity);
+        const addedQty = currentItem.unit === 'Stk.' ? 5 : 25;
+        const newQty = isNaN(numQty) ? "50" : (numQty + addedQty).toString();
+        const updated = [...prev];
+        updated[existingIdx] = { ...currentItem, quantity: newQty };
+        showToast(`Menge für "${product.name}" im Planer erhöht!`);
+        return updated;
+      }
+      
+      let defaultUnit = 'm²';
+      const lowercaseName = product.name.toLowerCase();
+      const lowercaseSpec = product.spec.toLowerCase();
+      
+      if (
+        lowercaseName.includes('wc') || 
+        lowercaseName.includes('armatur') || 
+        lowercaseName.includes('duschset') || 
+        lowercaseName.includes('waschtisch') || 
+        lowercaseName.includes('waschbecken') || 
+        lowercaseName.includes('duschwanne') ||
+        lowercaseName.includes('clips') ||
+        lowercaseName.includes('keile') ||
+        lowercaseName.includes('set') ||
+        lowercaseName.includes('schraubsystem') ||
+        lowercaseName.includes('haken') ||
+        lowercaseName.includes('stern') ||
+        lowercaseName.includes('turm') ||
+        lowercaseName.includes('kappe')
+      ) {
+        defaultUnit = 'Stk.';
+      } else if (lowercaseName.includes('leiste') || lowercaseName.includes('draht') || lowercaseSpec.includes('m-') || lowercaseName.includes('haken') || lowercaseName.includes('bindehaken')) {
+        defaultUnit = 'Stk.';
+      }
+      
+      const defaultFormat = defaultUnit === 'm²' ? '' : undefined;
+      
+      const newItem: QuoteItem = {
+        id: Date.now().toString() + '-' + Math.random().toString(36).substring(2, 6),
+        name: product.name,
+        spec: product.spec,
+        brand: product.brand,
+        image: product.image,
+        quantity: defaultUnit === 'Stk.' ? '5' : '50',
+        unit: defaultUnit,
+        format: defaultFormat,
+        customNote: ''
+      };
+      showToast(`"${product.name}" zum Offerten-Planer hinzugefügt!`);
+      return [...prev, newItem];
+    });
+  };
+
+  const changeQuoteQty = (productName: string, delta: number) => {
+    setQuoteItems(prev => {
+      const idx = prev.findIndex(item => item.name === productName);
+      if (idx > -1) {
+        const item = prev[idx];
+        const currentQty = parseFloat(item.quantity) || 0;
+        const step = item.unit === 'Stk.' ? 1 : 10;
+        const newQty = currentQty + (delta * step);
+        if (newQty <= 0) {
+          showToast(`"${item.name}" aus der Zusammenstellung entfernt.`);
+          return prev.filter((_, i) => i !== idx);
+        } else {
+          const updated = [...prev];
+          updated[idx] = { ...item, quantity: newQty.toString() };
+          return updated;
+        }
+      }
+      return prev;
+    });
+  };
+
+  const removeFromQuote = (id: string) => {
+    setQuoteItems(prev => prev.filter(item => item.id !== id));
+    showToast('Produkt aus der Zusammenstellung entfernt.');
+  };
+
+  const updateQuoteItem = (id: string, fields: Partial<QuoteItem>) => {
+    setQuoteItems(prev => prev.map(item => item.id === id ? { ...item, ...fields } : item));
+  };
+
+  const addCustomQuoteItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customItemName.trim()) return;
+
+    const newItem: QuoteItem = {
+      id: Date.now().toString() + '-' + Math.random().toString(36).substring(2, 6),
+      name: customItemName,
+      spec: 'Benutzerdefinierte Anfrage',
+      image: '/images/baustellenzubehoor_premium.png', // fallback
+      quantity: customItemQty || '10',
+      unit: customItemUnit,
+      customNote: customItemNotes,
+      isCustom: true
+    };
+
+    setQuoteItems(prev => [...prev, newItem]);
+    setCustomItemName('');
+    setCustomItemQty('10');
+    setCustomItemNotes('');
+    showToast('Benutzerdefiniertes Material hinzugefügt!');
+  };
 
   const getProductWhatsAppLink = (productName: string) => {
     const message = `Guten Tag, ich interessiere mich für ${productName}. Können Sie mir bitte weitere Informationen und eine Angebot senden?`;
@@ -89,8 +239,9 @@ export default function App() {
 
   const submitContactForm = async (e: React.FormEvent) => {
     e.preventDefault();
+    setContactError(null);
     if (!formData.contactName || !formData.email) {
-      alert("Bitte füllen Sie mindestens Name und E-Mail aus.");
+      setContactError("Bitte füllen Sie mindestens Name und E-Mail aus.");
       return;
     }
     
@@ -119,12 +270,80 @@ export default function App() {
       if (response.ok) {
         setFormSubmitted(true);
       } else {
-        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+        setContactError("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
       }
     } catch (error) {
-      alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.");
+      setContactError("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const submitQuoteForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuoteError(null);
+    if (!quoteFormData.contactName || !quoteFormData.email) {
+      setQuoteError("Bitte füllen Sie mindestens Ihren Namen und Ihre E-Mail-Adresse aus.");
+      return;
+    }
+    if (quoteItems.length === 0) {
+      setQuoteError("Ihr Offerten-Planer ist leer. Bitte fügen Sie mindestens ein Produkt hinzu.");
+      return;
+    }
+
+    setIsSubmittingQuote(true);
+    try {
+      const itemsString = quoteItems.map((item, idx) => {
+        const brandStr = item.brand ? ` [Marke: ${item.brand}]` : '';
+        const noteStr = item.customNote ? ` (Anmerkung: ${item.customNote})` : '';
+        const customTypeStr = item.isCustom ? ' [EIGENES MATERIAL]' : '';
+        return `${idx + 1}. ${item.name}${brandStr}${customTypeStr} - Spezifikation: ${item.spec} - Menge: ${item.quantity} ${item.unit}${noteStr}`;
+      }).join('\n\n');
+
+      const requestData: any = {
+        _subject: "Neue detaillierte Offertenanfrage / Zusammenstellung!",
+        _template: "table",
+        _replyto: quoteFormData.email,
+        "Kunden-Name": quoteFormData.contactName,
+        "Firmenname": quoteFormData.company,
+        "Telefon": quoteFormData.phone,
+        "E-Mail": quoteFormData.email,
+        "Lieferadresse / Baustelle": quoteFormData.deliveryAddress,
+        "Wunsch-Liefertermin": quoteFormData.deliveryTimeframe === 'asap' ? 'Schnellstmöglich (ASAP)' :
+                             quoteFormData.deliveryTimeframe === '1-month' ? 'In ca. 1 Monat' :
+                             quoteFormData.deliveryTimeframe === '2-3-months' ? 'In 2-3 Monaten' : 'Flexibel / Später',
+        "Allgemeine Anmerkungen": quoteFormData.generalNotes || 'Keine zusätzlichen Kommentare',
+        "Detaillierte Materialaufstellung": itemsString
+      };
+
+      quoteItems.forEach((item, idx) => {
+        const label = item.isCustom ? `Benutzerdefiniert ${idx + 1}` : `Produkt ${idx + 1}`;
+        requestData[label] = `${item.name} (${item.brand || 'Keine Marke'})`;
+        requestData[`Spezifikation ${idx + 1}`] = item.spec;
+        requestData[`Menge ${idx + 1}`] = `${item.quantity} ${item.unit}`;
+        if (item.customNote) {
+          requestData[`Anmerkung ${idx + 1}`] = item.customNote;
+        }
+      });
+
+      const response = await fetch("https://formsubmit.co/ajax/rodrigo@ra-bau-lieferung.com", {
+        method: "POST",
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+      
+      if (response.ok) {
+        setQuoteSubmitted(true);
+      } else {
+        setQuoteError("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+      }
+    } catch (error) {
+      setQuoteError("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.");
+    } finally {
+      setIsSubmittingQuote(false);
     }
   };
 
@@ -137,7 +356,23 @@ export default function App() {
       message: '',
       interests: []
     });
+    setContactError(null);
     setFormSubmitted(false);
+  };
+
+  const resetQuoteForm = () => {
+    setQuoteItems([]);
+    setQuoteFormData({
+      company: '',
+      contactName: '',
+      phone: '',
+      email: '',
+      deliveryAddress: '',
+      deliveryTimeframe: '1-month',
+      generalNotes: ''
+    });
+    setQuoteError(null);
+    setQuoteSubmitted(false);
   };
 
   const handleNavigation = (page: PageRoute) => {
@@ -154,19 +389,19 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 selection:bg-yellow-500 selection:text-black scroll-smooth">
+    <div className="min-h-screen w-full overflow-x-hidden bg-zinc-50 font-sans text-zinc-900 selection:bg-yellow-500 selection:text-black scroll-smooth">
       
       {/* Top Warning/Trust Bar */}
-      <div className="bg-[#004b87] text-white text-xs sm:text-sm py-2.5 px-4 font-bold text-center relative z-40 border-b border-[#003b6b]">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap text-zinc-100 mt-0.5">
-          <Truck className="w-4.5 h-4.5 text-yellow-500 animate-bounce" />
-          <span>Zuverlässige Materiallieferung für Schweizer Projekte <span className="text-yellow-500 mx-1.5">•</span> Rascher Versand von Baustellenzubehör</span>
+      <div className="bg-[#004b87] text-white text-[11px] sm:text-xs md:text-sm py-2 px-3 sm:py-2.5 sm:px-4 font-bold text-center relative z-40 border-b border-[#003b6b]">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap text-zinc-100 mt-0.5">
+          <Truck className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-yellow-500 animate-bounce" />
+          <span>Zuverlässige Materiallieferung für Schweizer Projekte <span className="text-yellow-500 mx-1">•</span> Rascher Versand von Baustellenzubehör</span>
         </div>
       </div>
 
       {/* Navigation Header */}
       <nav className="bg-white border-b-2 border-yellow-500 sticky top-0 z-50 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center cursor-pointer select-none" onClick={() => handleNavigation('home')}>
@@ -225,26 +460,39 @@ export default function App() {
               </button>
             </div>
 
-            {/* Offerte CTA Button */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            {/* Offerte CTA Button & Offerten-Planer Badge */}
+            <div className="flex items-center gap-1.5 sm:gap-4">
+              <button
+                onClick={() => handleNavigation('quote-planner')}
+                className={`relative flex items-center gap-1.5 px-2 py-1.5 sm:px-4.5 sm:py-2.5 rounded-full font-bold text-[11px] sm:text-xs md:text-sm transition-all shadow-md border ${currentPage === 'quote-planner' ? 'bg-yellow-500 text-[#004b87] border-yellow-500 font-black' : 'bg-yellow-400 hover:bg-yellow-500 text-[#004b87] border-yellow-400'}`}
+              >
+                <Package className="w-4 h-4 text-[#004b87]" />
+                <span className="hidden md:inline">Offerten-Planer</span>
+                <span className="hidden sm:inline md:hidden">Planer</span>
+                {quoteItems.length > 0 && (
+                  <span className="bg-[#004b87] text-white text-[9px] sm:text-xs font-black min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] px-1 rounded-full flex items-center justify-center animate-pulse">
+                    {quoteItems.length}
+                  </span>
+                )}
+              </button>
+
               <a 
                 href={getWhatsAppLink("general_ask")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 bg-[#25D366] hover:bg-[#1ebe57] text-white px-4 py-2.5 rounded-full font-bold transition-all shadow-md hover:shadow-lg text-xs sm:text-sm"
+                className="flex items-center gap-1.5 bg-[#25D366] hover:bg-[#1ebe57] text-white px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-full font-bold transition-all shadow-md hover:shadow-lg text-[11px] sm:text-xs md:text-sm"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">Preis anfragen</span>
-                <span className="sm:hidden">Anfragen</span>
               </a>
 
               {/* Mobile Menu Icon */}
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-md text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
+                className="lg:hidden p-1.5 rounded-md text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
                 aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>
           </div>
@@ -296,6 +544,20 @@ export default function App() {
               Sanitärlösungen
             </button>
             <div className="h-px bg-zinc-150 my-1"></div>
+            <button 
+              onClick={() => handleNavigation('quote-planner')}
+              className={`flex items-center justify-between w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${currentPage === 'quote-planner' ? 'bg-yellow-500 text-black' : 'bg-yellow-400 text-[#004b87]'}`}
+            >
+              <span className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span>Offerten-Planer</span>
+              </span>
+              {quoteItems.length > 0 && (
+                <span className="bg-[#004b87] text-white text-xs font-black px-2 py-0.5 rounded-full">
+                  {quoteItems.length}
+                </span>
+              )}
+            </button>
             <button 
               onClick={() => handleNavigation('contact')}
               className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentPage === 'contact' ? 'bg-[#004b87] text-white' : 'text-zinc-700 hover:bg-zinc-50'}`}
@@ -425,7 +687,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/02_MOSAIKE.png" 
+                      src="/images/travertino-60x120.png" 
                       alt="Feinsteinzeug" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -456,7 +718,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/03_PREMIUM_MOSAIKE.png" 
+                      src="/images/beige-stone-mosaic.png" 
                       alt="Premium Mosaike" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -487,7 +749,7 @@ export default function App() {
                 >
                   <div className="relative h-36 w-full overflow-hidden">
                     <img 
-                      src="/images/04_SPC_VINYLBOEDEN.png" 
+                      src="/images/beige-oak-matte-spc.png" 
                       alt="SPC-Vinylböden" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -853,15 +1115,62 @@ export default function App() {
                             </span>
                           </div>
                           
-                          <a 
-                            href={getProductWhatsAppLink(product.name)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full bg-[#004b87] hover:bg-[#003b6b] text-white px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
-                          >
-                            <ArrowRight className="w-4 h-4 text-yellow-500" />
-                            <span>Jetzt anfragen</span>
-                          </a>
+                          {/* Quote Planner Add Button or Counter */}
+                          {(() => {
+                            const existing = quoteItems.find(item => item.name === product.name);
+                            return (
+                              <div className="space-y-2 mt-auto">
+                                {existing ? (
+                                  <div className="flex flex-col gap-1.5 bg-yellow-50 border border-yellow-200 rounded-xl p-2.5">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[10px] font-black uppercase text-yellow-800 flex items-center gap-1">
+                                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                        <span>Im Planer</span>
+                                      </span>
+                                      <div className="flex items-center gap-1.5">
+                                        <button
+                                          type="button"
+                                          onClick={() => changeQuoteQty(product.name, -1)}
+                                          className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                        >
+                                          <Minus className="w-2.5 h-2.5 text-stone-700" />
+                                        </button>
+                                        <span className="text-xs font-black text-[#004b87] min-w-[20px] text-center">
+                                          {existing.quantity}
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => changeQuoteQty(product.name, 1)}
+                                          className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                        >
+                                          <Plus className="w-2.5 h-2.5 text-stone-700" />
+                                        </button>
+                                        <span className="text-[10px] font-bold text-stone-500">Stk.</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => addToQuote({ name: product.name, spec: product.application, image: product.image })}
+                                    className="flex items-center justify-center gap-1.5 w-full bg-yellow-400 hover:bg-yellow-500 text-[#004b87] px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs border border-yellow-400"
+                                  >
+                                    <Plus className="w-3.5 h-3.5 text-[#004b87]" />
+                                    <span>In den Planer legen</span>
+                                  </button>
+                                )}
+                                
+                                <a 
+                                  href={getProductWhatsAppLink(product.name)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-center gap-1.5 w-full bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all"
+                                >
+                                  <MessageCircle className="w-3.5 h-3.5 text-stone-500" />
+                                  <span>Direkt fragen</span>
+                                </a>
+                              </div>
+                            );
+                          })()}
                         </div>
                       </div>
                     ))}
@@ -928,7 +1237,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/02_MOSAIKE.png" 
+                    src="/images/travertino-60x120.png" 
                     alt="Porcelain Tiles Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -956,7 +1265,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/03_PREMIUM_MOSAIKE.png" 
+                    src="/images/beige-stone-mosaic.png" 
                     alt="Premium Mosaics Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -984,7 +1293,7 @@ export default function App() {
               >
                 <div className="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img 
-                    src="/images/04_SPC_VINYLBOEDEN.png" 
+                    src="/images/beige-oak-matte-spc.png" 
                     alt="SPC Category" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -1084,9 +1393,9 @@ export default function App() {
                     SIA-Geprüft • Kalibrierte Schnittkanten • Naturstein-Haptik
                   </p>
                 </div>
-                <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
+                <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/02_MOSAIKE.png" 
+                    src="/images/travertino-60x120.png" 
                     alt="Porcelain Tiles Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1142,6 +1451,11 @@ export default function App() {
 
                   {/* Body Content */}
                   <div className="p-6 flex flex-col flex-grow">
+                    {product.brand && (
+                      <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
+                        {product.brand}
+                      </span>
+                    )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
                       {product.name}
                     </h4>
@@ -1159,15 +1473,62 @@ export default function App() {
                       </span>
                     </div>
                     
-                    <a 
-                      href={getProductWhatsAppLink(product.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full bg-[#004b87] hover:bg-[#003b6b] text-white px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-[#004b87] shadow-sm"
-                    >
-                      <MessageCircle className="w-4 h-4 text-white" />
-                      <span>Jetzt anfragen</span>
-                    </a>
+                    {/* Quote Planner Add Button or Counter */}
+                    {(() => {
+                      const existing = quoteItems.find(item => item.name === product.name);
+                      return (
+                        <div className="space-y-2 mt-auto">
+                          {existing ? (
+                            <div className="flex flex-col gap-1.5 bg-yellow-50 border border-yellow-200 rounded-xl p-2.5">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase text-yellow-800 flex items-center gap-1">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Im Planer</span>
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, -1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Minus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-xs font-black text-[#004b87] min-w-[20px] text-center">
+                                    {existing.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, 1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Plus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-[10px] font-bold text-stone-500">m²</span>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => addToQuote({ name: product.name, spec: product.spec, brand: product.brand, image: product.image })}
+                              className="flex items-center justify-center gap-1.5 w-full bg-yellow-400 hover:bg-yellow-500 text-[#004b87] px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs border border-yellow-400"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-[#004b87]" />
+                              <span>In den Planer legen</span>
+                            </button>
+                          )}
+                          
+                          <a 
+                            href={getProductWhatsAppLink(product.name)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 w-full bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 text-stone-500" />
+                            <span>Direkt fragen</span>
+                          </a>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -1217,9 +1578,9 @@ export default function App() {
                     Premium Haptik • Kalibrierte Trägernetze • Edle Steinauswahl
                   </p>
                 </div>
-                <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
+                <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/03_PREMIUM_MOSAIKE.png" 
+                    src="/images/beige-stone-mosaic.png" 
                     alt="Premium Mosaics Showroom Landscape" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1275,6 +1636,11 @@ export default function App() {
 
                   {/* Body Content */}
                   <div className="p-6 flex flex-col flex-grow">
+                    {product.brand && (
+                      <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
+                        {product.brand}
+                      </span>
+                    )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
                       {product.name}
                     </h4>
@@ -1292,15 +1658,62 @@ export default function App() {
                       </span>
                     </div>
                     
-                    <a 
-                      href={getProductWhatsAppLink(product.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full bg-[#004b87] hover:bg-[#003b6b] text-white px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-[#004b87] shadow-sm"
-                    >
-                      <MessageCircle className="w-4 h-4 text-white" />
-                      <span>Jetzt anfragen</span>
-                    </a>
+                    {/* Quote Planner Add Button or Counter */}
+                    {(() => {
+                      const existing = quoteItems.find(item => item.name === product.name);
+                      return (
+                        <div className="space-y-2 mt-auto">
+                          {existing ? (
+                            <div className="flex flex-col gap-1.5 bg-yellow-50 border border-yellow-200 rounded-xl p-2.5">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase text-yellow-800 flex items-center gap-1">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Im Planer</span>
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, -1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Minus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-xs font-black text-[#004b87] min-w-[20px] text-center">
+                                    {existing.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, 1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Plus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-[10px] font-bold text-stone-500">m²</span>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => addToQuote({ name: product.name, spec: product.spec, brand: product.brand, image: product.image })}
+                              className="flex items-center justify-center gap-1.5 w-full bg-yellow-400 hover:bg-yellow-500 text-[#004b87] px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs border border-yellow-400"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-[#004b87]" />
+                              <span>In den Planer legen</span>
+                            </button>
+                          )}
+                          
+                          <a 
+                            href={getProductWhatsAppLink(product.name)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 w-full bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 text-stone-500" />
+                            <span>Direkt fragen</span>
+                          </a>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -1350,9 +1763,9 @@ export default function App() {
                     Fester Steinkern (SPC) • Trittschall-Dämmung • Kratzfest
                   </p>
                 </div>
-                <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
+                <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/04_SPC_VINYLBOEDEN.png" 
+                    src="/images/beige-oak-matte-spc.png" 
                     alt="SPC/Vinyl Flooring Showroom Picture" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1408,6 +1821,11 @@ export default function App() {
 
                   {/* Body Content */}
                   <div className="p-6 flex flex-col flex-grow">
+                    {product.brand && (
+                      <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
+                        {product.brand}
+                      </span>
+                    )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
                       {product.name}
                     </h4>
@@ -1425,15 +1843,62 @@ export default function App() {
                       </span>
                     </div>
                     
-                    <a 
-                      href={getProductWhatsAppLink(product.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full bg-[#004b87] hover:bg-[#003b6b] text-white px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-[#004b87] shadow-sm"
-                    >
-                      <MessageCircle className="w-4 h-4 text-white" />
-                      <span>Jetzt anfragen</span>
-                    </a>
+                    {/* Quote Planner Add Button or Counter */}
+                    {(() => {
+                      const existing = quoteItems.find(item => item.name === product.name);
+                      return (
+                        <div className="space-y-2 mt-auto">
+                          {existing ? (
+                            <div className="flex flex-col gap-1.5 bg-yellow-50 border border-yellow-200 rounded-xl p-2.5">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase text-yellow-800 flex items-center gap-1">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Im Planer</span>
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, -1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Minus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-xs font-black text-[#004b87] min-w-[20px] text-center">
+                                    {existing.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, 1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Plus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-[10px] font-bold text-stone-500">m²</span>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => addToQuote({ name: product.name, spec: product.spec, brand: product.brand, image: product.image })}
+                              className="flex items-center justify-center gap-1.5 w-full bg-yellow-400 hover:bg-yellow-500 text-[#004b87] px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs border border-yellow-400"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-[#004b87]" />
+                              <span>In den Planer legen</span>
+                            </button>
+                          )}
+                          
+                          <a 
+                            href={getProductWhatsAppLink(product.name)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 w-full bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 text-stone-500" />
+                            <span>Direkt fragen</span>
+                          </a>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -1479,7 +1944,7 @@ export default function App() {
                     Nano-Beschichtung • Mineralguss-Duschwannen • SIA-Zertifiziertes Design
                   </p>
                 </div>
-                <div className="lg:col-span-5 h-[220px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
+                <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
                     src="/images/05_SANITAERLOESUNGEN.png" 
                     alt="Bathroom Solutions Showroom Picture" 
@@ -1537,6 +2002,11 @@ export default function App() {
 
                   {/* Body Content */}
                   <div className="p-6 flex flex-col flex-grow">
+                    {product.brand && (
+                      <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
+                        {product.brand}
+                      </span>
+                    )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
                       {product.name}
                     </h4>
@@ -1554,15 +2024,62 @@ export default function App() {
                       </span>
                     </div>
                     
-                    <a 
-                      href={getProductWhatsAppLink(product.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full bg-[#004b87] hover:bg-[#003b6b] text-white px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-[#004b87] shadow-sm"
-                    >
-                      <MessageCircle className="w-4 h-4 text-white" />
-                      <span>Jetzt anfragen</span>
-                    </a>
+                    {/* Quote Planner Add Button or Counter */}
+                    {(() => {
+                      const existing = quoteItems.find(item => item.name === product.name);
+                      return (
+                        <div className="space-y-2 mt-auto">
+                          {existing ? (
+                            <div className="flex flex-col gap-1.5 bg-yellow-50 border border-yellow-200 rounded-xl p-2.5">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase text-yellow-800 flex items-center gap-1">
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Im Planer</span>
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, -1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Minus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-xs font-black text-[#004b87] min-w-[20px] text-center">
+                                    {existing.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => changeQuoteQty(product.name, 1)}
+                                    className="w-6 h-6 bg-white hover:bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center font-black"
+                                  >
+                                    <Plus className="w-2.5 h-2.5 text-stone-700" />
+                                  </button>
+                                  <span className="text-[10px] font-bold text-stone-500">Stk.</span>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => addToQuote({ name: product.name, spec: product.spec, brand: product.brand, image: product.image })}
+                              className="flex items-center justify-center gap-1.5 w-full bg-yellow-400 hover:bg-yellow-500 text-[#004b87] px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs border border-yellow-400"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-[#004b87]" />
+                              <span>In den Planer legen</span>
+                            </button>
+                          )}
+                          
+                          <a 
+                            href={getProductWhatsAppLink(product.name)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 w-full bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 text-stone-500" />
+                            <span>Direkt fragen</span>
+                          </a>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -1584,6 +2101,790 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+          </div>
+        </section>
+      )}
+
+
+      {/* -------------------- QUOTE PLANNER PAGE -------------------- */}
+      {currentPage === 'quote-planner' && (
+        <section className="py-16 bg-zinc-50 min-h-[70vh]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            {/* Header Title */}
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="text-[10px] sm:text-xs uppercase font-black tracking-widest text-[#004b87] bg-yellow-400 px-3 py-1.5 rounded-md shadow-sm mb-3 inline-block">
+                Offerten-Planer & Zusammenstellung
+              </span>
+              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-[#004b87] leading-none font-display mb-4">
+                Ihre Materialausstellung
+              </h1>
+              <div className="w-20 h-1 bg-yellow-500 mx-auto mb-4"></div>
+              <p className="text-zinc-500 text-sm sm:text-base font-normal leading-relaxed">
+                Fügen Sie Produkte hinzu, passen Sie Mengen und Dimensionen an, tragen Sie Ihre Wunschtermine ein und fordern Sie direkt Ihre schlüsselfertige, schweizerische Projekt-Offerte an.
+              </p>
+            </div>
+
+            {quoteSubmitted ? (
+              /* Success Screen */
+              <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 md:p-14 border border-stone-200 shadow-xl text-center space-y-6">
+                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-500">
+                  <CheckCircle2 className="w-12 h-12" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#004b87] font-display animate-fadeIn">
+                  Offertenanfrage erfolgreich gesendet!
+                </h2>
+                <p className="text-stone-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                  Vielen Dank für Ihre Anfrage. Die Daten wurden erfolgreich an **rodrigo@ra-bau-lieferung.com** übermittelt. Wir prüfen Ihre Zusammenstellung direkt mit unseren europäischen Partnerwerken und senden Ihnen ein massgeschneidertes, zoll- und lieferfertiges Angebot für Ihre Schweizer Destination.
+                </p>
+                
+                <div className="bg-stone-50 p-6 rounded-2xl border border-stone-100 text-left space-y-4 text-stone-700 text-sm max-w-md mx-auto">
+                  <div className="flex items-center gap-2 border-b border-stone-100 pb-2">
+                    <Clock className="w-4 h-4 text-yellow-500" />
+                    <span className="font-bold uppercase tracking-wider text-xs">Wie es jetzt weitergeht:</span>
+                  </div>
+                  <ul className="space-y-2 text-xs text-stone-600 list-decimal list-inside leading-relaxed">
+                    <li>Wir kalkulieren Ihren individuellen Projekt-Sonderpreis.</li>
+                    <li>Sie erhalten die Offerte (inkl. Zoll & Lieferung) via E-Mail.</li>
+                    <li>Spezifikationen werden genau mit Ihren SIA-Schnittstellen abgeglichen.</li>
+                  </ul>
+                </div>
+
+                <div className="pt-4">
+                  <button 
+                    onClick={resetQuoteForm}
+                    className="bg-[#004b87] hover:bg-[#003b6b] text-white text-xs font-bold py-3.5 px-8 rounded-full uppercase tracking-wider transition-all"
+                  >
+                    Neue Zusammenstellung starten
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Core Planner Screen */
+              <div className="space-y-8 text-left">
+                {/* 1-Click Express-Katalogauswahl */}
+                <div className="bg-white rounded-3xl border-2 border-dashed border-yellow-400 p-6 sm:p-8 shadow-sm space-y-6">
+                  <div className="text-left max-w-3xl">
+                    <span className="text-[10px] font-black uppercase text-yellow-600 bg-yellow-100 px-2.5 py-1 rounded-md tracking-wider inline-block mb-2 select-none shadow-xs">
+                      ⚡ Blitz-Auswahl (Kein Hin- & Herwechseln nötig!)
+                    </span>
+                    <h3 className="font-black uppercase text-xl md:text-2xl text-[#004b87] tracking-tight font-display">
+                      Express-Produktkatalog
+                    </h3>
+                    <p className="text-stone-500 text-xs sm:text-sm font-normal">
+                      Wählen Sie unten eine Sparte aus. Fügen Sie per Klick Produkte direkt Ihrer Zusammenstellung hinzu, passen Sie Mengen an oder wählen Sie Fliesenmasse – alles auf einer Seite.
+                    </p>
+                  </div>
+
+                  {/* Tabs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
+                    <button
+                      onClick={() => setCatalogMode('zubehoor')}
+                      className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${catalogMode === 'zubehoor' ? 'bg-[#004b87] border-[#004b87] text-white shadow-md' : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'}`}
+                    >
+                      <Package className="w-4 h-4 shrink-0" />
+                      <span>Sparte 01: Baustellenzubehör</span>
+                    </button>
+                    <button
+                      onClick={() => setCatalogMode('innenausbau')}
+                      className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${catalogMode === 'innenausbau' ? 'bg-[#004b87] border-[#004b87] text-white shadow-md' : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'}`}
+                    >
+                      <Layers className="w-4 h-4 shrink-0" />
+                      <span>Sparte 02-05: Innenausbau</span>
+                    </button>
+                  </div>
+
+                  {/* Catalog list container */}
+                  <div className="bg-stone-50 rounded-2xl border border-stone-200 p-4 sm:p-6 max-h-[460px] overflow-y-auto space-y-3">
+                    {catalogMode === 'zubehoor' ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {constructionCategories.flatMap(cat => cat.products.map(prod => {
+                          const existing = quoteItems.find(item => item.name === prod.name);
+                          return (
+                            <div key={prod.name} className={`bg-white p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${existing ? 'border-yellow-500 ring-2 ring-yellow-400/20 shadow-xs' : 'border-stone-200 hover:border-stone-300'}`}>
+                              <div className="flex items-center gap-3 min-w-0">
+                                <img 
+                                  src={prod.image} 
+                                  alt={prod.name} 
+                                  className="w-12 h-12 rounded bg-stone-50 object-contain p-1 border border-stone-150 shrink-0" 
+                                  referrerPolicy="no-referrer"
+                                />
+                                <div className="text-left min-w-0">
+                                  <span className="text-[9px] font-bold text-[#004b87] uppercase tracking-wider block leading-none mb-1">
+                                    Zubehör
+                                  </span>
+                                  <h4 className="font-bold text-xs sm:text-sm text-stone-900 leading-tight truncate uppercase">
+                                    {prod.name}
+                                  </h4>
+                                  <p className="text-[10px] text-stone-500 truncate font-medium">
+                                    {prod.application}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="shrink-0">
+                                {existing ? (
+                                  <div className="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 px-2 py-1 rounded-lg">
+                                    <button
+                                      type="button"
+                                      onClick={() => changeQuoteQty(prod.name, -1)}
+                                      className="w-5 h-5 bg-white rounded border border-stone-200 flex items-center justify-center font-black hover:bg-stone-100"
+                                    >
+                                      <Minus className="w-2.5 h-2.5" />
+                                    </button>
+                                    <span className="text-xs font-black text-stone-850 min-w-[20px] text-center">
+                                      {existing.quantity}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => changeQuoteQty(prod.name, 1)}
+                                      className="w-5 h-5 bg-white rounded border border-stone-200 flex items-center justify-center font-black hover:bg-stone-100"
+                                    >
+                                      <Plus className="w-2.5 h-2.5" />
+                                    </button>
+                                    <span className="text-[10px] font-bold text-stone-500">Stk.</span>
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => addToQuote({ name: prod.name, spec: prod.application, image: prod.image })}
+                                    className="bg-zinc-100 hover:bg-[#004b87] hover:text-white text-[#004b87] font-black text-[10px] uppercase py-1.5 px-3 rounded-lg border border-stone-200 transition-all"
+                                  >
+                                    + Auswählen
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {interiorCategories.flatMap(cat => cat.products.map(prod => {
+                          const existing = quoteItems.find(item => item.name === prod.name);
+                          const isM2 = !prod.name.toLowerCase().includes('wc') && 
+                                       !prod.name.toLowerCase().includes('armatur') && 
+                                       !prod.name.toLowerCase().includes('duschset') && 
+                                       !prod.name.toLowerCase().includes('waschtisch') && 
+                                       !prod.name.toLowerCase().includes('waschbecken') && 
+                                       !prod.name.toLowerCase().includes('duschwanne');
+                          return (
+                            <div key={prod.name} className={`bg-white p-3.5 rounded-xl border transition-all flex flex-col justify-between gap-3 ${existing ? 'border-yellow-500 ring-2 ring-yellow-400/20 shadow-xs' : 'border-stone-200 hover:border-stone-300'}`}>
+                              <div className="flex items-center justify-between gap-3 w-full">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <img 
+                                    src={prod.image} 
+                                    alt={prod.name} 
+                                    className="w-12 h-12 rounded bg-stone-50 object-contain p-1 border border-stone-150 shrink-0" 
+                                    referrerPolicy="no-referrer"
+                                  />
+                                  <div className="text-left min-w-0">
+                                    <span className="text-[9px] font-bold text-[#004b87] uppercase tracking-wider block leading-none mb-1">
+                                      {prod.brand || 'Innenausbau'}
+                                    </span>
+                                    <h4 className="font-bold text-xs sm:text-sm text-stone-900 leading-tight truncate uppercase">
+                                      {prod.name}
+                                    </h4>
+                                    <p className="text-[10px] text-stone-500 truncate font-medium">
+                                      {prod.spec}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="shrink-0">
+                                  {existing ? (
+                                    <div className="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 px-2 py-1 rounded-lg">
+                                      <button
+                                        type="button"
+                                        onClick={() => changeQuoteQty(prod.name, -1)}
+                                        className="w-5 h-5 bg-white rounded border border-stone-200 flex items-center justify-center font-black hover:bg-stone-100"
+                                      >
+                                        <Minus className="w-2.5 h-2.5" />
+                                      </button>
+                                      <span className="text-xs font-black text-stone-850 min-w-[20px] text-center">
+                                        {existing.quantity}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => changeQuoteQty(prod.name, 1)}
+                                        className="w-5 h-5 bg-white rounded border border-stone-200 flex items-center justify-center font-black hover:bg-stone-100"
+                                      >
+                                        <Plus className="w-2.5 h-2.5" />
+                                      </button>
+                                      <span className="text-[10px] font-bold text-stone-500">{existing.unit}</span>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => addToQuote({ name: prod.name, spec: prod.spec, brand: prod.brand, image: prod.image })}
+                                      className="bg-zinc-100 hover:bg-[#004b87] hover:text-white text-[#004b87] font-black text-[10px] uppercase py-1.5 px-3 rounded-lg border border-stone-200 transition-all"
+                                    >
+                                      + Auswählen
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Formats Selection directly on quick catalog item if selected and unit is m² */}
+                              {existing && existing.unit === 'm²' && (
+                                <div className="border-t border-dashed border-stone-200 pt-2 flex flex-col gap-1 w-full">
+                                  <span className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Wunschgrösse / Masse:</span>
+                                  <input 
+                                    type="text"
+                                    placeholder="z.B. 60x60 cm, eigene Masse eintragen..."
+                                    value={existing.format || ''}
+                                    onChange={(e) => updateQuoteItem(existing.id, { format: e.target.value })}
+                                    className="w-full text-[10px] font-semibold text-stone-800 placeholder-stone-400 border border-stone-200 rounded px-2 py-1 outline-none focus:border-[#004b87] bg-white shadow-inner"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Left and Right column split for selected items & submission form */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  
+                  {/* Left Column: Items list */}
+                  <div className="lg:col-span-7 space-y-6">
+                  
+                  {/* Warning disclaimer inside items area */}
+                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-left flex items-start gap-4">
+                    <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5 animate-pulse" />
+                    <div className="space-y-1">
+                      <span className="font-black text-xs uppercase tracking-wider text-amber-800 block">
+                        Wichtiger Hinweis zu Produktabbildungen
+                      </span>
+                      <p className="text-amber-700 text-xs leading-relaxed font-normal">
+                        Die im Katalog gezeigten Bilder dienen ausschliesslich zur visuellen Veranschaulichung (Symbolbilder). In Ihrer offiziellen Offerte erhalten Sie stets die exakten Produkt-Kurzreferenzen, Markenbezeichnungen und spezifischen SIA-Zertifizierungsdokumente passend zu Ihren exakten Massvorgaben.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quote items block */}
+                  <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6">
+                    <div className="flex items-center justify-between border-b border-stone-100 pb-4">
+                      <div className="flex items-center gap-2 text-[#004b87]">
+                        <ClipboardList className="w-5 h-5" />
+                        <h3 className="font-bold uppercase text-lg tracking-tight">Gewählte Positionen</h3>
+                      </div>
+                      <span className="text-xs font-black uppercase text-stone-400 bg-stone-100 px-2.5 py-1 rounded-md">
+                        {quoteItems.length} {quoteItems.length === 1 ? 'Position' : 'Positionen'}
+                      </span>
+                    </div>
+
+                    {quoteItems.length === 0 ? (
+                      /* Empty state */
+                      <div className="py-12 text-center space-y-4">
+                        <Package className="w-12 h-12 text-stone-300 mx-auto animate-bounce" />
+                        <h4 className="font-bold uppercase text-stone-600 text-sm">Noch keine Produkte im Planer</h4>
+                        <p className="text-xs text-stone-400 max-w-sm mx-auto leading-relaxed">
+                          Durchstöbern Sie unser Sortiment an hochwertigem Baustellenzubehör, Feinsteinzeug, SPC-Vinyl, Mosaiken und Sanitärprodukten und fügen Sie Ihre Wunschartikel mit einem Klick hinzu.
+                        </p>
+                        <div className="pt-2 flex justify-center gap-3">
+                          <button 
+                            onClick={() => handleNavigation('baustellenzubehoor')}
+                            className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-[10px] font-black uppercase py-2.5 px-4 rounded-lg tracking-wider"
+                          >
+                            Baustellenzubehör
+                          </button>
+                          <button 
+                            onClick={() => handleNavigation('porcelain')}
+                            className="bg-[#004b87] hover:bg-[#003b6b] text-white text-[10px] font-black uppercase py-2.5 px-4 rounded-lg tracking-wider"
+                          >
+                            Innenausbau / Fliesen
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Items Table / Cards list */
+                      <div className="space-y-6 divide-y divide-stone-100">
+                        {quoteItems.map((item, idx) => (
+                          <div key={item.id} className={`pt-6 ${idx === 0 ? 'pt-0' : ''} space-y-4`}>
+                            <div className="flex items-start gap-4 justify-between">
+                              <div className="flex items-start gap-3.5">
+                                <div className="w-16 h-16 rounded-xl border border-stone-200 overflow-hidden bg-stone-50 flex items-center justify-center shrink-0">
+                                  <img 
+                                    src={item.image} 
+                                    alt={item.name} 
+                                    className="w-full h-full object-contain p-1"
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/images/baustellenzubehoor_premium.png';
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  {item.brand && (
+                                    <span className="text-[9px] uppercase font-black tracking-widest text-[#004b87] bg-blue-50 px-1.5 py-0.5 rounded">
+                                      {item.brand}
+                                    </span>
+                                  )}
+                                  <h4 className="font-bold text-sm sm:text-base text-stone-900 leading-tight uppercase">
+                                    {item.name}
+                                  </h4>
+                                  <p className="text-[10px] text-stone-450 leading-none">
+                                    Referenz/Spezifikation: <span className="font-semibold text-stone-600">{item.spec}</span>
+                                  </p>
+                                </div>
+                              </div>
+
+                              <button 
+                                onClick={() => removeFromQuote(item.id)}
+                                className="p-1.5 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all shrink-0"
+                                title="Position entfernen"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            {/* Inputs Row */}
+                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                              {/* Quantity field */}
+                              <div className="sm:col-span-5 flex items-center gap-2">
+                                <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider w-14 sm:w-auto shrink-0">
+                                  Menge:
+                                </label>
+                                <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden flex-grow bg-white">
+                                  <button 
+                                    type="button"
+                                    onClick={() => {
+                                      const val = parseFloat(item.quantity) || 0;
+                                      const step = item.unit === 'Stk.' ? 1 : 10;
+                                      if (val > step) {
+                                        updateQuoteItem(item.id, { quantity: (val - step).toString() });
+                                      }
+                                    }}
+                                    className="p-2 text-stone-500 hover:bg-stone-100"
+                                  >
+                                    <Minus className="w-3.5 h-3.5" />
+                                  </button>
+                                  <input 
+                                    type="text" 
+                                    value={item.quantity}
+                                    onChange={(e) => updateQuoteItem(item.id, { quantity: e.target.value })}
+                                    className="w-full text-center text-xs font-bold text-stone-800 border-none outline-none focus:ring-0 focus:outline-none p-1 bg-transparent"
+                                  />
+                                  <button 
+                                    type="button"
+                                    onClick={() => {
+                                      const val = parseFloat(item.quantity) || 0;
+                                      const step = item.unit === 'Stk.' ? 1 : 10;
+                                      updateQuoteItem(item.id, { quantity: (val + step).toString() });
+                                    }}
+                                    className="p-2 text-stone-500 hover:bg-stone-100"
+                                  >
+                                    <Plus className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Unit Selector */}
+                              <div className="sm:col-span-3 flex items-center gap-2">
+                                <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider sm:hidden">
+                                  Einheit:
+                                </label>
+                                <select 
+                                  value={item.unit}
+                                  onChange={(e) => updateQuoteItem(item.id, { unit: e.target.value })}
+                                  className="w-full text-xs font-bold text-stone-700 border border-stone-200 rounded-lg p-2.5 outline-none focus:border-[#004b87] bg-white"
+                                >
+                                  <option value="m²">m² (Quadratmeter)</option>
+                                  <option value="Stk.">Stk. (Stücke)</option>
+                                  <option value="m">m (Laufmeter)</option>
+                                  <option value="Kartons">Kartons</option>
+                                  <option value="Paletten">Paletten</option>
+                                </select>
+                              </div>
+
+                              {/* Note Field */}
+                              <div className="sm:col-span-4">
+                                <input 
+                                  type="text"
+                                  placeholder="Zusatzwunsch / Farbe..."
+                                  value={item.customNote || ''}
+                                  onChange={(e) => updateQuoteItem(item.id, { customNote: e.target.value })}
+                                  className="w-full text-xs text-stone-700 border border-stone-200 rounded-lg p-2.5 placeholder-stone-400 focus:border-[#004b87] bg-stone-50 focus:bg-white transition-all outline-none"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Ergonomic Quick Quantity Panel */}
+                            <div className="bg-stone-50/50 p-3 rounded-xl border border-stone-200/60 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+                              <div className="space-y-0.5">
+                                <span className="text-[10px] font-black uppercase text-[#004b87] tracking-wider block">
+                                  Ergonomische Mengenanpassung:
+                                </span>
+                                <span className="text-[11px] text-stone-500 font-medium leading-none block">
+                                  Wählen Sie Schnellschritte oder typische Projektgrössen.
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                {/* Decrements */}
+                                <div className="flex gap-1">
+                                  {(item.unit === 'Stk.' ? ['-50', '-10', '-5'] : ['-100', '-50', '-25', '-5']).map(adj => {
+                                    const diff = parseInt(adj);
+                                    return (
+                                      <button
+                                        key={adj}
+                                        type="button"
+                                        onClick={() => {
+                                          const current = parseFloat(item.quantity) || 0;
+                                          const next = Math.max(1, current + diff);
+                                          updateQuoteItem(item.id, { quantity: next.toString() });
+                                        }}
+                                        className="px-2 py-1 text-[10px] font-bold rounded bg-zinc-100 border border-zinc-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all select-none"
+                                        title={`${adj} ${item.unit}`}
+                                      >
+                                        {adj}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+
+                                {/* Increments */}
+                                <div className="flex gap-1">
+                                  {(item.unit === 'Stk.' ? ['+5', '+10', '+50'] : ['+5', '+25', '+50', '+100', '+500']).map(adj => {
+                                    const diff = parseInt(adj);
+                                    return (
+                                      <button
+                                        key={adj}
+                                        type="button"
+                                        onClick={() => {
+                                          const current = parseFloat(item.quantity) || 0;
+                                          const next = current + diff;
+                                          updateQuoteItem(item.id, { quantity: next.toString() });
+                                        }}
+                                        className="px-2 py-1 text-[10px] font-bold rounded bg-zinc-100 border border-zinc-200 hover:bg-[#004b87] hover:text-white hover:border-[#004b87] transition-all select-none"
+                                        title={`${adj} ${item.unit}`}
+                                      >
+                                        {adj}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+
+                                <span className="text-stone-300 hidden sm:inline">|</span>
+
+                                {/* Presets */}
+                                <div className="flex flex-wrap gap-1 items-center">
+                                  <span className="text-[9px] font-black uppercase text-stone-400 tracking-wider mr-1">Presets:</span>
+                                  {(item.unit === 'm²' 
+                                    ? ['15', '30', '50', '80', '120', '250', '500'] 
+                                    : item.unit === 'Stk.' 
+                                      ? ['1', '5', '10', '25', '50', '100', '250'] 
+                                      : ['5', '10', '25', '50', '100', '250']
+                                  ).map(preset => (
+                                    <button
+                                      key={preset}
+                                      type="button"
+                                      onClick={() => updateQuoteItem(item.id, { quantity: preset })}
+                                      className={`px-2 py-1 text-[9px] font-bold rounded border transition-all ${item.quantity === preset ? 'bg-[#004b87] border-[#004b87] text-white font-black shadow-xs' : 'bg-white hover:bg-stone-100 border-stone-200 text-stone-700'}`}
+                                    >
+                                      {preset} {item.unit}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Format & Specification Open Text Field */}
+                            {item.unit === 'm²' && (
+                              <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2 text-left">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                  <span className="text-[10px] font-black uppercase text-[#004b87] tracking-wider block">
+                                    Gewünschte Masse, Format & spezifische Werk-Details:
+                                  </span>
+                                  <span className="text-[9px] bg-yellow-100 text-yellow-800 font-bold px-2 py-0.5 rounded-full select-none">
+                                    Freie Eingabe (Werk-Prüfung)
+                                  </span>
+                                </div>
+                                <p className="text-stone-500 text-[11px] leading-relaxed font-normal">
+                                  Da die Werksverfügbarkeiten für Mosaike und Fliesenformate (z.B. ob das Werk Ihr gewünschtes Modell aktuell in 60x60 cm, 120x20 cm, 10x10 cm etc. vorrätig hat) stetig variieren, haben wir die vordefinierten Vorschläge entfernt. Bitte tragen Sie hier einfach Ihre gewünschten Masse, Fugen-Details, Oberflächen (matt/poliert) oder andere Pormenores ein. Wir klären die exakte Machbarkeit umgehend tagesaktuell für Sie ab.
+                                </p>
+                                <div className="relative">
+                                  <input 
+                                    type="text"
+                                    placeholder="z.B. Format 120x20 cm gewünscht / Mosaikstein 5x5 cm / matte Ausführung / Dicke 10mm..."
+                                    value={item.format || ''}
+                                    onChange={(e) => updateQuoteItem(item.id, { format: e.target.value })}
+                                    className="w-full text-xs font-semibold text-stone-800 placeholder-stone-400 border border-stone-200 rounded-lg p-3 outline-none focus:border-[#004b87] bg-white shadow-inner transition-all focus:ring-1 focus:ring-[#004b87]/30"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Add completely Custom position form */}
+                  <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+                    <div className="flex items-center gap-2 text-stone-700 border-b border-stone-100 pb-4 mb-5">
+                      <Plus className="w-4.5 h-4.5 text-[#004b87]" />
+                      <h4 className="font-bold uppercase text-sm tracking-tight">Eigenes Produkt / Wunsch hinzufügen</h4>
+                    </div>
+
+                    <form onSubmit={addCustomQuoteItem} className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                        <div className="sm:col-span-6">
+                          <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                            Produktbezeichnung *
+                          </label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="z.B. Mosaik Premium Grau, alternatives Format..."
+                            value={customItemName}
+                            onChange={(e) => setCustomItemName(e.target.value)}
+                            className="w-full border border-stone-200 rounded-xl p-3 text-xs focus:border-[#004b87] outline-none"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                            Gewünschte Menge
+                          </label>
+                          <input 
+                            type="text" 
+                            placeholder="z.B. 100"
+                            value={customItemQty}
+                            onChange={(e) => setCustomItemQty(e.target.value)}
+                            className="w-full border border-stone-200 rounded-xl p-3 text-xs focus:border-[#004b87] outline-none"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                            Einheit
+                          </label>
+                          <select 
+                            value={customItemUnit}
+                            onChange={(e) => setCustomItemUnit(e.target.value)}
+                            className="w-full border border-stone-200 rounded-xl p-3 text-xs bg-white focus:border-[#004b87] outline-none font-bold text-stone-700"
+                          >
+                            <option value="m²">m²</option>
+                            <option value="Stk.">Stk.</option>
+                            <option value="m">m</option>
+                            <option value="Kartons">Kartons</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                          Beschreibung / Besonderheiten / Ähnliche Referenz
+                        </label>
+                        <textarea 
+                          placeholder="z.B. Ich suche ein graues Marmormosaik, ähnlich wie Sparte 03, aber mit glänzendem Finish und einer maximalen Fugengrösse von 2mm..."
+                          value={customItemNotes}
+                          onChange={(e) => setCustomItemNotes(e.target.value)}
+                          rows={2}
+                          className="w-full border border-stone-200 rounded-xl p-3 text-xs focus:border-[#004b87] outline-none"
+                        ></textarea>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <button 
+                          type="submit"
+                          className="bg-zinc-50 hover:bg-[#004b87] hover:text-white text-[#004b87] border border-stone-200 font-bold text-xs uppercase tracking-wider py-2.5 px-5 rounded-xl transition-all"
+                        >
+                          Position hinzufügen
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+
+                {/* Right Column: Contact Request Form */}
+                <div className="lg:col-span-5 bg-white rounded-3xl border-2 border-yellow-500 p-6 sm:p-8 shadow-md space-y-6">
+                  
+                  <div className="space-y-2 border-b border-stone-100 pb-4">
+                    <span className="text-[9px] uppercase font-black text-yellow-500 tracking-widest block">
+                      Express-Preisanfrage
+                    </span>
+                    <h3 className="font-black uppercase text-xl text-[#004b87] tracking-tight font-display">
+                      Offertenanfrage senden
+                    </h3>
+                    <p className="text-stone-500 text-xs font-normal leading-relaxed">
+                      Tragen Sie Ihre Daten ein. Unser Logistik-Team berechnet die Verzollung, schlüsselfertige Schweizer Lieferung und Sonderkonditionen für Ihre Mengen.
+                    </p>
+                  </div>
+
+                  <form onSubmit={submitQuoteForm} className="space-y-4">
+                    
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                        Ansprechpartner *
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="Ihr vollständiger Name"
+                          value={quoteFormData.contactName}
+                          onChange={(e) => setQuoteFormData(prev => ({ ...prev, contactName: e.target.value }))}
+                          className="w-full border border-stone-200 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-[#004b87] outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                        Firmenname
+                      </label>
+                      <div className="relative">
+                        <Building className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                        <input 
+                          type="text" 
+                          placeholder="z.B. Muster AG Plattenleger"
+                          value={quoteFormData.company}
+                          onChange={(e) => setQuoteFormData(prev => ({ ...prev, company: e.target.value }))}
+                          className="w-full border border-stone-200 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-[#004b87] outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                          Telefonnummer *
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                          <input 
+                            type="tel" 
+                            required
+                            placeholder="z.B. +41 78..."
+                            value={quoteFormData.phone}
+                            onChange={(e) => setQuoteFormData(prev => ({ ...prev, phone: e.target.value }))}
+                            className="w-full border border-stone-200 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-[#004b87] outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                          E-Mail-Adresse *
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                          <input 
+                            type="email" 
+                            required
+                            placeholder="rodrigo@ra-bau..."
+                            value={quoteFormData.email}
+                            onChange={(e) => setQuoteFormData(prev => ({ ...prev, email: e.target.value }))}
+                            className="w-full border border-stone-200 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-[#004b87] outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                        Lieferadresse / Bestimmungsort in der Schweiz
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                        <input 
+                          type="text" 
+                          placeholder="PLZ, Ort, Strasse oder Baustelle"
+                          value={quoteFormData.deliveryAddress}
+                          onChange={(e) => setQuoteFormData(prev => ({ ...prev, deliveryAddress: e.target.value }))}
+                          className="w-full border border-stone-200 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-[#004b87] outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-2">
+                        Geschätzter Liefertermin (Wunschzeitraum) *
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { val: 'urgent_yesterday', label: 'Sehr dringend!', sub: 'Am besten gestern! 💥' },
+                          { val: '1-week', label: 'In 1 Woche', sub: 'Nächste Woche' },
+                          { val: '2-weeks', label: 'In 2 Wochen', sub: 'KW' },
+                          { val: '3-weeks', label: 'In 3 Wochen', sub: 'KW' },
+                          { val: '4-weeks', label: 'In ca. 4 Wochen', sub: '1 Monat' },
+                          { val: '1-month-plus', label: '1 Monat +', sub: 'Langfristig' },
+                          { val: 'flexible', label: 'Flexibel', sub: 'Auf Abruf / Später' }
+                        ].map((tf) => (
+                          <button
+                            key={tf.val}
+                            type="button"
+                            onClick={() => setQuoteFormData(prev => ({ ...prev, deliveryTimeframe: tf.val }))}
+                            className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all ${quoteFormData.deliveryTimeframe === tf.val ? 'border-yellow-500 bg-yellow-50/70 text-[#004b87] shadow-sm ring-1 ring-yellow-500' : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-700'}`}
+                          >
+                            <span className="text-xs font-black uppercase tracking-tight leading-none mb-1 block">
+                              {tf.label}
+                            </span>
+                            <span className="text-[9px] text-stone-450 font-bold tracking-normal block leading-none">
+                              {tf.sub}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest block mb-1">
+                        Allgemeine Anmerkungen zum Projekt
+                      </label>
+                      <textarea 
+                        rows={3}
+                        placeholder="Ergänzen Sie Details zu Kran-Abladung, speziellen SIA-Schnittstellen oder anderen Wünschen..."
+                        value={quoteFormData.generalNotes}
+                        onChange={(e) => setQuoteFormData(prev => ({ ...prev, generalNotes: e.target.value }))}
+                        className="w-full border border-stone-200 rounded-xl p-3 text-xs focus:border-[#004b87] outline-none"
+                      ></textarea>
+                    </div>
+
+                    <div className="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 space-y-2">
+                      <div className="flex items-center gap-1.5 text-[#004b87] font-black text-[10px] uppercase tracking-wider">
+                        <ShieldCheck className="w-4 h-4 text-yellow-500 shrink-0" />
+                        <span>SIA-Konforme Abwicklung</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-600 leading-normal font-normal font-sans">
+                        Jedes Angebot wird technisch verifiziert. Mit dem Absenden erhalten Sie die schlüsselfertigen Dokumente und exakten Spezifikationen direkt in Ihr Postfach.
+                      </p>
+                    </div>
+
+                    {quoteError && (
+                      <div className="bg-red-50 text-red-700 border border-red-200 p-3.5 rounded-xl text-xs font-bold leading-normal flex items-start gap-2">
+                        <span className="text-red-500 font-black shrink-0">⚠️</span>
+                        <span>{quoteError}</span>
+                      </div>
+                    )}
+
+                    <button 
+                      type="submit"
+                      disabled={isSubmittingQuote}
+                      className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-stone-300 text-[#004b87] font-black py-4 rounded-xl uppercase tracking-wider transition-all text-sm shadow-md border border-yellow-400 flex flex-col items-center justify-center gap-1.5"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Send className="w-4 h-4 text-[#004b87]" />
+                        <span>
+                          {isSubmittingQuote ? 'Anfrage wird gesendet...' : 'Anfrage senden'}
+                        </span>
+                      </span>
+                      <span className="text-[10px] font-bold text-[#004b87]/80 normal-case block">
+                        Direkt per E-Mail an rodrigo@ra-bau-lieferung.com
+                      </span>
+                    </button>
+
+                  </form>
+                </div>
+
+              </div>
+              </div>
+            )}
 
           </div>
         </section>
@@ -1888,14 +3189,27 @@ export default function App() {
                       />
                     </div>
 
+                    {/* Validation Error Message */}
+                    {contactError && (
+                      <div className="bg-red-50 text-red-700 border border-red-200 p-3.5 rounded-xl text-xs font-bold leading-normal flex items-start gap-2">
+                        <span className="text-red-500 font-black shrink-0">⚠️</span>
+                        <span>{contactError}</span>
+                      </div>
+                    )}
+
                     {/* Submission Button */}
                     <button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-zinc-950 py-4 rounded-xl font-black text-sm uppercase tracking-wider transition-colors shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full flex flex-col items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-zinc-950 py-4 rounded-xl font-black transition-colors shadow-md disabled:opacity-70 disabled:cursor-not-allowed gap-1"
                     >
-                      <Send className={`w-4 h-4 text-zinc-900 ${isSubmitting ? 'animate-pulse' : ''}`} />
-                      <span>{isSubmitting ? 'Wird gesendet...' : 'Anfrage absenden'}</span>
+                      <div className="flex items-center gap-2">
+                        <Send className={`w-4 h-4 text-zinc-900 ${isSubmitting ? 'animate-pulse' : ''}`} />
+                        <span className="text-sm uppercase tracking-wider">{isSubmitting ? 'Wird gesendet...' : 'Anfrage absenden'}</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-zinc-800 normal-case block">
+                        Direkt per E-Mail an rodrigo@ra-bau-lieferung.com
+                      </span>
                     </button>
 
                   </form>
@@ -1958,6 +3272,8 @@ export default function App() {
               <span>•</span>
               <button onClick={() => handleNavigation('interior')} className="hover:text-zinc-400">Innenausbau</button>
               <span>•</span>
+              <button onClick={() => handleNavigation('quote-planner')} className="hover:text-yellow-500 text-yellow-400 font-bold">Offerten-Planer</button>
+              <span>•</span>
               <button onClick={() => handleNavigation('contact')} className="hover:text-zinc-400">Kontakt</button>
             </div>
             <p>© {new Date().getFullYear()} RA Bau Lieferung. Alle Rechte vorbehalten. Material für Profis. Direkt auf Ihre Schweizer Baustelle.</p>
@@ -1978,6 +3294,22 @@ export default function App() {
           Jetzt anfragen!
         </span>
       </a>
+
+      {/* Elegant Toast Notification for Quote Additions */}
+      {toastMessage && (
+        <div className="fixed bottom-24 left-6 z-50 bg-[#004b87] text-white py-3.5 px-5 rounded-2xl shadow-2xl border border-blue-800 animate-slideUp flex items-center gap-3 max-w-sm">
+          <Sparkles className="w-5 h-5 text-yellow-500 shrink-0" />
+          <span className="text-xs font-bold font-sans tracking-wide leading-normal">
+            {toastMessage}
+          </span>
+          <button 
+            onClick={() => handleNavigation('quote-planner')}
+            className="ml-2 bg-yellow-400 hover:bg-yellow-500 text-[#004b87] px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-wider transition-all shadow-sm shrink-0"
+          >
+            Ansehen
+          </button>
+        </div>
+      )}
 
     </div>
   );
