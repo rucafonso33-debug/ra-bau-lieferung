@@ -730,9 +730,9 @@ export default function App() {
                   </div>
                   <div className="p-5 flex-grow flex flex-col justify-between">
                     <div>
-                      <h3 className="font-black uppercase text-[#004b87] text-base sm:text-lg leading-tight font-display">Premium Mosaike</h3>
+                      <h3 className="font-black uppercase text-[#004b87] text-base sm:text-lg leading-tight font-display">Mosaike & Marmor XL</h3>
                       <p className="text-zinc-500 text-xs mt-2 leading-relaxed font-sans">
-                        Mosaike für Duschen und Badezimmer. Einfach verlegbar und sofort lieferbar.
+                        Mosaike, Statuario- und Calacatta-Optiken bis zum Grossformat. Verfügbarkeit wird projektbezogen bestätigt.
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 font-bold uppercase text-xs tracking-wider text-[#004b87] pt-4 group-hover:translate-x-1 transition-transform mt-auto">
@@ -1272,12 +1272,12 @@ export default function App() {
                   <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-stone-950/20 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 text-white">
                     <span className="text-[10px] uppercase font-bold tracking-widest text-yellow-500">Sparte 03</span>
-                    <h3 className="font-bold uppercase text-xl sm:text-2xl tracking-tight font-display">Premium Mosaike</h3>
+                    <h3 className="font-bold uppercase text-xl sm:text-2xl tracking-tight font-display">Mosaike & Marmor XL</h3>
                   </div>
                 </div>
                 <div className="p-6 flex-grow flex flex-col justify-between">
                   <p className="text-stone-500 text-xs sm:text-sm font-normal leading-relaxed mb-6 font-sans">
-                    Netzgeklebte Mosaike für Duschen und Spa-Bereiche. Einfach zu verlegen, robust und in diversen Formaten sofort verfügbar.
+                    Netzgeklebte Mosaike sowie luxuriöse Marmoroptiken und Grossformate bis ca. 200×200 cm. Referenz und Verfügbarkeit werden je Projekt bestätigt.
                   </p>
                   <button className="flex items-center gap-1.5 font-bold uppercase text-xs tracking-wider text-[#004b87] transition-colors group-hover:translate-x-1 transition-transform">
                     <span>Zum Sortiment</span>
@@ -1349,7 +1349,7 @@ export default function App() {
               <div className="text-left space-y-4 max-w-xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400 text-[#004b87] rounded-full text-[10px] font-black tracking-widest uppercase shadow-sm">
                   <Globe className="w-3.5 h-3.5 text-[#004b87]" />
-                  <span>SIA Schweizer Standard</span>
+                  <span>Für Schweizer Bauprojekte</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-zinc-900 mb-1 font-display">
                   Projektanfrage konfigurieren
@@ -1390,7 +1390,7 @@ export default function App() {
                     Robuste Feinsteinzeugplatten für Wand und Boden. Massgenau rektifiziert, ideal für schnelles, sauberes Verlegen auf der Baustelle.
                   </p>
                   <p className="text-xs font-semibold text-zinc-450 uppercase tracking-wider font-sans">
-                    SIA-Geprüft • Kalibrierte Schnittkanten • Naturstein-Haptik
+                    Werkdaten projektbezogen geprüft • Rektifizierte Formate • Naturstein-Haptik
                   </p>
                 </div>
                 <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
@@ -1414,7 +1414,7 @@ export default function App() {
                   Visualisierung & Modellschnittstellen
                 </p>
                 <p className="text-stone-600 text-xs leading-relaxed font-medium">
-                  Unsere Abbildungen dienen als **visuelle Orientierungshilfe (Symbolbilder)** für das gewünschte Design und Materialkonzept. Da wir über ein weitaus größeres Partnernetzwerk mit Hunderten anderer Formate, Schattierungen und Zusatzprodukte verfügen, passen wir das Sortiment flexibel an Ihre Schweizer Pläne an. Fragen Sie Ihr Wunschdekor einfach bei uns an!
+                  Die Abbildungen sind Symbolbilder und zeigen die gewünschte Material- und Designrichtung. Marken dienen als mögliche Referenzbasis, nicht als Zusage einer offiziellen Vertretung. Exakte Referenz, Format, Verpackung, Palettierung, m² pro Palette und Verfügbarkeit bestätigen wir schriftlich im Projektangebot.
                 </p>
               </div>
               <a 
@@ -1429,7 +1429,7 @@ export default function App() {
             </div>
 
             {/* List category products */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
               {interiorCategories[0].products.map((product, idx) => (
                 <div key={idx} className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 flex flex-col group hover:shadow-[0_12px_40px_rgba(40,30,10,0.06)] hover:-translate-y-1.5 transition-all duration-300 h-full">
                   
@@ -1442,7 +1442,7 @@ export default function App() {
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute top-3 right-3 bg-white/95 backdrop-blur px-2.5 py-1 rounded-md text-[9px] font-bold text-stone-800 tracking-wider uppercase border border-stone-100/60">
-                      SIA Geprüft
+                      Projektreferenz
                     </div>
                     <div className="absolute bottom-2.5 left-2.5 bg-black/55 backdrop-blur-xs text-[8px] sm:text-[9px] text-stone-200 px-2 py-0.5 rounded font-bold select-none tracking-wider uppercase">
                       Symbolbild
@@ -1453,7 +1453,7 @@ export default function App() {
                   <div className="p-6 flex flex-col flex-grow">
                     {product.brand && (
                       <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
-                        {product.brand}
+                        Referenzbasis: {product.brand}
                       </span>
                     )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
@@ -1566,21 +1566,21 @@ export default function App() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div className="lg:col-span-7 space-y-4 text-left">
                   <span className="text-[10px] sm:text-xs uppercase font-black tracking-widest text-[#004b87] bg-yellow-400 px-2.5 py-1 rounded-md shadow-sm mb-2">
-                    Sparte 03 / Premium Mosaike
+                    Sparte 03 / Mosaike & Marmor-Grossformate
                   </span>
                   <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-[#004b87] leading-none font-display mb-4">
-                    Premium Mosaike
+                    Mosaike & Marmor XL
                   </h1>
                   <p className="text-zinc-600 text-sm sm:text-base font-normal leading-relaxed max-w-xl font-sans">
-                    Mosaike für Badezimmer, Duschen und Spa-Bereiche. Netzgeklebt und direkt ab Lager verfügbar.
+                    Premium-Mosaike, Statuario- und Calacatta-Optiken für Bad, Spa und repräsentative Innenräume – von Mosaikmatten bis zu Grossformaten um 200×200 cm.
                   </p>
                   <p className="text-xs font-semibold text-zinc-450 uppercase tracking-wider font-sans">
-                    Premium Haptik • Kalibrierte Trägernetze • Edle Steinauswahl
+                    Premium-Haptik • Marmoroptik • Grossformatige Projektlösungen
                   </p>
                 </div>
                 <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
                   <img 
-                    src="/images/beige-stone-mosaic.png" 
+                    src="/images/marble-look-soft-matte.png"
                     alt="Premium Mosaics Showroom Landscape" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -1599,7 +1599,7 @@ export default function App() {
                   Visualisierung & Modellschnittstellen
                 </p>
                 <p className="text-stone-600 text-xs leading-relaxed font-medium">
-                  Unsere Abbildungen dienen als **visuelle Orientierungshilfe (Symbolbilder)** für das gewünschte Design und Materialkonzept. Da wir über ein weitaus größeres Partnernetzwerk mit Hunderten anderer Formate, Schattierungen und Zusatzprodukte verfügen, passen wir das Sortiment flexibel an Ihre Schweizer Pläne an. Fragen Sie Ihr Wunschdekor einfach bei uns an!
+                  Die Abbildungen sind Symbolbilder und zeigen die gewünschte Material- und Designrichtung. Marken dienen als mögliche Referenzbasis, nicht als Zusage einer offiziellen Vertretung. Exakte Referenz, Format, Verpackung, Palettierung, m² pro Palette und Verfügbarkeit bestätigen wir schriftlich im Projektangebot.
                 </p>
               </div>
               <a 
@@ -1614,7 +1614,7 @@ export default function App() {
             </div>
 
             {/* List Mosaics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
               {interiorCategories[1].products.map((product, idx) => (
                 <div key={idx} className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 flex flex-col group hover:shadow-[0_12px_40px_rgba(40,30,10,0.06)] hover:-translate-y-1.5 transition-all duration-300 h-full">
                   
@@ -1638,7 +1638,7 @@ export default function App() {
                   <div className="p-6 flex flex-col flex-grow">
                     {product.brand && (
                       <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
-                        {product.brand}
+                        Referenzbasis: {product.brand}
                       </span>
                     )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
@@ -1784,7 +1784,7 @@ export default function App() {
                   Visualisierung & Modellschnittstellen
                 </p>
                 <p className="text-stone-600 text-xs leading-relaxed font-medium">
-                  Unsere Abbildungen dienen als **visuelle Orientierungshilfe (Symbolbilder)** für das gewünschte Design und Materialkonzept. Da wir über ein weitaus größeres Partnernetzwerk mit Hunderten anderer Formate, Schattierungen und Zusatzprodukte verfügen, passen wir das Sortiment flexibel an Ihre Schweizer Pläne an. Fragen Sie Ihr Wunschdekor einfach bei uns an!
+                  Die Abbildungen sind Symbolbilder und zeigen die gewünschte Material- und Designrichtung. Marken dienen als mögliche Referenzbasis, nicht als Zusage einer offiziellen Vertretung. Exakte Referenz, Format, Verpackung, Palettierung, m² pro Palette und Verfügbarkeit bestätigen wir schriftlich im Projektangebot.
                 </p>
               </div>
               <a 
@@ -1799,7 +1799,7 @@ export default function App() {
             </div>
 
             {/* List SPC */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
               {interiorCategories[2].products.map((product, idx) => (
                 <div key={idx} className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 flex flex-col group hover:shadow-[0_12px_40px_rgba(40,30,10,0.06)] hover:-translate-y-1.5 transition-all duration-300 h-full">
                   
@@ -1823,7 +1823,7 @@ export default function App() {
                   <div className="p-6 flex flex-col flex-grow">
                     {product.brand && (
                       <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
-                        {product.brand}
+                        Referenzbasis: {product.brand}
                       </span>
                     )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
@@ -1941,7 +1941,7 @@ export default function App() {
                     Keramik, Duschtassen und mattschwarze Armaturen für moderne Badezimmer. Alles aus einer Hand für Ihr nächstes Bauprojekt.
                   </p>
                   <p className="text-xs font-semibold text-zinc-450 uppercase tracking-wider font-sans">
-                    Nano-Beschichtung • Mineralguss-Duschwannen • SIA-Zertifiziertes Design
+                    Keramik • Mineralguss-Duschwannen • Projektbezogener Lieferumfang
                   </p>
                 </div>
                 <div className="lg:col-span-5 h-[240px] lg:h-[350px] rounded-2xl overflow-hidden shadow-inner border border-stone-200/40">
@@ -1965,7 +1965,7 @@ export default function App() {
                   Visualisierung & Modellschnittstellen
                 </p>
                 <p className="text-stone-600 text-xs leading-relaxed font-medium">
-                  Unsere Abbildungen dienen als **visuelle Orientierungshilfe (Symbolbilder)** für das gewünschte Design und Materialkonzept. Da wir über ein weitaus größeres Partnernetzwerk mit Hunderten anderer Formate, Schattierungen und Zusatzprodukte verfügen, passen wir das Sortiment flexibel an Ihre Schweizer Pläne an. Fragen Sie Ihr Wunschdekor einfach bei uns an!
+                  Die Abbildungen sind Symbolbilder und zeigen die gewünschte Material- und Designrichtung. Marken dienen als mögliche Referenzbasis, nicht als Zusage einer offiziellen Vertretung. Exakte Referenz, Abmessungen, Lieferumfang, Verpackung, Palettierung und Verfügbarkeit bestätigen wir schriftlich im Projektangebot.
                 </p>
               </div>
               <a 
@@ -1980,7 +1980,7 @@ export default function App() {
             </div>
 
             {/* List Sanitär */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
               {interiorCategories[3].products.map((product, idx) => (
                 <div key={idx} className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 flex flex-col group hover:shadow-[0_12px_40px_rgba(40,30,10,0.06)] hover:-translate-y-1.5 transition-all duration-300 h-full">
                   
@@ -2004,7 +2004,7 @@ export default function App() {
                   <div className="p-6 flex flex-col flex-grow">
                     {product.brand && (
                       <span className="text-[10px] uppercase font-black tracking-widest text-[#004b87] mb-1 inline-block">
-                        {product.brand}
+                        Referenzbasis: {product.brand}
                       </span>
                     )}
                     <h4 className="text-base sm:text-lg font-bold text-zinc-900 uppercase leading-snug tracking-tight mb-2 font-display">
@@ -2090,7 +2090,7 @@ export default function App() {
               <Compass className="w-10 h-10 text-[#004b87] mx-auto" />
               <h3 className="text-xl font-black uppercase tracking-tight text-[#004b87]">Bad komplett ausstatten?</h3>
               <p className="text-stone-500 text-sm max-w-xl mx-auto leading-relaxed">
-                Wir rüsten komplette Überbauungen und Sanierungen aus. Gerne planen wir maßgeschneiderte Sanitärobjekte nach Ihren gewünschten SIA-Schnittstellen.
+                Wir stellen komplette Projektpakete für Überbauungen und Sanierungen zusammen. Sanitärobjekte und Einbaukomponenten gleichen wir mit Ihren technischen Schnittstellen und Planungsunterlagen ab.
               </p>
               <div className="pt-2 flex justify-center gap-4">
                 <button 
