@@ -79,6 +79,13 @@ export default function App() {
   };
 
   const addProduct = (product: InteriorProduct) => {
+    const isPieceProduct = [
+      'Waschtisch',
+      'Duschsystem',
+      'Duschwanne',
+      'WC'
+    ].some(type => product.application.includes(type));
+
     setQuote(current => {
       const existing = current.find(item => item.reference === product.reference);
       if (existing) return current;
@@ -88,8 +95,8 @@ export default function App() {
         spec: product.spec,
         brand: product.brand,
         image: product.image,
-        quantity: product.application.includes('WC') || product.application.includes('Waschtisch') || product.application.includes('Dusch') ? '1' : '25',
-        unit: product.application.includes('WC') || product.application.includes('Waschtisch') || product.application.includes('Dusch') ? 'Stk.' : 'm²',
+        quantity: isPieceProduct ? '1' : '25',
+        unit: isPieceProduct ? 'Stk.' : 'm²',
         reference: product.reference,
         customNote: ''
       }];
@@ -273,7 +280,7 @@ function CategoryPage({ category, search, onSearch, quote, onAdd, onSelect, onNa
 function ProductCard({ product, onSelect, onAdd, inQuote = false }: { key?: string; product: InteriorProduct; onSelect: (p: InteriorProduct) => void; onAdd: (p: InteriorProduct) => void; inQuote?: boolean }) {
   return <article className="group overflow-hidden rounded-[26px] border border-[#dedbd2] bg-[#fffefb] shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
     <button onClick={() => onSelect(product)} className="relative block h-[290px] w-full overflow-hidden bg-[#ebe8e0] text-left">
-      <img src={product.image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+      <img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
       <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">{product.badges?.slice(0, 2).map(b => <span key={b} className="rounded-full bg-[#fffefb]/95 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#132335] shadow-sm">{b}</span>)}</div>
       <span className="absolute bottom-4 right-4 rounded-full bg-[#132335]/90 px-3 py-1.5 text-[10px] font-bold text-white backdrop-blur">Details ansehen</span>
     </button>
@@ -287,9 +294,9 @@ function ProductCard({ product, onSelect, onAdd, inQuote = false }: { key?: stri
 }
 
 function ProductModal({ product, inQuote, onClose, onAdd }: { product: InteriorProduct; inQuote: boolean; onClose: () => void; onAdd: () => void }) {
-  return <div className="fixed inset-0 z-[80] flex items-end justify-center bg-[#0a1420]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={e => e.target === e.currentTarget && onClose()}>
+  return <div role="dialog" aria-modal="true" aria-label={`Produktdetails: ${product.name}`} className="fixed inset-0 z-[80] flex items-end justify-center bg-[#0a1420]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={e => e.target === e.currentTarget && onClose()}>
     <div className="max-h-[94vh] w-full max-w-5xl overflow-y-auto rounded-t-[30px] bg-[#fffefb] shadow-2xl sm:rounded-[30px]">
-      <div className="grid lg:grid-cols-2"><div className="relative min-h-[340px] bg-[#ebe8e0]"><img src={product.image} alt={product.name} className="absolute inset-0 h-full w-full object-cover" /><button onClick={onClose} className="absolute left-4 top-4 rounded-full bg-white p-2 shadow"><X size={19} /></button></div>
+      <div className="grid lg:grid-cols-2"><div className="relative min-h-[340px] bg-[#ebe8e0]"><img src={product.image} alt={product.name} className="absolute inset-0 h-full w-full object-cover" /><button onClick={onClose} aria-label="Produktdetails schliessen" className="absolute left-4 top-4 rounded-full bg-white p-2 shadow"><X size={19} /></button></div>
         <div className="p-7 sm:p-10"><p className="text-xs font-black uppercase tracking-[.2em] text-[#a77e34]">{product.brand}</p><h2 className="mt-2 font-display text-4xl font-bold tracking-tight">{product.name}</h2><p className="mt-4 leading-7 text-[#65717c]">{product.details}</p><div className="mt-7 space-y-0 divide-y divide-[#e2ded5] border-y border-[#e2ded5]"><Spec label="Referenz" value={product.reference} /><Spec label="Format / Aufbau" value={product.format} /><Spec label="Oberfläche" value={product.finish} /><Spec label="Anwendung" value={product.application} /><Spec label="Karton" value={product.box} /><Spec label="Palette / Einheit" value={product.pallet} /></div><p className="mt-5 text-[11px] leading-5 text-[#7c858d]">Werkdaten gemäss vorliegendem Herstellerkatalog. Preis, aktuelle Verfügbarkeit, Farbton/Charge und Liefertermin werden in der schriftlichen Offerte bestätigt.</p><div className="mt-7 flex flex-col gap-2 sm:flex-row"><button onClick={onAdd} disabled={inQuote} className={`flex flex-1 items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-black ${inQuote ? 'bg-[#e3eadf] text-[#3c6d43]' : 'bg-[#d7aa57] text-[#132335]'}`}>{inQuote ? <><Check size={17} /> Bereits hinzugefügt</> : <><Plus size={17} /> Zur Projektanfrage</>}</button><a href={wa(`Guten Tag, ich interessiere mich für ${product.brand} ${product.name}, Referenz ${product.reference}.`)} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-full border border-[#d7d3c9] px-6 py-4 text-sm font-black"><MessageCircle size={17} /> Frage stellen</a></div></div>
       </div>
     </div>
