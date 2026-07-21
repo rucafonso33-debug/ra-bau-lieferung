@@ -125,13 +125,13 @@ export const constructionCategories: ConstructionCategory[] = [
         badges: ["2 m Leiste"]
       },
       {
-        id: "rohrstopfen-schutzkappen",
-        name: "Rohrstopfen / Schutzkappen",
-        description: "Kunststoffstopfen zum sauberen Verschliessen und Schützen offener Rohr- und Hülsenenden.",
-        application: "Für Schalungsrohre, Hülsen und Transport",
+        id: "armierung-schutzkappen",
+        name: "Armierungs-Schutzkappen",
+        description: "Gut sichtbare Kunststoffkappen zum Abdecken freiliegender Armierungs- und Stabenden.",
+        application: "Für temporären Schutz auf Baustellen und beim Transport",
         image: "/images/Schutzkappen.jpg",
-        variants: "Durchmesser passend zum eingesetzten Rohrsystem",
-        pack: "Beutelmenge nach Durchmesser",
+        variants: "Aufnahme passend zum eingesetzten Stabdurchmesser",
+        pack: "Beutelmenge nach Ausführung",
         defaultQuantity: "500",
         unit: "Stk."
       },
