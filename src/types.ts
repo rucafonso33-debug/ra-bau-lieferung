@@ -36,6 +36,7 @@ export interface InteriorProduct {
   spec: string;
   details: string;
   image: string;
+  imageFit?: 'cover' | 'contain';
   brand?: string;
   reference: string;
   format: string;
