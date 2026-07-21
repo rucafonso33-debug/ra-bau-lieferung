@@ -79,10 +79,10 @@ const sparten: Sparte[] = [
     copy: 'Praxisnahe Systeme und Verbrauchsmaterial für Verlegung, Bewehrung und Betonbau.',
     ranges: ['Nivelliersysteme', 'Abstandhalter', 'Drahtbinder', 'Schutz & Werkzeug'],
     images: [
+      { src: '/images/fliesen-nivelliersystem-banner.png', alt: 'Professionelles Fliesen-Nivelliersystem im Einsatz' },
       { src: '/images/fliesen-clips.png', alt: 'Nivellierclips für Fliesen', fit: 'contain' },
       { src: '/images/nivellier-keile-real.jpg.png', alt: 'Wiederverwendbare System-Keile', fit: 'contain' },
-      { src: '/images/distanzhalter-turm.jpg', alt: 'Abstandhalter-Turm für Bewehrung', fit: 'contain' },
-      { src: '/images/Bindehaken.jpg', alt: 'Drill-Bindehaken für Bewehrung', fit: 'contain' }
+      { src: '/images/distanzhalter-turm.jpg', alt: 'Abstandhalter-Turm für Bewehrung', fit: 'contain' }
     ]
   },
   {
@@ -92,10 +92,10 @@ const sparten: Sparte[] = [
     copy: 'Ausgewählte Serien für Boden, Wand, Bad, Wohnbau und anspruchsvolle Renovationen.',
     ranges: ['Steinoptik', 'Marmoroptik', 'Terrazzo', 'Grossformate'],
     images: [
+      { src: '/images/categories/recer-pixstone-room.webp', alt: 'Feinsteinzeug in einem modernen Badezimmer' },
       { src: '/images/catalog/rubicer-rapolano.png', alt: 'Rubicer Rapolano Feinsteinzeug' },
       { src: '/images/catalog/rubicer-toscana.png', alt: 'Rubicer Toscana Carving' },
-      { src: '/images/categories/recer-mastery-room.webp', alt: 'Recer Mastery Feinsteinzeug in einer hochwertigen Innenanwendung' },
-      { src: '/images/categories/recer-pixstone-room.webp', alt: 'Recer Pixstone Terrazzooptik in einem modernen Bad' }
+      { src: '/images/categories/recer-mastery-room.webp', alt: 'Recer Mastery Feinsteinzeug in einer hochwertigen Innenanwendung' }
     ]
   },
   {
@@ -138,6 +138,12 @@ const sparten: Sparte[] = [
     ]
   }
 ];
+
+function productCountFor(route: PageRoute) {
+  if (route === 'baustellenzubehoor') return constructionCategories.reduce((total, category) => total + category.products.length, 0);
+  const category = Object.entries(routeForCategory).find(([, categoryRoute]) => categoryRoute === route)?.[0];
+  return interiorCategories.find(item => item.germanTitle === category)?.products.length ?? 0;
+}
 
 function wa(text: string) {
   return `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
@@ -292,16 +298,16 @@ function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: 
 function Home({ onNavigate }: { onNavigate: (p: PageRoute) => void }) {
   return <main>
     <section className="overflow-hidden border-b border-[#dbe1e5] bg-[#f7f8f7]">
-      <div className="mx-auto grid min-h-[700px] max-w-[1500px] items-center gap-12 px-5 py-16 lg:grid-cols-[.82fr_1.18fr] lg:px-10 lg:py-20">
+      <div className="mx-auto grid min-h-[680px] max-w-[1500px] items-center gap-12 px-5 py-14 lg:grid-cols-[.78fr_1.22fr] lg:px-10 lg:py-16">
         <div className="max-w-2xl">
           <p className="mb-5 text-[11px] font-extrabold uppercase tracking-[.24em] text-[#a77825]">RA Bau Lieferung · Bau- und Renovationsmaterial</p>
           <h1 className="font-display text-5xl font-semibold leading-[1.02] tracking-[-.045em] text-[#102c45] sm:text-6xl lg:text-[72px]">Produkte finden.<br /><span className="text-[#b8842d]">Projekt kalkulieren.</span><br />Offerte erhalten.</h1>
-          <p className="mt-7 max-w-xl text-base leading-7 text-[#586a77] sm:text-lg">Fünf klar getrennte Sparten, reale Produkte und technische Angaben. Wählen Sie Material, Menge und Lieferort – wir erstellen die projektbezogene Offerte.</p>
+          <p className="mt-7 max-w-xl text-base leading-7 text-[#586a77] sm:text-lg">Baustellenzubehör, Feinsteinzeug, Premium Mosaike, Designböden und Badlösungen – klar nach Sparte geordnet und direkt für Ihre Offerte auswählbar.</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <button onClick={() => onNavigate('interior')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#123d63] px-7 py-4 text-sm font-extrabold text-white transition hover:bg-[#0d3151]">Produkte nach Sparte <ArrowRight size={17} /></button>
             <button onClick={() => onNavigate('quote-planner')} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cbd4da] bg-white px-7 py-4 text-sm font-extrabold text-[#123d63] transition hover:border-[#123d63]"><ClipboardList size={17} /> Offerte zusammenstellen</button>
           </div>
-          <div className="mt-9 grid max-w-xl grid-cols-3 gap-4 border-t border-[#d7dee2] pt-6 text-[11px] font-bold text-[#5c6d78]"><span>Reale Produktbilder</span><span>Werkdaten & Logistik</span><span>Weitere Marken auf Anfrage</span></div>
+          <div className="mt-9 flex max-w-xl flex-wrap gap-x-7 gap-y-3 border-t border-[#d7dee2] pt-6 text-[11px] font-bold text-[#5c6d78]"><span>Reale Produkte</span><span>Technische Daten</span><span>Projektbezogene Offerte</span></div>
         </div>
         <HeroProductWall onNavigate={onNavigate} />
       </div>
@@ -311,9 +317,9 @@ function Home({ onNavigate }: { onNavigate: (p: PageRoute) => void }) {
       <div className="mx-auto max-w-[1500px] px-5 py-20 lg:px-10 lg:py-24">
         <SectionTitle kicker="Unser Sortiment" title="Fünf Sparten. Jede mit eigener Produktauswahl." copy="Keine vermischten Produktlisten: Wählen Sie zuerst die Sparte. Dort finden Sie die passenden Produktgruppen, konkreten Artikel, Varianten und Verpackungsdaten." />
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
-          {sparten.map((sparte, index) => <button key={sparte.number} onClick={() => onNavigate(sparte.route)} className={`group overflow-hidden rounded-[26px] border border-[#dce2e5] bg-[#f6f8f8] text-left shadow-[0_14px_42px_rgba(16,44,69,.06)] transition duration-300 hover:-translate-y-1 hover:border-[#b9c8d2] hover:shadow-[0_20px_55px_rgba(16,44,69,.12)] ${index === sparten.length - 1 ? 'lg:col-span-2' : ''}`}>
+          {sparten.map((sparte, index) => <button key={sparte.number} onClick={() => onNavigate(sparte.route)} className={`group overflow-hidden rounded-[26px] border border-[#dce2e5] bg-white text-left shadow-[0_14px_42px_rgba(16,44,69,.06)] transition duration-300 hover:-translate-y-1 hover:border-[#b9c8d2] hover:shadow-[0_20px_55px_rgba(16,44,69,.12)] ${index === sparten.length - 1 ? 'lg:col-span-2' : ''}`}>
             <SparteVisual sparte={sparte} />
-            <div className="p-6 sm:p-8"><div className="flex items-center justify-between gap-4"><div><span className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#a77825]">Sparte {sparte.number}</span><h2 className="mt-2 font-display text-3xl font-semibold tracking-[-.03em] text-[#102c45] sm:text-4xl">{sparte.title}</h2></div><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#123d63] shadow-sm transition group-hover:translate-x-1"><ArrowRight size={19} /></span></div><p className="mt-4 max-w-2xl text-sm leading-6 text-[#60717c]">{sparte.copy}</p><div className="mt-5 flex flex-wrap gap-2">{sparte.ranges.map(range => <span key={range} className="rounded-lg border border-[#d9e0e4] bg-white px-3 py-1.5 text-[10px] font-bold text-[#526673]">{range}</span>)}</div></div>
+            <div className="p-6 sm:p-8"><div className="flex items-center justify-between gap-4"><div><span className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#a77825]">Sparte {sparte.number}</span><h2 className="mt-2 font-display text-3xl font-semibold tracking-[-.03em] text-[#102c45] sm:text-4xl">{sparte.title}</h2></div><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#eef3f5] text-[#123d63] transition group-hover:translate-x-1"><ArrowRight size={19} /></span></div><p className="mt-4 max-w-2xl text-sm leading-6 text-[#60717c]">{sparte.copy}</p><div className="mt-5 flex flex-wrap gap-2">{sparte.ranges.map(range => <span key={range} className="rounded-lg border border-[#d9e0e4] bg-[#f7f9f9] px-3 py-1.5 text-[10px] font-bold text-[#526673]">{range}</span>)}</div><div className="mt-6 flex items-center justify-between border-t border-[#e1e6e9] pt-5 text-xs font-extrabold text-[#123d63]"><span>{productCountFor(sparte.route)} Produkte direkt ansehen</span><span className="hidden sm:inline">Alle Produkte dieser Sparte</span></div></div>
           </button>)}
         </div>
       </div>
@@ -340,7 +346,7 @@ function HeroProductWall({ onNavigate }: { onNavigate: (p: PageRoute) => void })
         'sm:col-span-4 sm:row-span-3',
         'col-span-2 sm:col-span-4 sm:row-span-3'
       ][index];
-      const visual = sparte.images[index % sparte.images.length];
+      const visual = sparte.images[0];
       return <button key={sparte.number} onClick={() => onNavigate(sparte.route)} className={`group relative min-h-48 overflow-hidden rounded-[22px] bg-[#e7ecee] text-left shadow-[0_18px_48px_rgba(16,44,69,.12)] ${layout}`}>
         <img src={hires(visual.src)} alt={visual.alt} className={`h-full w-full transition duration-700 group-hover:scale-[1.04] ${visual.fit === 'contain' ? 'object-contain p-7 mix-blend-multiply' : 'object-cover'}`} />
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b2338]/95 via-[#0b2338]/55 to-transparent px-4 pb-4 pt-12 text-white"><span className="text-[9px] font-extrabold tracking-[.2em] text-[#edc66f]">SPARTE {sparte.number}</span><h2 className="mt-1 text-sm font-extrabold sm:text-base">{sparte.title}</h2></div>
@@ -350,8 +356,10 @@ function HeroProductWall({ onNavigate }: { onNavigate: (p: PageRoute) => void })
 }
 
 function SparteVisual({ sparte, compact = false }: { sparte: Sparte; compact?: boolean }) {
-  return <div className={`relative grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden bg-[#dfe5e8] p-1 ${compact ? 'h-[250px]' : 'h-[340px]'}`}>
-    {sparte.images.map((image, index) => <div key={image.src} className="overflow-hidden bg-[#f3f5f4]"><img src={hires(image.src)} alt={image.alt} loading="lazy" decoding="async" className={`h-full w-full transition duration-700 group-hover:scale-[1.035] ${image.fit === 'contain' ? 'object-contain p-5 mix-blend-multiply' : 'object-cover'}`} /></div>)}
+  const [hero, ...details] = sparte.images;
+  return <div className={`relative grid grid-cols-[minmax(0,1fr)_96px] gap-1 overflow-hidden bg-[#dfe5e8] p-1 sm:grid-cols-[minmax(0,1fr)_128px] ${compact ? 'h-[270px]' : 'h-[380px]'}`}>
+    <div className="overflow-hidden bg-[#f3f5f4]"><img src={hires(hero.src)} alt={hero.alt} loading="lazy" decoding="async" className={`h-full w-full transition duration-700 group-hover:scale-[1.025] ${hero.fit === 'contain' ? 'object-contain p-8 mix-blend-multiply' : 'object-cover'}`} /></div>
+    <div className="grid grid-rows-3 gap-1">{details.slice(0, 3).map(image => <div key={image.src} className="overflow-hidden bg-[#f3f5f4]"><img src={hires(image.src)} alt={image.alt} loading="lazy" decoding="async" className={`h-full w-full transition duration-700 group-hover:scale-[1.035] ${image.fit === 'contain' ? 'object-contain p-3 mix-blend-multiply' : 'object-cover'}`} /></div>)}</div>
   </div>;
 }
 
@@ -359,8 +367,8 @@ function CatalogOverview({ onNavigate }: { onNavigate: (p: PageRoute) => void })
   return <main className="bg-[#f5f7f7]">
     <section className="border-b border-[#dce2e5] bg-white"><div className="mx-auto max-w-[1500px] px-5 py-16 lg:px-10 lg:py-20"><SectionTitle kicker="Gesamtsortiment · 5 Sparten" title="Wählen Sie den richtigen Produktbereich" copy="Jede Sparte enthält ausschliesslich die zugehörigen Produktgruppen und konkreten Artikel. So gelangen Sie ohne Umwege von der Auswahl zur projektbezogenen Offerte." /></div></section>
     <section className="mx-auto grid max-w-[1500px] gap-6 px-5 py-12 lg:px-10 lg:py-16">
-      {sparten.map((sparte, index) => {
-        const productCount = index === 0 ? constructionCategories.flatMap(category => category.products).length : interiorCategories[index - 1].products.length;
+      {sparten.map(sparte => {
+        const productCount = productCountFor(sparte.route);
         return <button key={sparte.number} onClick={() => onNavigate(sparte.route)} className="group grid w-full overflow-hidden rounded-[26px] border border-[#dce2e5] bg-white text-left shadow-[0_12px_38px_rgba(16,44,69,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(16,44,69,.11)] md:grid-cols-[420px_1fr_auto]">
           <SparteVisual sparte={sparte} compact />
           <div className="self-center p-7 sm:p-9"><span className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#a77825]">Sparte {sparte.number}</span><h2 className="mt-2 font-display text-3xl font-semibold tracking-[-.03em] text-[#102c45] sm:text-4xl">{sparte.title}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[#60717c]">{sparte.copy}</p><div className="mt-5 flex flex-wrap gap-2">{sparte.ranges.map(range => <span key={range} className="rounded-lg bg-[#eef3f5] px-3 py-1.5 text-[10px] font-bold text-[#526673]">{range}</span>)}</div><p className="mt-5 text-xs font-extrabold text-[#123d63]">{productCount} konkrete Auswahlprodukte · weitere Artikel auf Anfrage</p></div>
