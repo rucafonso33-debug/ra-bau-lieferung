@@ -1,5 +1,40 @@
   const selectedCategory = interiorCategories.find((item) => item.germanTitle === category);
   const meta = categoryMeta[category];
+  const expandedFamilies: Record<string, Array<{ brand: string; name: string; focus: string; image: string; fit?: 'cover' | 'contain' }>> = {
+    Feinsteinzeug: [
+      { brand: 'Recer', name: 'Rapolano Kollektion', focus: 'Travertinoptik · warme Naturtöne · Boden und Wand', image: '/images/catalog/rubicer-rapolano.png' },
+      { brand: 'Recer', name: 'Grand Stone Kollektion', focus: 'Architektonischer Steinlook · Innen und Aussen', image: '/images/products/recer-grand-stone-mosaic.webp', fit: 'contain' },
+      { brand: 'Gresco', name: 'Concrete & Grey', focus: 'Beton-, Grau- und Anthrazitoptiken für Renovation und Objektbau', image: '/images/categories/recer-pixstone-room.webp' },
+      { brand: 'Gresco', name: 'Outdoor Stone', focus: 'Frostbeständige Projektfliesen und robuste Aussenbereiche', image: '/images/catalog/recer-bluenza.png' },
+      { brand: 'Rubicer', name: 'Calacatta & Marmor', focus: 'Helle Marmoroptiken und repräsentative Grossformate', image: '/images/catalog/recer-mastery.png' },
+      { brand: 'Rubicer', name: 'Beton & Naturstein', focus: 'Breite Projektabdeckung in mehreren Formaten und Oberflächen', image: '/images/catalog/recer-pixstone.png' },
+    ],
+    'Premium Mosaike': [
+      { brand: 'Recer', name: 'Mastery Mix & Geometrien', focus: 'Marmor-Mix, Hexagon und koordinierte Akzentflächen', image: '/images/products/recer-mastery-mosaic.webp', fit: 'contain' },
+      { brand: 'Recer', name: 'Bluenza & Ripple', focus: 'Natursteinwirkung, Relief und hochwertige Duschwände', image: '/images/products/recer-bluenza-mosaic.webp' },
+      { brand: 'Recer', name: 'Rapolano Mosaike', focus: 'Travertin in Bone, Sand, Caramel und Grey', image: '/images/products/recer-rapolano-mosaic.webp', fit: 'contain' },
+      { brand: 'Recer', name: 'Pixstone Design', focus: 'Terrazzo und geometrische Mosaike für Spa und Dusche', image: '/images/products/recer-pixstone-mosaic.webp', fit: 'contain' },
+      { brand: 'Rubicer', name: 'Marmor- und Steinmosaike', focus: 'Koordinierte Lösungen zu Flächenfliesen und Badprojekten', image: '/images/products/recer-grand-stone-mosaic.webp', fit: 'contain' },
+    ],
+    'SPC / Vinyl-Designböden': [
+      { brand: 'Corkart', name: 'Vinyl Wood Kollektion', focus: 'Natürliche Eichenoptiken für schnelle Renovationen', image: '/images/products/rubifloor-xl-home.webp' },
+      { brand: 'Corkart', name: 'Cork Comfort', focus: 'Natürlicher Korkkomfort, Wärme und angenehme Raumakustik', image: '/images/products/rubifloor-premium-cream.webp' },
+      { brand: 'Rubifloor', name: 'Classic Oak', focus: 'Verkaufsstarke Holzdekore für Wohnungen und Umbauten', image: '/images/products/rubifloor-pro-nordig.webp' },
+      { brand: 'Rubifloor', name: 'Herringbone Programme', focus: 'Fischgrät in mehreren Natur- und Designfarbtönen', image: '/images/products/rubifloor-herringbone-natural.webp' },
+      { brand: 'Rubifloor', name: 'Stone & Project', focus: 'Steinoptik und hohe Nutzschichten für Objektflächen', image: '/images/products/rubifloor-rigid-grey.webp' },
+    ],
+    'Sanitäre Individuallösungen': [
+      { brand: 'IMEX', name: 'Basin Armaturen', focus: 'Waschtischarmaturen in Chrom, Schwarz, Gold und Gunmetal', image: '/images/products/imex-toscana-bdt064.webp', fit: 'contain' },
+      { brand: 'IMEX', name: 'Toscana & Duschsysteme', focus: 'Aufputz-, Thermostat- und Unterputzlösungen in mehreren Oberflächen', image: '/images/products/imex-toscana-bdt064.webp', fit: 'contain' },
+      { brand: 'Ramon Soler', name: 'Black & Finish Programme', focus: 'Technisch breite Armaturenserien mit Designoberflächen', image: '/images/products/moovlux-tube-tl1001.webp', fit: 'contain' },
+      { brand: 'Roca', name: 'Targa Armaturen', focus: 'Bewährte Waschtisch-, Bidet-, Badewannen- und Duscharmaturen', image: '/images/products/moovlux-tube-tl1001.webp', fit: 'contain' },
+      { brand: 'Roca', name: 'Sanitär & Badmöbel', focus: 'WCs, Waschtische, Möbel, Spiegel und Duschglas aus einer bekannten Badmarke', image: '/images/products/roca-avant-intank.webp', fit: 'contain' },
+      { brand: 'Accua Banho', name: 'Badmöbel & Spiegel', focus: 'Flexible Möbelbreiten, Waschtische, Spiegel und komplette Badpakete', image: '/images/catalog/rubicer-stria.png' },
+      { brand: 'Moovlux', name: 'Quadra, Tube & Spiegel', focus: 'Armaturen, Duschwannen und preisbewusste Badalternativen', image: '/images/products/moovlux-tube-tl1001.webp', fit: 'contain' },
+      { brand: 'Rubicer', name: 'Komplettbad Sortiment', focus: 'Möbel, Duschwannen, Sanitär und passende Boden- und Wandflächen', image: '/images/catalog/rubicer-stria.png' },
+    ],
+  };
+  const families = expandedFamilies[category] ?? [];
   const products = useMemo(() => {
     const order = commercialOrder[category] ?? [];
     const curated = [...(selectedCategory?.products ?? [])].sort((a, b) => {
@@ -13,6 +48,7 @@
   }, [search, selectedCategory, category]);
 
   if (!selectedCategory) return null;
+  const visibleBrands = Array.from(new Set([...selectedCategory.products.map((product) => product.brand), ...families.map((family) => family.brand)])).filter(Boolean);
 
   return (
     <main className="bg-[#f3f5f6]">
@@ -23,7 +59,8 @@
             <p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">{meta.kicker}</p>
             <h1 className="mt-4 max-w-3xl font-display text-5xl font-bold leading-[1.02] tracking-[-.04em] text-[#10293e] lg:text-6xl">{meta.title}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#566e7d]">{meta.copy}</p>
-            <div className="mt-7 flex flex-wrap gap-3 text-xs font-bold text-[#496173]"><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">{selectedCategory.products.length} kuratierte Produkte</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Werkdaten sichtbar</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Einzeln oder als Paket anfragen</span></div>
+            <div className="mt-7 flex flex-wrap gap-3 text-xs font-bold text-[#496173]"><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">{selectedCategory.products.length} technisch dokumentierte Produkte</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">{families.length} weitere Produktfamilien</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Einzeln oder als Paket anfragen</span></div>
+            <div className="mt-6"><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8e6725]">Marken in diesem Bereich</p><div className="mt-3 flex flex-wrap gap-2">{visibleBrands.map((brand) => <button key={brand} onClick={() => onSearch(brand)} className="rounded-full border border-[#d4dee4] bg-white px-3.5 py-2 text-[11px] font-extrabold text-[#355266] transition hover:border-[#004b87] hover:text-[#004b87]">{brand}</button>)}{search && <button onClick={() => onSearch('')} className="rounded-full bg-[#10293e] px-3.5 py-2 text-[11px] font-extrabold text-white">Alle anzeigen</button>}</div></div>
           </div>
           <div className="min-h-[410px] overflow-hidden rounded-[22px] border border-[#d8e1e6] bg-[#e8edef]"><SmartImage asset={meta.hero} priority className={`h-full w-full ${meta.hero.fit === 'contain' ? 'bg-white p-12' : ''}`} /></div>
         </div>
@@ -31,10 +68,18 @@
 
       <section className="mx-auto max-w-[1540px] px-5 py-12 lg:px-10 lg:py-16">
         <div className="mb-9 flex flex-col gap-4 border-b border-[#d8e1e6] pb-7 sm:flex-row sm:items-end sm:justify-between">
-          <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Verkaufsstarke Vorauswahl</p><h2 className="mt-2 font-display text-3xl font-bold tracking-[-.03em] text-[#10293e]">{selectedCategory.germanTitle}</h2></div>
+          <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Verkaufsstarke Vorauswahl</p><h2 className="mt-2 font-display text-3xl font-bold tracking-[-.03em] text-[#10293e]">Konkrete Produkte mit Werkdaten</h2></div>
           <label className="flex w-full items-center gap-3 rounded-lg border border-[#ccd8df] bg-white px-4 py-3 sm:max-w-sm"><Search size={17} className="text-[#6d818e]" /><input value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Produkt, Marke oder Referenz" className="w-full bg-transparent text-sm outline-none placeholder:text-[#8a9aa4]" /></label>
         </div>
-        {products.length ? <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{products.map((product) => <ProductCard key={product.id} product={product} inQuote={quote.some((item) => item.reference === product.reference)} onSelect={() => onSelect(product)} onAdd={() => onAdd(product)} />)}</div> : <div className="rounded-2xl border border-dashed border-[#cbd7de] bg-white px-6 py-16 text-center text-[#5c7280]">Kein Produkt passt zu dieser Suche.</div>}
+        {products.length ? <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{products.map((product) => <ProductCard key={product.id} product={product} inQuote={quote.some((item) => item.reference === product.reference)} onSelect={() => onSelect(product)} onAdd={() => onAdd(product)} />)}</div> : <div className="rounded-2xl border border-dashed border-[#cbd7de] bg-white px-6 py-16 text-center text-[#5c7280]">Keine konkrete Referenz passt zu dieser Suche. Die erweiterten Markenprogramme finden Sie direkt darunter.</div>}
+      </section>
+
+      <section className="border-t border-[#d8e1e6] bg-white">
+        <div className="mx-auto max-w-[1540px] px-5 py-16 lg:px-10 lg:py-20">
+          <div className="max-w-4xl"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Erweitertes Liefernetzwerk</p><h2 className="mt-3 font-display text-4xl font-bold tracking-[-.035em] text-[#10293e]">Mehr Marken und Produktfamilien als der Online-Katalog zeigt.</h2><p className="mt-4 text-base leading-7 text-[#5d7381]">Diese Programme zeigen unser Beschaffungspotenzial. Die konkrete Referenz, technische Eignung, Ausführung und Verfügbarkeit werden projektbezogen geprüft – ohne falsches Lager- oder Exklusivversprechen.</p></div>
+          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{families.map((family) => { const message = `Guten Tag, ich interessiere mich für ${family.brand} · ${family.name}. Projektbedarf: Bitte kontaktieren Sie mich für Katalog, passende Referenzen und eine Offerte.`; return <article key={`${family.brand}-${family.name}`} className="overflow-hidden rounded-[18px] border border-[#d7e0e5] bg-[#f8fafb] shadow-[0_10px_28px_rgba(16,41,62,.05)]"><div className="aspect-[16/9] overflow-hidden border-b border-[#dfe6ea] bg-white"><SmartImage asset={{ src: family.image, alt: `${family.brand} ${family.name}`, fit: family.fit ?? 'cover' }} className={`h-full w-full ${family.fit === 'contain' ? 'p-8' : ''}`} /></div><div className="p-6"><p className="text-[10px] font-extrabold uppercase tracking-[.17em] text-[#8e6725]">{family.brand}</p><h3 className="mt-2 font-display text-2xl font-bold text-[#10293e]">{family.name}</h3><p className="mt-3 min-h-12 text-sm leading-6 text-[#607582]">{family.focus}</p><div className="mt-5 grid grid-cols-2 gap-2"><a href={wa(message)} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#16734b] px-4 py-3 text-xs font-extrabold text-white"><MessageCircle size={15} /> WhatsApp</a><a href={mail(`Kataloganfrage: ${family.brand} ${family.name}`, message)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#cbd7de] bg-white px-4 py-3 text-xs font-extrabold text-[#004b87]"><Mail size={15} /> Katalog</a></div></div></article>; })}</div>
+          <div className="mt-8 rounded-[18px] bg-[#10293e] p-7 text-white sm:flex sm:items-center sm:justify-between sm:gap-8"><div><h3 className="font-display text-2xl font-bold">Eine bestimmte Marke oder Referenz gesucht?</h3><p className="mt-2 text-sm leading-6 text-white/65">Foto, Marke, Artikelnummer, Menge und Lieferort senden. Wir prüfen passende Bezugsquellen und Alternativen.</p></div><a href={wa(`Guten Tag, ich suche eine bestimmte Marke oder Referenz im Bereich ${category}.`)} target="_blank" rel="noreferrer" className="mt-5 inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#d7aa57] px-5 py-3.5 text-xs font-extrabold text-[#10293e] sm:mt-0">Referenz prüfen lassen <ArrowRight size={16} /></a></div>
+        </div>
       </section>
     </main>
   );
