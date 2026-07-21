@@ -24,11 +24,21 @@ export interface ConstructionCategory {
 }
 
 export interface InteriorProduct {
+  id: string;
   name: string;
   spec: string;
   details: string;
   image: string;
   brand?: string;
+  reference: string;
+  format: string;
+  finish: string;
+  application: string;
+  box: string;
+  pallet: string;
+  lead?: string;
+  badges?: string[];
+  featured?: boolean;
 }
 
 export interface InteriorCategory {
@@ -49,4 +59,5 @@ export interface QuoteItem {
   format?: string; // e.g. '60x60', '30x60', '120x120' etc.
   customNote?: string;
   isCustom?: boolean;
+  reference?: string;
 }
