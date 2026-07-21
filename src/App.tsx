@@ -12,6 +12,13 @@ import { Logo } from './components/Logo';
 const PHONE = '41782418913';
 const EMAIL = 'rodrigo@ra-bau-lieferung.com';
 
+const constructionRange = [
+  { title: 'Nivellieren & Verlegen', items: 'Clips · Keile · Drehkappen · Fugenkreuze · Systemzangen' },
+  { title: 'Bewehrung & Betondeckung', items: 'Abstandhalter · Klemmsterne · Distanzleisten · Doppeldrahtbinder' },
+  { title: 'Schutz & Verschluss', items: 'Armierungskappen · Rohrstopfen · Schutz- und Verschlussteile' },
+  { title: 'Werkzeug & Verbrauch', items: 'Bindehaken · Bindedraht · Verlegehilfen · Projektpackungen' },
+];
+
 const routeForCategory: Record<string, PageRoute> = {
   'Feinsteinzeug': 'porcelain',
   'Premium Mosaike': 'mosaics',
@@ -341,7 +348,15 @@ function ConstructionPage({ quote, onAdd, onSelect, onNavigate }: { quote: Quote
   return <main>
     <section className="bg-[#132335] text-white"><div className="mx-auto grid max-w-[1480px] gap-10 px-5 py-16 lg:grid-cols-[1fr_440px] lg:px-10 lg:py-20"><div className="self-center"><p className="text-xs font-black uppercase tracking-[.22em] text-[#e0b563]">Sparte 01 · Direkter Baustellenbedarf</p><h1 className="mt-4 font-display text-5xl font-bold sm:text-6xl">Baustellenzubehör</h1><p className="mt-5 max-w-3xl leading-7 text-white/70">Die ursprüngliche Sparte der RA Bau Lieferung: Nivelliersysteme, Bewehrungszubehör und konkrete Verbrauchspakete. Online auswählen oder eine andere Grösse, Menge und Ausführung anfragen.</p><div className="mt-7 flex flex-wrap gap-2 text-[11px] font-bold text-white/70"><span className="rounded-full border border-white/20 px-3 py-2">Konkrete Packungen</span><span className="rounded-full border border-white/20 px-3 py-2">Varianten auswählbar</span><span className="rounded-full border border-white/20 px-3 py-2">Weitere Baustellenartikel auf Anfrage</span></div></div><div className="flex h-[320px] items-center justify-center rounded-[28px] bg-[#f1eee7] p-8"><img src="/images/Komplettset.png" alt="Nivellier-Komplettset mit Clips, Keilen und Zange" className="h-full w-full object-contain mix-blend-multiply" /></div></div></section>
 
-    <section className="mx-auto max-w-[1480px] space-y-20 px-5 py-16 lg:px-10">{constructionCategories.map((category, categoryIndex) => <div key={category.title}>
+    <section className="mx-auto max-w-[1480px] px-5 pt-16 lg:px-10">
+      <div className="grid gap-8 rounded-[30px] border border-[#ded8cd] bg-[#fffefb] p-7 sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:p-12">
+        <div><p className="text-[10px] font-black uppercase tracking-[.22em] text-[#a77e34]">Das vollständige Beschaffungsfeld</p><h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#132335]">Die bekannten Sortimente bleiben. Die konkrete Auswahl wächst.</h2><p className="mt-4 max-w-xl text-sm leading-7 text-[#68737e]">RA Bau Lieferung zeigt online bewusst die Artikel, die wir konkret kalkulieren können. Gleichzeitig beschaffen wir innerhalb dieser Produktfamilien weitere Grössen, Ausführungen und kompatible Lösungen – auch wenn sie noch nicht als Einzelkarte aufgeführt sind.</p></div>
+        <div className="grid gap-3 sm:grid-cols-2">{constructionRange.map(range => <div key={range.title} className="rounded-[22px] bg-[#f0ede6] p-5"><Package size={20} className="text-[#a77e34]" /><h3 className="mt-4 text-sm font-black text-[#132335]">{range.title}</h3><p className="mt-2 text-xs leading-5 text-[#697580]">{range.items}</p></div>)}</div>
+      </div>
+      <div className="mt-10 flex flex-wrap items-end justify-between gap-4"><div><p className="text-[10px] font-black uppercase tracking-[.22em] text-[#a77e34]">Direkt auswählbar</p><h2 className="mt-2 text-3xl font-bold text-[#132335]">Diese Artikel und Pakete sind bereits konkret erfasst.</h2></div><p className="max-w-lg text-xs leading-5 text-[#68737e]">Menge und Variante auswählen, zur Projektanfrage hinzufügen und eine schriftliche Offerte mit Verfügbarkeit und Liefertermin erhalten.</p></div>
+    </section>
+
+    <section className="mx-auto max-w-[1480px] space-y-20 px-5 py-12 lg:px-10">{constructionCategories.map((category, categoryIndex) => <div key={category.title}>
       <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end"><div><p className="text-[10px] font-black uppercase tracking-[.22em] text-[#a77e34]">Sortimentsgruppe 0{categoryIndex + 1}</p><h2 className="mt-2 text-3xl font-bold">{category.title}</h2><p className="mt-3 max-w-3xl text-sm leading-6 text-[#68737e]">{category.description}</p></div><span className="text-xs font-bold text-[#68737e]">{category.products.length} konkrete Auswahlprodukte</span></div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{category.products.map(product => <ConstructionCard key={product.id} product={product} inQuote={quote.some(item => item.id === `construction-${product.id}`)} onAdd={onAdd} onSelect={onSelect} />)}</div>
     </div>)}</section>
