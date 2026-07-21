@@ -1,10 +1,16 @@
   const selectedCategory = interiorCategories.find((item) => item.germanTitle === category);
   const meta = categoryMeta[category];
   const products = useMemo(() => {
+    const order = commercialOrder[category] ?? [];
+    const curated = [...(selectedCategory?.products ?? [])].sort((a, b) => {
+      const aIndex = order.indexOf(a.id);
+      const bIndex = order.indexOf(b.id);
+      return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+    });
     const query = search.trim().toLowerCase();
-    if (!query) return selectedCategory?.products ?? [];
-    return (selectedCategory?.products ?? []).filter((product) => [product.name, product.brand, product.reference, product.spec, product.application].join(' ').toLowerCase().includes(query));
-  }, [search, selectedCategory]);
+    if (!query) return curated;
+    return curated.filter((product) => [product.name, product.brand, product.reference, product.spec, product.application].join(' ').toLowerCase().includes(query));
+  }, [search, selectedCategory, category]);
 
   if (!selectedCategory) return null;
 
@@ -17,7 +23,7 @@
             <p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">{meta.kicker}</p>
             <h1 className="mt-4 max-w-3xl font-display text-5xl font-bold leading-[1.02] tracking-[-.04em] text-[#10293e] lg:text-6xl">{meta.title}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#566e7d]">{meta.copy}</p>
-            <div className="mt-7 flex flex-wrap gap-3 text-xs font-bold text-[#496173]"><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">{selectedCategory.products.length} Produkte</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Werkdaten sichtbar</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Projektbezogene Offerte</span></div>
+            <div className="mt-7 flex flex-wrap gap-3 text-xs font-bold text-[#496173]"><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">{selectedCategory.products.length} kuratierte Produkte</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Werkdaten sichtbar</span><span className="rounded-full border border-[#d5e0e6] bg-[#f7f9fa] px-4 py-2">Einzeln oder als Paket anfragen</span></div>
           </div>
           <div className="min-h-[410px] overflow-hidden rounded-[22px] border border-[#d8e1e6] bg-[#e8edef]"><SmartImage asset={meta.hero} priority className={`h-full w-full ${meta.hero.fit === 'contain' ? 'bg-white p-12' : ''}`} /></div>
         </div>
@@ -25,7 +31,7 @@
 
       <section className="mx-auto max-w-[1540px] px-5 py-12 lg:px-10 lg:py-16">
         <div className="mb-9 flex flex-col gap-4 border-b border-[#d8e1e6] pb-7 sm:flex-row sm:items-end sm:justify-between">
-          <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Konkrete Artikel</p><h2 className="mt-2 font-display text-3xl font-bold tracking-[-.03em] text-[#10293e]">{selectedCategory.germanTitle}</h2></div>
+          <div><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Verkaufsstarke Vorauswahl</p><h2 className="mt-2 font-display text-3xl font-bold tracking-[-.03em] text-[#10293e]">{selectedCategory.germanTitle}</h2></div>
           <label className="flex w-full items-center gap-3 rounded-lg border border-[#ccd8df] bg-white px-4 py-3 sm:max-w-sm"><Search size={17} className="text-[#6d818e]" /><input value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Produkt, Marke oder Referenz" className="w-full bg-transparent text-sm outline-none placeholder:text-[#8a9aa4]" /></label>
         </div>
         {products.length ? <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{products.map((product) => <ProductCard key={product.id} product={product} inQuote={quote.some((item) => item.reference === product.reference)} onSelect={() => onSelect(product)} onAdd={() => onAdd(product)} />)}</div> : <div className="rounded-2xl border border-dashed border-[#cbd7de] bg-white px-6 py-16 text-center text-[#5c7280]">Kein Produkt passt zu dieser Suche.</div>}
@@ -36,6 +42,7 @@
 
 function ProductCard({ product, inQuote, onSelect, onAdd }: { product: InteriorProduct; inQuote: boolean; onSelect: () => void; onAdd: () => void }) {
   const asset: VisualAsset = { src: product.image, alt: `${product.brand ?? ''} ${product.name}`.trim(), fit: product.imageFit ?? 'cover' };
+  const message = productInquiry(product);
   return (
     <article className="group flex overflow-hidden rounded-[20px] border border-[#d7e0e5] bg-white shadow-[0_10px_32px_rgba(16,41,62,.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(16,41,62,.11)]">
       <div className="flex w-full flex-col">
@@ -50,6 +57,7 @@ function ProductCard({ product, inQuote, onSelect, onAdd }: { product: InteriorP
           <p className="mt-4 line-clamp-3 text-sm leading-6 text-[#6a7e8a]">{product.details}</p>
           <div className="mt-5 grid grid-cols-2 gap-2 text-[10px] font-semibold text-[#546b79]"><span className="rounded-md bg-[#f1f4f5] px-3 py-2">{product.format}</span><span className="rounded-md bg-[#f1f4f5] px-3 py-2">{product.application}</span></div>
           <div className="mt-auto flex gap-2 pt-6"><button onClick={onSelect} className="flex-1 rounded-lg border border-[#ccd7de] px-4 py-3 text-xs font-extrabold text-[#004b87] hover:border-[#004b87]">Details</button><button onClick={onAdd} disabled={inQuote} className={`flex-1 rounded-lg px-4 py-3 text-xs font-extrabold ${inQuote ? 'bg-[#e7ecef] text-[#768995]' : 'bg-[#004b87] text-white hover:bg-[#003d70]'}`}>{inQuote ? 'In Anfrage' : 'Zur Offerte'}</button></div>
+          <div className="mt-2 grid grid-cols-3 gap-2"><a href={wa(message)} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 rounded-lg border border-[#d6e0e5] px-2 py-2 text-[10px] font-bold text-[#16734b]"><MessageCircle size={13} /> WhatsApp</a><a href={mail(`Anfrage: ${product.name}`, message)} className="flex items-center justify-center gap-1 rounded-lg border border-[#d6e0e5] px-2 py-2 text-[10px] font-bold text-[#004b87]"><Mail size={13} /> E-Mail</a><a href={sms(message)} className="flex items-center justify-center gap-1 rounded-lg border border-[#d6e0e5] px-2 py-2 text-[10px] font-bold text-[#4d6575]"><Phone size={13} /> SMS</a></div>
         </div>
       </div>
     </article>
@@ -61,14 +69,14 @@ function ConstructionPage({ quote, onAdd, onSelect, onNavigate }: { quote: Quote
     <main className="bg-[#f3f5f6]">
       <section className="border-b border-[#d9e1e5] bg-white">
         <div className="mx-auto grid max-w-[1540px] gap-9 px-5 py-12 lg:grid-cols-[.88fr_1.12fr] lg:px-10 lg:py-16">
-          <div className="self-center"><button onClick={() => onNavigate('interior')} className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-[#5a7180] hover:text-[#004b87]"><ArrowLeft size={15} /> Alle Sparten</button><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">Sparte 01 · Baustellenbedarf</p><h1 className="mt-4 font-display text-5xl font-bold leading-[1.02] tracking-[-.04em] text-[#10293e] lg:text-6xl">Baustellenzubehör für Verlegung, Bewehrung und Betonbau</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-[#566e7d]">Konkrete Produkte, Varianten und Packungseinheiten. Jede Produktgruppe bleibt klar innerhalb dieser Sparte.</p></div>
-          <div className="min-h-[410px] overflow-hidden rounded-[22px] border border-[#d8e1e6] bg-[#e8edef]"><SmartImage asset={sparten[0].hero} priority className="h-full w-full" /></div>
+          <div className="self-center"><button onClick={() => onNavigate('interior')} className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-[#5a7180] hover:text-[#004b87]"><ArrowLeft size={15} /> Alle Sparten</button><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">Sparte 01 · Reale Produktfotografie</p><h1 className="mt-4 font-display text-5xl font-bold leading-[1.02] tracking-[-.04em] text-[#10293e] lg:text-6xl">Baustellenzubehör ohne künstliche Baustellenszene</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-[#566e7d]">Die Hauptdarstellung zeigt das reale Produktset. Varianten, Packungseinheiten und technische Anwendung bleiben klar sichtbar.</p></div>
+          <div className="min-h-[410px] overflow-hidden rounded-[22px] border border-[#d8e1e6] bg-white"><SmartImage asset={sparten[0].hero} priority className="h-full w-full p-12" /></div>
         </div>
       </section>
       <div className="mx-auto max-w-[1540px] space-y-16 px-5 py-14 lg:px-10 lg:py-20">
         {constructionCategories.map((category) => (
           <section key={category.title}>
             <div className="mb-8 grid overflow-hidden rounded-[20px] border border-[#d7e0e5] bg-white md:grid-cols-[360px_1fr]">
-              <div className="min-h-[220px] overflow-hidden bg-[#eef1f2]"><SmartImage asset={{ src: category.bannerImage || sparten[0].hero.src, alt: category.title, fit: 'cover' }} className="h-full w-full" /></div>
+              <div className="min-h-[220px] overflow-hidden bg-white"><SmartImage asset={{ src: category.products[0]?.image || sparten[0].hero.src, alt: category.title, fit: 'contain' }} className="h-full w-full p-8" /></div>
               <div className="self-center p-7 sm:p-9"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Produktgruppe</p><h2 className="mt-2 font-display text-4xl font-bold tracking-[-.035em] text-[#10293e]">{category.title}</h2><p className="mt-4 max-w-3xl leading-7 text-[#5b7180]">{category.description}</p><p className="mt-4 text-xs font-bold text-[#004b87]">{category.products.length} konkrete Produkte</p></div>
             </div>
