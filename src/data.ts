@@ -1,4 +1,4 @@
-import { ConstructionCategory, InteriorCategory } from './types';
+import type { ConstructionCategory, InteriorCategory } from './types';
 
 export const constructionCategories: ConstructionCategory[] = [
   {

@@ -6,7 +6,7 @@ import {
   Truck, X
 } from 'lucide-react';
 import { constructionCategories, interiorCategories } from './data';
-import { ConstructionProduct, InteriorProduct, PageRoute, QuoteItem } from './types';
+import type { ConstructionProduct, InteriorProduct, PageRoute, QuoteItem } from './types';
 import { Logo } from './components/Logo';
 
 const PHONE = '41782418913';
