@@ -1,83 +1,163 @@
-import { ConstructionCategory, InteriorCategory } from './types';
+import type { ConstructionCategory, InteriorCategory } from './types';
 
 export const constructionCategories: ConstructionCategory[] = [
   {
     title: "Fliesen-Nivelliersysteme",
-    description: "Mechanische Präzisionswerkzeuge für flächige, kantenfreie Verlegequalität.",
+    description: "Clips, Keile, Drehkappen und komplette Einstiegspakete für eine präzise, kantenarme Verlegung.",
     bannerImage: "/images/fliesen-nivelliersystem-banner.png",
     products: [
       {
-        name: "Präzisions-Fliesenclips",
-        description: "Professionelle Fliesenclips für präzise und gleichmäßige Verlegung.",
-        application: "In 1.0 mm, 1.5 mm, 2.0 mm und 3.0 mm Fugenschnitt",
-        image: "/images/fliesen-clips.png"
+        id: "fliesenclips-1000",
+        name: "Nivellierclips",
+        description: "Einweg-Zuglaschen für einen gleichmässigen Fugenverlauf und eine plane Verlegung.",
+        application: "Für Wand- und Bodenplatten",
+        image: "/images/fliesen-clips.png",
+        variants: "Fugenbreite 1,0 / 1,5 / 2,0 / 3,0 mm",
+        pack: "Standardpackung: 1'000 Clips",
+        defaultQuantity: "1000",
+        unit: "Stk.",
+        badges: ["4 Fugenbreiten", "Schnellbedarf"],
+        featured: true
       },
       {
+        id: "system-keile-500",
         name: "System-Keile",
-        description: "Robuste und mehrfach wiederverwendbare Keile für gleichmäßigen Anpressdruck.",
-        application: "Ergonomische Druckverteilung",
-        image: "/images/nivellier-keile-real.jpg.png"
+        description: "Mehrfach verwendbare Keile für kontrollierten Anpressdruck im Clip-Nivelliersystem.",
+        application: "Kompatibel mit den angebotenen Nivellierclips",
+        image: "/images/nivellier-keile-real.jpg.png",
+        variants: "Einheitliche Keilgrösse",
+        pack: "Standardpackung: 500 Keile",
+        defaultQuantity: "500",
+        unit: "Stk.",
+        badges: ["Wiederverwendbar"],
+        featured: true
       },
       {
+        id: "dreh-schraubsystem",
         name: "Dreh-Schraubsystem",
-        description: "Wiederverwendbares Nivelliersystem mit Drehkappen für kantenfreie Naturstein- und Keramikarbeiten.",
-        application: "Stufenlose Regulierung per Hand, zangenfrei",
-        image: "/images/fliesen-schraubsystem-real.jpg.png"
+        description: "Wiederverwendbare Drehkappe mit Gewindelasche für eine kontrollierte Nivellierung von Keramik und Naturstein.",
+        application: "Von Hand regulierbar, ohne Systemzange",
+        image: "/images/fliesen-schraubsystem-real.jpg.png",
+        variants: "Kappen und passende Gewindelaschen",
+        pack: "Packungsgrösse nach Projektbedarf",
+        defaultQuantity: "100",
+        unit: "Stk.",
+        badges: ["Zangenfrei"]
       },
       {
-        name: "Industrie-Fugenkreuze",
-        description: "Aus unverformbarem Kunststoff für exakte Fugenabstände bei Wand- & Bodenplatten.",
-        application: "Varianten: 2.0 bis 5.0 mm",
-        image: "/images/fugenkreuze.jpg"
+        id: "fugenkreuze",
+        name: "Fliesen-Fugenkreuze",
+        description: "Kunststoff-Abstandhalter für gleichmässige Fugen bei Wand- und Bodenplatten.",
+        application: "Für Keramik, Feinsteinzeug und Wandplatten",
+        image: "/images/fugenkreuze.jpg",
+        variants: "Fugenbreite 2,0 / 3,0 / 4,0 / 5,0 mm",
+        pack: "Packungsgrösse nach Ausführung",
+        defaultQuantity: "500",
+        unit: "Stk."
       },
       {
-        name: "Profi-Komplettset",
-        description: "Vollständiges Set für anspruchsvolle Fliesenarbeiten (Clips, Keile, Systemzange).",
-        application: "Komplettiert in robuster Transportbox",
-        image: "/images/Komplettset.png"
+        id: "starterset-1000-500",
+        name: "Starterset 1'000 + 500",
+        description: "Praxisnahes Einstiegspaket aus Nivellierclips und wiederverwendbaren System-Keilen.",
+        application: "Für erste Projekte oder regelmässige Kleinflächen",
+        image: "/images/Komplettset.png",
+        variants: "1'000 Clips in gewählter Fugenbreite + 500 Keile",
+        pack: "1 Komplettset",
+        defaultQuantity: "1",
+        unit: "Set",
+        badges: ["Einstiegspaket"],
+        featured: true
+      },
+      {
+        id: "projektset-2500-500",
+        name: "Projektset 2'500 + 500",
+        description: "Grösseres Verbrauchspaket mit hoher Clip-Menge und wiederverwendbarer Keilbasis.",
+        application: "Für grössere Flächen und laufende Verlegearbeiten",
+        image: "/images/Komplettset.png",
+        variants: "2'500 Clips in gewählter Fugenbreite + 500 Keile",
+        pack: "1 Projektset",
+        defaultQuantity: "1",
+        unit: "Set",
+        badges: ["Projektpaket"]
       }
     ]
   },
   {
     title: "Bewehrung & Betonbau",
-    description: "Zugelassene Systemkomponenten für Schalungsbau, Betonarbeiten und Bewehrungsschutz.",
+    description: "Abstandhalter, Befestigung und Schutzteile für Bewehrungs-, Beton- und Schalungsarbeiten.",
     bannerImage: "/images/01_BAUSTELLENZUBEHOER.png",
     products: [
       {
-        name: "Abstands-Turm",
-        description: "Stabile, punktuelle Auflage für mittlere und schwere Bewehrungseisen.",
-        application: "SIA-konforme Höhen: 20 bis 50 mm",
-        image: "/images/distanzhalter-turm.jpg"
+        id: "abstandhalter-turm",
+        name: "Abstandhalter-Turm",
+        description: "Punktuelle Kunststoffauflage zur definierten Betondeckung bei horizontaler Bewehrung.",
+        application: "Für Decken, Bodenplatten und Fertigteile",
+        image: "/images/distanzhalter-turm.jpg",
+        variants: "Deckungshöhen 20 / 25 / 30 / 35 / 40 / 50 mm",
+        pack: "Sack- oder Kartonmenge nach Höhe",
+        defaultQuantity: "500",
+        unit: "Stk.",
+        badges: ["6 Höhen"],
+        featured: true
       },
       {
-        name: "Klemmen-Stern",
-        description: "Runder Abstandshalter für Bewehrungen. Garantiert hervorragende Rundum-Betondeckung.",
-        application: "Für Armierungseisen Ø 40–50 mm",
-        image: "/images/distanzhalter-stern.jpg"
+        id: "klemmstern-rund",
+        name: "Klemmstern / Rundabstandhalter",
+        description: "Aufsteckbarer Rundabstandhalter für eine gleichmässige Betondeckung an Wänden und Stützen.",
+        application: "Für vertikale Bewehrung und Fertigteile",
+        image: "/images/distanzhalter-stern.jpg",
+        variants: "Betondeckung und Eisenaufnahme nach Projekt",
+        pack: "Sackmenge nach Ausführung",
+        defaultQuantity: "500",
+        unit: "Stk.",
+        badges: ["Wand & Stütze"]
       },
       {
+        id: "distanzleiste-linear",
         name: "Distanzleiste Linear",
-        description: "Lineares Abstandshaltersystem für flächige Bewehrungsabstützungen auf Schalungen.",
-        application: "SIA-Konform | Profil-Länge: 2.0 m",
-        image: "/images/Distanzleiste.jpg"
+        description: "Lineare Kunststoffleiste zur flächigen Abstützung der unteren Bewehrungslage.",
+        application: "Für Decken, Bodenplatten und Schalungen",
+        image: "/images/Distanzleiste.jpg",
+        variants: "Verschiedene Deckungshöhen · Standardlänge 2 m",
+        pack: "Bundmenge nach Höhe",
+        defaultQuantity: "100",
+        unit: "Stk.",
+        badges: ["2 m Leiste"]
       },
       {
-        name: "Sicherheits-Schutzkappen",
-        description: "Flexible, weithin sichtbare Schutzkappen für freiliegende Bewehrungsenden.",
-        application: "Unfallschutz für alle gängigen Eisendurchmesser",
-        image: "/images/Schutzkappen.jpg"
+        id: "rohrstopfen-schutzkappen",
+        name: "Rohrstopfen / Schutzkappen",
+        description: "Kunststoffstopfen zum sauberen Verschliessen und Schützen offener Rohr- und Hülsenenden.",
+        application: "Für Schalungsrohre, Hülsen und Transport",
+        image: "/images/Schutzkappen.jpg",
+        variants: "Durchmesser passend zum eingesetzten Rohrsystem",
+        pack: "Beutelmenge nach Durchmesser",
+        defaultQuantity: "500",
+        unit: "Stk."
       },
       {
-        name: "Rödel-Bindedraht",
-        description: "Weichgeglühter Bindedraht für sichere Bewehrungsflechtung. Hochzugfest.",
-        application: "Kompakte Rollen à 1 kg | Mühelos formbar",
-        image: "/images/Bindedraht.jpg"
+        id: "doppeldrahtbinder-14",
+        name: "Doppeldrahtbinder 14 cm",
+        description: "Vorgefertigte Drahtbinder mit zwei Ösen zum schnellen Verbinden von Armierungseisen.",
+        application: "Mit Drill-Bindehaken zu verarbeiten",
+        image: "/images/Bindedraht.jpg",
+        variants: "Länge 14 cm · weitere Längen auf Anfrage",
+        pack: "Rolle / Bund nach Lieferausführung",
+        defaultQuantity: "1",
+        unit: "Rolle",
+        badges: ["14 cm"]
       },
       {
-        name: "Ergonomischer Drill-Bindehaken",
-        description: "Gugelgelagertes Bindewerkzeug zum zeitsparenden Verdrillen des Bindedrahts.",
-        application: "Gummiertes Metallsystem für Dauerbetrieb",
-        image: "/images/Bindehaken.jpg"
+        id: "drill-bindehaken",
+        name: "Drill-Bindehaken",
+        description: "Mechanischer Bindehaken zum schnellen Verdrillen von Doppeldrahtbindern.",
+        application: "Für wiederkehrende Bindearbeiten in der Bewehrung",
+        image: "/images/Bindehaken.jpg",
+        variants: "Holzgriff · rotierender Schaft",
+        pack: "1 Werkzeug",
+        defaultQuantity: "1",
+        unit: "Stk.",
+        badges: ["Passend zu 14-cm-Bindern"]
       }
     ]
   }
