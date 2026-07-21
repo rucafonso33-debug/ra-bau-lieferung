@@ -56,6 +56,50 @@ const categoryMeta: Record<string, { kicker: string; title: string; copy: string
   }
 };
 
+const sparten = [
+  {
+    route: 'baustellenzubehoor' as PageRoute,
+    number: '01',
+    title: 'Baustellenzubehör',
+    copy: 'Praxisnahe Systeme und Verbrauchsmaterial für Verlegung, Bewehrung und Betonbau.',
+    image: '/images/Komplettset.png',
+    contain: true,
+    ranges: ['Nivelliersysteme', 'Abstandhalter', 'Drahtbinder', 'Schutz & Werkzeug']
+  },
+  {
+    route: 'porcelain' as PageRoute,
+    number: '02',
+    title: 'Feinsteinzeug',
+    copy: 'Ausgewählte Serien für Boden, Wand, Bad, Wohnbau und anspruchsvolle Renovationen.',
+    image: '/images/catalog/rubicer-rapolano.png',
+    ranges: ['Steinoptik', 'Marmoroptik', 'Terrazzo', 'Grossformate']
+  },
+  {
+    route: 'mosaics' as PageRoute,
+    number: '03',
+    title: 'Premium Mosaike',
+    copy: 'Koordinierte Designmosaike für Dusche, Spa, Akzentwand und exklusive Innenräume.',
+    image: '/images/products/recer-mastery-mosaic.webp',
+    ranges: ['Marmor', 'Naturstein', 'Geometrisch', 'Nassbereich']
+  },
+  {
+    route: 'spc' as PageRoute,
+    number: '04',
+    title: 'SPC & Vinylböden',
+    copy: 'Widerstandsfähige Klickböden für schnelle, saubere Renovationen im Wohn- und Objektbau.',
+    image: '/images/products/rubifloor-herringbone-natural.webp',
+    ranges: ['Landhausdiele', 'Fischgrät', 'XL-Dielen', 'Objektqualität']
+  },
+  {
+    route: 'bathroom' as PageRoute,
+    number: '05',
+    title: 'Bad & Sanitär',
+    copy: 'Einzelprodukte und abgestimmte Lösungen für ein vollständiges, hochwertiges Badezimmer.',
+    image: '/images/products/imex-toscana-bdt064.webp',
+    ranges: ['Badmöbel', 'Armaturen', 'Duschen', 'WC & Duschwannen']
+  }
+];
+
 function wa(text: string) {
   return `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
 }
@@ -73,7 +117,6 @@ export default function App() {
 
   const allProducts = useMemo(() => interiorCategories.flatMap(c => c.products), []);
   const featured = allProducts.filter(p => p.featured);
-  const featuredConstruction = useMemo(() => constructionCategories.flatMap(c => c.products).filter(p => p.featured), []);
 
   const navigate = (next: PageRoute) => {
     setPage(next);
@@ -161,10 +204,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f5f4f0] text-[#132335] selection:bg-[#d7aa57] selection:text-white">
-      <TopBar />
       <Header page={page} quoteCount={quote.length} mobileOpen={mobileOpen} onMobile={() => setMobileOpen(v => !v)} onNavigate={navigate} />
 
-      {page === 'home' && <Home onNavigate={navigate} featured={featured} featuredConstruction={featuredConstruction} onSelect={setSelected} onAdd={addProduct} onAddConstruction={addConstruction} />}
+      {page === 'home' && <Home onNavigate={navigate} featured={featured} onSelect={setSelected} onAdd={addProduct} />}
       {page === 'interior' && <CatalogOverview onNavigate={navigate} />}
       {categoryForRoute[page] && (
         <CategoryPage
@@ -190,12 +232,8 @@ export default function App() {
   );
 }
 
-function TopBar() {
-  return <div className="bg-[#132335] px-4 py-2 text-center text-[11px] font-semibold tracking-wide text-white sm:text-xs">Baustellenzubehör & Ausbaumaterial für die Schweiz <span className="mx-2 text-[#d7aa57]">•</span> Konkrete Auswahl plus weitere Produkte auf Anfrage <span className="mx-2 text-[#d7aa57]">•</span> Lieferung und Verzollung kalkuliert</div>;
-}
-
 function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: PageRoute; quoteCount: number; mobileOpen: boolean; onMobile: () => void; onNavigate: (p: PageRoute) => void }) {
-  const links: Array<[PageRoute, string]> = [['home', 'Home'], ['baustellenzubehoor', 'Baustellenzubehör'], ['porcelain', 'Feinsteinzeug'], ['mosaics', 'Premium Mosaike'], ['spc', 'SPC'], ['bathroom', 'Bad & Sanitär'], ['contact', 'Kontakt']];
+  const links: Array<[PageRoute, string]> = [['home', 'Home'], ['interior', 'Sparten'], ['baustellenzubehoor', 'Baustellenzubehör'], ['porcelain', 'Feinsteinzeug'], ['mosaics', 'Premium Mosaike'], ['spc', 'SPC'], ['bathroom', 'Bad & Sanitär']];
   return <header className="sticky top-0 z-50 border-b border-[#d8d5cd] bg-[#fffefb]/95 backdrop-blur-xl">
     <div className="mx-auto flex h-[76px] max-w-[1480px] items-center gap-5 px-4 lg:px-7">
       <button onClick={() => onNavigate('home')} className="shrink-0" aria-label="Startseite"><Logo /></button>
@@ -211,48 +249,35 @@ function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: 
   </header>;
 }
 
-function Home({ onNavigate, featured, featuredConstruction, onSelect, onAdd, onAddConstruction }: { onNavigate: (p: PageRoute) => void; featured: InteriorProduct[]; featuredConstruction: ConstructionProduct[]; onSelect: (p: InteriorProduct) => void; onAdd: (p: InteriorProduct) => void; onAddConstruction: (p: ConstructionProduct) => void }) {
+function Home({ onNavigate, featured, onSelect, onAdd }: { onNavigate: (p: PageRoute) => void; featured: InteriorProduct[]; onSelect: (p: InteriorProduct) => void; onAdd: (p: InteriorProduct) => void }) {
   return <main>
     <section className="relative overflow-hidden bg-[#132335] text-white">
       <div className="absolute inset-0 opacity-55"><img src="/images/catalog/recer-pixstone.png" className="h-full w-full object-cover" alt="Recer Pixstone Badezimmer" /><div className="absolute inset-0 bg-gradient-to-r from-[#132335] via-[#132335]/90 to-[#132335]/20" /></div>
       <div className="relative mx-auto grid min-h-[680px] max-w-[1480px] items-center px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-10">
         <div className="max-w-3xl">
-          <p className="mb-5 text-xs font-black uppercase tracking-[.24em] text-[#e0b563]">RA Bau Lieferung · Baustelle bis Innenausbau</p>
-          <h1 className="font-display text-5xl font-bold leading-[.98] tracking-[-.04em] sm:text-6xl lg:text-[78px]">Material wählen.<br /><span className="text-[#e0b563]">Projekt anfragen.</span><br />Geliefert bekommen.</h1>
-          <p className="mt-7 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">Baustellenzubehör für den direkten Bedarf sowie Feinsteinzeug, Premium Mosaike, SPC und komplette Badlösungen für Ihr Projekt. Konkrete Produkte online auswählen – weitere Marken, Masse und Ausführungen beschaffen wir auf Anfrage.</p>
+          <p className="mb-5 text-xs font-black uppercase tracking-[.24em] text-[#e0b563]">RA Bau Lieferung · Sortiment für Bau & Renovation</p>
+          <h1 className="font-display text-5xl font-bold leading-[.98] tracking-[-.04em] sm:text-6xl lg:text-[78px]">Fünf Sparten.<br /><span className="text-[#e0b563]">Eine klare Auswahl.</span><br />Ein Projekt.</h1>
+          <p className="mt-7 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">Von Baustellenzubehör bis zum kompletten Bad: Entdecken Sie Produktgruppen, vergleichen Sie konkrete Artikel und stellen Sie Ihre Anfrage direkt online zusammen.</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <button onClick={() => onNavigate('interior')} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d7aa57] px-7 py-4 text-sm font-black text-[#132335] transition hover:bg-[#e4bd70]">Gesamtsortiment <ArrowRight size={17} /></button>
-            <button onClick={() => onNavigate('quote-planner')} className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-7 py-4 text-sm font-black backdrop-blur transition hover:bg-white/15"><ClipboardList size={17} /> Projekt zusammenstellen</button>
+            <button onClick={() => onNavigate('interior')} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d7aa57] px-7 py-4 text-sm font-black text-[#132335] transition hover:bg-[#e4bd70]">Sparten entdecken <ArrowRight size={17} /></button>
+            <button onClick={() => onNavigate('quote-planner')} className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-7 py-4 text-sm font-black backdrop-blur transition hover:bg-white/15"><ClipboardList size={17} /> Offerte anfragen</button>
           </div>
-          <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 border-t border-white/15 pt-6 text-xs text-white/65"><span><strong className="block text-lg text-white">5</strong> Sortimentswelten</span><span><strong className="block text-lg text-white">32+</strong> konkrete Auswahlprodukte</span><span><strong className="block text-lg text-white">1</strong> gemeinsame Projektanfrage</span></div>
         </div>
       </div>
     </section>
 
     <section className="border-b border-[#dedbd2] bg-[#fffefb]">
       <div className="mx-auto max-w-[1480px] px-5 py-20 lg:px-10">
-        <div className="grid gap-8 xl:grid-cols-[.78fr_1.22fr] xl:items-end">
-          <div>
-            <SectionTitle kicker="Sparte 01 · Die ursprüngliche Stärke" title="Baustellenzubehör für den direkten Bedarf" copy="Die RA Bau Lieferung bleibt auch das, womit sie begonnen hat: ein direkter Ansprechpartner für Nivelliersysteme, Bewehrungszubehör und praxisnahe Verbrauchspakete." />
-            <div className="mt-7 flex flex-wrap gap-2 text-[11px] font-bold text-[#536170]"><span className="rounded-full bg-[#eeeae1] px-3 py-2">Clips & Keile</span><span className="rounded-full bg-[#eeeae1] px-3 py-2">Abstandhalter</span><span className="rounded-full bg-[#eeeae1] px-3 py-2">Drahtbinder & Werkzeug</span><span className="rounded-full bg-[#eeeae1] px-3 py-2">Weitere Varianten auf Anfrage</span></div>
-            <button onClick={() => onNavigate('baustellenzubehoor')} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#132335] px-6 py-3.5 text-sm font-black text-white">Sparte 01 öffnen <ArrowRight size={16} /></button>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">{featuredConstruction.slice(0, 3).map(product => <ConstructionMiniCard key={product.id} product={product} onAdd={onAddConstruction} onOpen={() => onNavigate('baustellenzubehoor')} />)}</div>
+        <SectionTitle kicker="Unser Sortiment" title="Wählen Sie zuerst Ihre Sparte" copy="Jede Sparte führt von der Produktgruppe direkt zu konkreten Artikeln, technischen Angaben und der Offertenanfrage. Weitere Marken, Masse und Ausführungen sind jederzeit möglich." />
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-6">
+          {sparten.map((sparte, index) => <button key={sparte.number} onClick={() => onNavigate(sparte.route)} className={`group overflow-hidden rounded-[28px] border border-[#dedbd2] bg-[#f5f2eb] text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl ${index < 2 ? 'xl:col-span-3' : 'xl:col-span-2'}`}>
+            <div className="relative h-[300px] overflow-hidden bg-[#ece8df]">
+              <img src={sparte.image} alt={sparte.title} className={`h-full w-full transition duration-700 group-hover:scale-105 ${sparte.contain ? 'object-contain p-8 mix-blend-multiply' : 'object-cover'}`} />
+              <span className="absolute left-5 top-5 rounded-full bg-[#132335] px-3 py-1.5 text-[10px] font-black uppercase tracking-[.2em] text-[#e0b563]">Sparte {sparte.number}</span>
+            </div>
+            <div className="p-6 sm:p-7"><h2 className="font-display text-3xl font-bold tracking-tight text-[#132335]">{sparte.title}</h2><p className="mt-3 min-h-12 text-sm leading-6 text-[#68747f]">{sparte.copy}</p><div className="mt-5 flex flex-wrap gap-2">{sparte.ranges.map(range => <span key={range} className="rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-[#52606d]">{range}</span>)}</div><span className="mt-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#132335]">Produkte öffnen <ArrowRight size={15} /></span></div>
+          </button>)}
         </div>
-      </div>
-    </section>
-
-    <section className="mx-auto max-w-[1480px] px-5 py-20 lg:px-10">
-      <SectionTitle kicker="Sparten 02–05 · Innenausbau" title="Echte Auswahlprodukte, ergänzt durch unser Beschaffungsnetzwerk" copy="Die gezeigten Artikel sind eine kuratierte Auswahl mit realen Herstellerdaten. Andere Marken, Farben, Formate und kompatible Lösungen bleiben ausdrücklich möglich." />
-      <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {interiorCategories.map((cat, index) => {
-          const hero = cat.products.find(p => p.featured) || cat.products[0];
-          return <button key={cat.germanTitle} onClick={() => onNavigate(routeForCategory[cat.germanTitle])} className="group relative min-h-[410px] overflow-hidden rounded-[28px] bg-[#132335] text-left text-white shadow-sm">
-            <img src={hero.image} alt={cat.germanTitle} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#101d2b] via-[#101d2b]/45 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6"><span className="text-[10px] font-black uppercase tracking-[.2em] text-[#e0b563]">Sparte 0{index + 2}</span><h3 className="mt-2 text-2xl font-bold">{cat.germanTitle}</h3><p className="mt-2 text-sm leading-6 text-white/70">{cat.description}</p><span className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider">Produkte ansehen <ArrowRight size={15} /></span></div>
-          </button>;
-        })}
       </div>
     </section>
 
@@ -404,5 +429,5 @@ function SectionTitle({ kicker, title, copy }: { kicker: string; title: string; 
 function TrustTile({ icon, title, text, dark = false }: { icon: React.ReactNode; title: string; text: string; dark?: boolean }) { return <div className={`${dark ? 'border border-white/10 bg-white/5' : 'bg-[#fffefb]'} p-6`}><div className="text-[#b58a3d]">{icon}</div><h3 className="mt-4 text-sm font-black">{title}</h3><p className={`mt-1 text-xs ${dark ? 'text-white/55' : 'text-[#778087]'}`}>{text}</p></div>; }
 
 function Footer({ onNavigate }: { onNavigate: (p: PageRoute) => void }) {
-  return <footer className="bg-[#0d1925] px-5 py-12 text-white lg:px-10"><div className="mx-auto grid max-w-[1480px] gap-10 md:grid-cols-[1.2fr_.8fr_.8fr]"><div><Logo /><p className="mt-5 max-w-md text-xs leading-6 text-white/55">Baustellenzubehör und projektbezogene Materialbeschaffung für Schweizer Bau- und Renovationsprojekte. Online auswählen, prüfen lassen und schriftlich offerieren.</p></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Sortiment</h3><div className="mt-4 space-y-2 text-sm text-white/65">{[['baustellenzubehoor','Baustellenzubehör'],['porcelain','Feinsteinzeug'],['mosaics','Premium Mosaike'],['spc','SPC-Vinyl'],['bathroom','Bad & Sanitär']].map(([r,l]) => <button key={r} onClick={() => onNavigate(r as PageRoute)} className="block hover:text-white">{l}</button>)}</div></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Kontakt</h3><div className="mt-4 space-y-2 text-sm text-white/65"><a className="block" href={`tel:${PHONE}`}>+41 78 241 89 13</a><a className="block" href={`mailto:${EMAIL}`}>{EMAIL}</a><span className="block">Oensingen, Schweiz</span></div></div></div><div className="mx-auto mt-10 flex max-w-[1480px] flex-col justify-between gap-2 border-t border-white/10 pt-5 text-[10px] text-white/35 sm:flex-row"><span>© 2026 RA Bau Lieferung</span><span>Ausführung, Preis und Verfügbarkeit werden projektbezogen bestätigt.</span></div></footer>;
+  return <footer className="bg-[#0d1925] px-5 py-12 text-white lg:px-10"><div className="mx-auto grid max-w-[1480px] gap-10 md:grid-cols-[1.2fr_.8fr_.8fr]"><div><Logo /><p className="mt-5 max-w-md text-xs leading-6 text-white/55">Baustellenzubehör und Ausbaumaterial für Bau- und Renovationsprojekte. Produkt auswählen, Menge definieren und projektbezogene Offerte erhalten.</p></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Sparten</h3><div className="mt-4 space-y-2 text-sm text-white/65">{[['baustellenzubehoor','Baustellenzubehör'],['porcelain','Feinsteinzeug'],['mosaics','Premium Mosaike'],['spc','SPC & Vinyl'],['bathroom','Bad & Sanitär']].map(([r,l]) => <button key={r} onClick={() => onNavigate(r as PageRoute)} className="block hover:text-white">{l}</button>)}</div></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Projektanfrage</h3><div className="mt-4 space-y-2 text-sm text-white/65"><button onClick={() => onNavigate('quote-planner')} className="block hover:text-white">Offerte zusammenstellen</button><a className="block" href={`mailto:${EMAIL}`}>{EMAIL}</a><a className="block" href={wa('Guten Tag, ich möchte ein Projekt besprechen.')} target="_blank" rel="noreferrer">WhatsApp</a></div></div></div><div className="mx-auto mt-10 flex max-w-[1480px] flex-col justify-between gap-2 border-t border-white/10 pt-5 text-[10px] text-white/35 sm:flex-row"><span>© 2026 RA Bau Lieferung</span><span>Ausführung, Preis und Verfügbarkeit werden projektbezogen bestätigt.</span></div></footer>;
 }
