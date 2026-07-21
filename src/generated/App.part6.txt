@@ -1,0 +1,44 @@
+function Field({ name, label, type = 'text', required = false }: { name: string; label: string; type?: string; required?: boolean }) {
+  return <label className="block text-xs font-bold text-[#415b6d]">{label}<input name={name} type={type} required={required} className="mt-2 w-full rounded-lg border border-[#cbd7de] px-4 py-3 text-sm outline-none focus:border-[#004b87]" /></label>;
+}
+
+function ContactPage() {
+  return (
+    <main className="bg-[#f3f5f6]"><section className="mx-auto max-w-[1100px] px-5 py-20 lg:px-10"><SectionTitle kicker="Kontakt" title="Produkt, Referenz und Menge senden." copy="Für eine belastbare Prüfung benötigen wir möglichst Hersteller, Referenz, Masse, Menge und Lieferort." /><div className="mt-10 grid gap-5 md:grid-cols-3"><ContactTile icon={<Phone />} title="Telefon" value="+41 78 241 89 13" href="tel:+41782418913" /><ContactTile icon={<Mail />} title="E-Mail" value={EMAIL} href={`mailto:${EMAIL}`} /><ContactTile icon={<MessageCircle />} title="WhatsApp" value="Produkt direkt anfragen" href={wa('Guten Tag, ich möchte ein Produkt anfragen.')} /></div></section></main>
+  );
+}
+
+function ProductModal({ product, inQuote, onClose, onAdd }: { product: InteriorProduct; inQuote: boolean; onClose: () => void; onAdd: () => void }) {
+  const rows = [['Referenz', product.reference], ['Format', product.format], ['Oberfläche', product.finish], ['Anwendung', product.application], ['Karton', product.box], ['Palette', product.pallet], ['Verfügbarkeit', product.lead || 'Projektbezogen']];
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#071925]/75 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={product.name} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[24px] bg-white shadow-2xl"><div className="sticky top-0 z-10 flex justify-end bg-white/90 p-3 backdrop-blur"><button onClick={onClose} className="rounded-full bg-[#eef2f4] p-2 text-[#10293e]" aria-label="Schliessen"><X /></button></div><div className="grid lg:grid-cols-[1.05fr_.95fr]"><div className="min-h-[460px] bg-[#eef1f2]"><SmartImage asset={{ src: product.image, alt: product.name, fit: product.imageFit ?? 'cover' }} priority className={`h-full w-full ${product.imageFit === 'contain' ? 'bg-white p-12' : ''}`} /></div><div className="p-7 sm:p-10"><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8e6725]">{product.brand}</p><h2 className="mt-2 font-display text-4xl font-bold tracking-[-.035em] text-[#10293e]">{product.name}</h2><p className="mt-3 font-semibold leading-7 text-[#506a79]">{product.spec}</p><p className="mt-5 leading-7 text-[#637987]">{product.details}</p><dl className="mt-7 divide-y divide-[#e1e7ea] border-y border-[#e1e7ea]">{rows.map(([label, value]) => <div key={label} className="grid grid-cols-[110px_1fr] gap-4 py-3 text-sm"><dt className="font-bold text-[#415c6e]">{label}</dt><dd className="text-[#617784]">{value}</dd></div>)}</dl><button onClick={onAdd} disabled={inQuote} className={`mt-7 w-full rounded-lg px-5 py-4 text-sm font-extrabold ${inQuote ? 'bg-[#e7ecef] text-[#768995]' : 'bg-[#004b87] text-white'}`}>{inQuote ? 'Bereits in der Anfrage' : 'Zur Offerte hinzufügen'}</button></div></div></div>
+    </div>
+  );
+}
+
+function ConstructionModal({ product, inQuote, onClose, onAdd }: { product: ConstructionProduct; inQuote: boolean; onClose: () => void; onAdd: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#071925]/75 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={product.name} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className="max-h-[92vh] w-full max-w-4xl overflow-auto rounded-[24px] bg-white shadow-2xl"><div className="sticky top-0 z-10 flex justify-end bg-white/90 p-3 backdrop-blur"><button onClick={onClose} className="rounded-full bg-[#eef2f4] p-2" aria-label="Schliessen"><X /></button></div><div className="grid lg:grid-cols-2"><div className="min-h-[430px] bg-white"><SmartImage asset={{ src: product.image, alt: product.name, fit: 'contain' }} priority className="h-full w-full p-12" /></div><div className="p-7 sm:p-10"><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8e6725]">RA Bau Sortiment</p><h2 className="mt-2 font-display text-4xl font-bold tracking-[-.035em] text-[#10293e]">{product.name}</h2><p className="mt-5 leading-7 text-[#637987]">{product.description}</p><div className="mt-7 space-y-4 rounded-xl bg-[#f2f5f6] p-5 text-sm text-[#526b7a]"><p><strong>Anwendung:</strong> {product.application}</p><p><strong>Varianten:</strong> {product.variants}</p><p><strong>Packung:</strong> {product.pack}</p></div><button onClick={onAdd} disabled={inQuote} className={`mt-7 w-full rounded-lg px-5 py-4 text-sm font-extrabold ${inQuote ? 'bg-[#e7ecef] text-[#768995]' : 'bg-[#004b87] text-white'}`}>{inQuote ? 'Bereits in der Anfrage' : 'Zur Offerte hinzufügen'}</button></div></div></div>
+    </div>
+  );
+}
+
+function SectionTitle({ kicker, title, copy }: { kicker: string; title: string; copy: string }) {
+  return <div className="max-w-4xl"><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">{kicker}</p><h2 className="mt-3 font-display text-4xl font-bold leading-tight tracking-[-.04em] text-[#10293e] sm:text-5xl">{title}</h2><p className="mt-5 max-w-3xl text-lg leading-8 text-[#5a7180]">{copy}</p></div>;
+}
+
+function TrustTile({ icon, title, text, dark = false }: { icon: React.ReactNode; title: string; text: string; dark?: boolean }) {
+  return <div className={`p-7 sm:p-9 ${dark ? 'bg-[#10293e]' : 'bg-white'}`}><div className={dark ? 'text-[#e0b75e]' : 'text-[#004b87]'}>{icon}</div><h3 className={`mt-4 text-sm font-extrabold ${dark ? 'text-white' : 'text-[#10293e]'}`}>{title}</h3><p className={`mt-2 text-xs leading-5 ${dark ? 'text-white/60' : 'text-[#657b88]'}`}>{text}</p></div>;
+}
+
+function ContactTile({ icon, title, value, href }: { icon: React.ReactNode; title: string; value: string; href: string }) {
+  return <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noreferrer' : undefined} className="rounded-[20px] border border-[#d7e0e5] bg-white p-7 transition hover:-translate-y-0.5 hover:shadow-lg"><div className="text-[#004b87]">{icon}</div><p className="mt-5 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8e6725]">{title}</p><p className="mt-2 font-display text-xl font-bold text-[#10293e]">{value}</p></a>;
+}
+
+function Footer({ onNavigate }: { onNavigate: (page: PageRoute) => void }) {
+  return (
+    <footer className="border-t border-[#d8e1e6] bg-white"><div className="mx-auto grid max-w-[1540px] gap-8 px-5 py-10 md:grid-cols-[1fr_auto] md:items-center lg:px-10"><div><Logo /><p className="mt-3 max-w-xl text-sm leading-6 text-[#657b88]">Bau- und Renovationsmaterial für projektbezogene Lieferungen in der Schweiz.</p></div><div className="flex flex-wrap gap-2 text-xs font-bold text-[#506979]"><button onClick={() => onNavigate('interior')} className="rounded-lg px-3 py-2 hover:bg-[#eef3f6]">Produkte</button><button onClick={() => onNavigate('quote-planner')} className="rounded-lg px-3 py-2 hover:bg-[#eef3f6]">Projektanfrage</button><button onClick={() => onNavigate('contact')} className="rounded-lg px-3 py-2 hover:bg-[#eef3f6]">Kontakt</button></div></div></footer>
+  );
+}
