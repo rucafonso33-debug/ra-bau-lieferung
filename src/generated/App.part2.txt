@@ -1,0 +1,172 @@
+  const [search, setSearch] = useState('');
+  const [toast, setToast] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const navigate = (next: PageRoute) => {
+    setPage(next);
+    setMobileOpen(false);
+    setSearch('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const notify = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(''), 2600);
+  };
+
+  const addProduct = (product: InteriorProduct) => {
+    const pieceProduct = ['Waschtisch', 'Duschsystem', 'Duschwanne', 'WC'].some((type) => product.application.includes(type));
+    setQuote((current) => {
+      if (current.some((item) => item.reference === product.reference)) return current;
+      return [...current, {
+        id: product.id,
+        name: product.name,
+        spec: product.spec,
+        brand: product.brand,
+        image: product.image,
+        quantity: pieceProduct ? '1' : '25',
+        unit: pieceProduct ? 'Stk.' : 'm²',
+        reference: product.reference,
+        customNote: '',
+      }];
+    });
+    notify(`${product.name} wurde zur Anfrage hinzugefügt.`);
+  };
+
+  const addConstruction = (product: ConstructionProduct) => {
+    setQuote((current) => {
+      if (current.some((item) => item.id === `construction-${product.id}`)) return current;
+      return [...current, {
+        id: `construction-${product.id}`,
+        name: product.name,
+        spec: product.variants,
+        brand: 'RA Bau Sortiment',
+        image: product.image,
+        quantity: product.defaultQuantity,
+        unit: product.unit,
+        reference: product.pack,
+        customNote: '',
+      }];
+    });
+    notify(`${product.name} wurde zur Anfrage hinzugefügt.`);
+  };
+
+  const updateItem = (id: string, patch: Partial<QuoteItem>) => {
+    setQuote((items) => items.map((item) => item.id === id ? { ...item, ...patch } : item));
+  };
+
+  const submitQuote = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!quote.length) return;
+    setSubmitting(true);
+    const form = new FormData(event.currentTarget);
+    const payload = Object.fromEntries(form.entries());
+    const list = quote.map((item, index) => `${index + 1}. ${item.brand ? `${item.brand} · ` : ''}${item.name} · ${item.reference || item.spec} · ${item.quantity} ${item.unit}${item.customNote ? ` · ${item.customNote}` : ''}`).join('\n');
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: 'Neue Projektanfrage über RA Bau Lieferung',
+          _template: 'table',
+          _replyto: payload.email,
+          ...payload,
+          Produktauswahl: list,
+        }),
+      });
+      if (!response.ok) throw new Error('submit');
+      setSent(true);
+    } catch {
+      notify('Senden nicht möglich. Bitte WhatsApp oder E-Mail verwenden.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f3f5f6] text-[#10293e] selection:bg-[#d7aa57] selection:text-[#10293e]">
+      <Header page={page} quoteCount={quote.length} mobileOpen={mobileOpen} onMobile={() => setMobileOpen((value) => !value)} onNavigate={navigate} />
+
+      {page === 'home' && <Home onNavigate={navigate} />}
+      {page === 'interior' && <CatalogOverview onNavigate={navigate} />}
+      {categoryForRoute[page] && (
+        <CategoryPage
+          category={categoryForRoute[page]!}
+          search={search}
+          onSearch={setSearch}
+          quote={quote}
+          onAdd={addProduct}
+          onSelect={setSelected}
+          onNavigate={navigate}
+        />
+      )}
+      {page === 'baustellenzubehoor' && <ConstructionPage quote={quote} onAdd={addConstruction} onSelect={setSelectedConstruction} onNavigate={navigate} />}
+      {page === 'quote-planner' && (
+        <QuotePage
+          quote={quote}
+          sent={sent}
+          submitting={submitting}
+          onSubmit={submitQuote}
+          onUpdate={updateItem}
+          onRemove={(id) => setQuote((items) => items.filter((item) => item.id !== id))}
+          onAddCustom={(item) => setQuote((items) => [...items, item])}
+          onNavigate={navigate}
+        />
+      )}
+      {page === 'contact' && <ContactPage />}
+
+      <Footer onNavigate={navigate} />
+      {toast && <div className="fixed bottom-6 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#10293e] px-5 py-3 text-sm font-bold text-white shadow-2xl"><Check className="h-4 w-4 text-[#e0b75e]" />{toast}</div>}
+      {selected && <ProductModal product={selected} inQuote={quote.some((item) => item.reference === selected.reference)} onClose={() => setSelected(null)} onAdd={() => addProduct(selected)} />}
+      {selectedConstruction && <ConstructionModal product={selectedConstruction} inQuote={quote.some((item) => item.id === `construction-${selectedConstruction.id}`)} onClose={() => setSelectedConstruction(null)} onAdd={() => addConstruction(selectedConstruction)} />}
+    </div>
+  );
+}
+
+function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: PageRoute; quoteCount: number; mobileOpen: boolean; onMobile: () => void; onNavigate: (page: PageRoute) => void }) {
+  const links: Array<[PageRoute, string]> = [
+    ['baustellenzubehoor', 'Baustellenzubehör'],
+    ['porcelain', 'Feinsteinzeug'],
+    ['mosaics', 'Premium Mosaike'],
+    ['spc', 'SPC & Vinyl'],
+    ['bathroom', 'Bad & Sanitär'],
+  ];
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-[#d8e0e5] bg-white/95 backdrop-blur-xl">
+      <div className="mx-auto flex h-[78px] max-w-[1540px] items-center gap-4 px-4 lg:px-8">
+        <button onClick={() => onNavigate('home')} className="shrink-0" aria-label="Startseite"><Logo /></button>
+        <nav className="ml-auto hidden items-center gap-1 xl:flex" aria-label="Produktsparten">
+          {links.map(([route, label], index) => (
+            <button key={route} onClick={() => onNavigate(route)} className={`rounded-lg px-3 py-2.5 text-[12px] font-bold transition ${page === route ? 'bg-[#004b87] text-white' : 'text-[#455e70] hover:bg-[#eef3f6] hover:text-[#004b87]'}`}>
+              <span className="mr-1.5 text-[9px] opacity-60">0{index + 1}</span>{label}
+            </button>
+          ))}
+        </nav>
+        <button onClick={() => onNavigate('quote-planner')} className="ml-auto flex items-center gap-2 rounded-lg bg-[#d7aa57] px-4 py-3 text-xs font-extrabold text-[#10293e] transition hover:bg-[#e3ba6c] xl:ml-3">
+          <ShoppingBag size={16} /><span className="hidden sm:inline">Offerte zusammenstellen</span><span className="rounded-full bg-[#10293e] px-1.5 py-0.5 text-[10px] text-white">{quoteCount}</span>
+        </button>
+        <button className="rounded-lg p-2.5 text-[#004b87] xl:hidden" onClick={onMobile} aria-label={mobileOpen ? 'Menü schliessen' : 'Menü öffnen'}>{mobileOpen ? <X /> : <Menu />}</button>
+      </div>
+      {mobileOpen && (
+        <nav className="border-t border-[#e1e7ea] bg-white px-4 py-4 xl:hidden" aria-label="Produktsparten mobil">
+          {links.map(([route, label], index) => (
+            <button key={route} onClick={() => onNavigate(route)} className={`flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-left text-sm font-bold ${page === route ? 'bg-[#004b87] text-white' : 'text-[#314b5e] hover:bg-[#eef3f6]'}`}>
+              <span className="text-[10px] opacity-55">0{index + 1}</span>{label}
+            </button>
+          ))}
+          <button onClick={() => onNavigate('interior')} className="mt-2 block w-full rounded-lg border border-[#d7e0e5] px-4 py-3 text-left text-sm font-bold text-[#314b5e]">Alle Sparten im Überblick</button>
+        </nav>
+      )}
+    </header>
+  );
+}
+
+function Home({ onNavigate }: { onNavigate: (page: PageRoute) => void }) {
+  return (
+    <main>
+      <section className="border-b border-[#d9e1e5] bg-white">
+        <div className="mx-auto grid min-h-[670px] max-w-[1540px] items-center gap-10 px-5 py-14 lg:grid-cols-[0.84fr_1.16fr] lg:px-10 lg:py-20">
+          <div className="max-w-2xl">
+            <p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">RA Bau Lieferung · Schweizer Materiallieferung</p>
