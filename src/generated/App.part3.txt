@@ -1,12 +1,24 @@
             <h1 className="mt-5 font-display text-5xl font-bold leading-[.98] tracking-[-.045em] text-[#10293e] sm:text-6xl lg:text-[74px]">Das Produkt steht im Mittelpunkt.</h1>
-            <p className="mt-7 max-w-xl text-lg leading-8 text-[#536b7b]">Fünf klar getrennte Sparten, reale Produktreferenzen und technische Angaben. Vom richtigen Material direkt zur projektbezogenen Offerte.</p>
+            <p className="mt-5 max-w-xl text-xl font-bold leading-8 text-[#28485e]">Bau- und Renovationsmaterial für projektbezogene Lieferungen in der Schweiz.</p>
+            <p className="mt-3 max-w-xl text-base leading-7 text-[#607785]">Sie senden Produkt, Referenz und Menge. Wir prüfen Herstellerdaten, Verfügbarkeit, Transport und Verzollung – vom Einzelprodukt bis zur Projektmenge.</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <button onClick={() => onNavigate('interior')} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#004b87] px-7 py-4 text-sm font-extrabold text-white transition hover:bg-[#003d70]">Produkte nach Sparte <ArrowRight size={17} /></button>
-              <button onClick={() => onNavigate('quote-planner')} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#c9d5dc] bg-white px-7 py-4 text-sm font-extrabold text-[#004b87] transition hover:border-[#004b87]"><ClipboardList size={17} /> Offerte zusammenstellen</button>
+              <button onClick={() => onNavigate('quote-planner')} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#c9d5dc] bg-white px-7 py-4 text-sm font-extrabold text-[#004b87] transition hover:border-[#004b87]"><ClipboardList size={17} /> Anfrage zusammenstellen</button>
             </div>
-            <div className="mt-9 grid max-w-xl grid-cols-3 gap-4 border-t border-[#d8e1e6] pt-6 text-[11px] font-bold text-[#5b7180]"><span>Reale Produkte</span><span>Technische Werkdaten</span><span>Schweiz-Logistik</span></div>
+            <div className="mt-9 grid max-w-xl grid-cols-2 gap-4 border-t border-[#d8e1e6] pt-6 text-[11px] font-bold text-[#5b7180] sm:grid-cols-4"><span>Reale Produkte</span><span>Werkdaten geprüft</span><span>Schweiz-Logistik</span><span>Persönlicher Kontakt</span></div>
           </div>
           <HeroSparten onNavigate={onNavigate} />
+        </div>
+      </section>
+
+      <section className="border-b border-[#d9e1e5] bg-[#10293e] text-white">
+        <div className="mx-auto max-w-[1540px] px-5 py-14 lg:px-10">
+          <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
+            <div><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#e0b75e]">So funktioniert die Anfrage</p><h2 className="mt-3 font-display text-4xl font-bold tracking-[-.035em]">Ein klarer Weg vom Produkt zur schriftlichen Offerte.</h2><p className="mt-4 max-w-xl leading-7 text-white/68">Keine automatische Fantasieofferte: Jede Anfrage wird anhand von Referenz, Menge, Lieferort und Verfügbarkeit geprüft.</p></div>
+            <div className="grid gap-px overflow-hidden rounded-[18px] bg-white/10 sm:grid-cols-4">
+              {[['01', 'Produkt senden', 'Produkt, Foto oder Herstellerreferenz auswählen.'], ['02', 'Prüfung', 'Ausführung, Werkdaten und Verfügbarkeit abklären.'], ['03', 'Offerte', 'Preis, Menge, Transport und Lieferbedingungen schriftlich erhalten.'], ['04', 'Lieferung', 'Nach Bestätigung wird die Projektlieferung organisiert.']].map(([number, title, text]) => <div key={number} className="bg-[#10293e] p-6"><span className="text-xs font-extrabold text-[#e0b75e]">{number}</span><h3 className="mt-3 font-bold">{title}</h3><p className="mt-2 text-xs leading-5 text-white/62">{text}</p></div>)}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -15,6 +27,15 @@
           <SectionTitle kicker="Produktsparten" title="Jede Sparte hat ihren eigenen, klaren Produktbereich." copy="Keine vermischten Listen. Jede Karte führt ausschliesslich zu den passenden Produktgruppen, Artikeln, Varianten und Verpackungsdaten." />
           <div className="mt-12 space-y-7">
             {sparten.map((sparte, index) => <SparteFeature key={sparte.number} sparte={sparte} reverse={index % 2 === 1} onNavigate={onNavigate} />)}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-[#d9e1e5] bg-white">
+        <div className="mx-auto max-w-[1540px] px-5 py-16 lg:px-10">
+          <div className="grid overflow-hidden rounded-[24px] border border-[#d7e0e5] bg-[#f7f9fa] lg:grid-cols-[.72fr_1.28fr]">
+            <div className="min-h-[300px] bg-white p-10"><SmartImage asset={{ src: '/images/Komplettset.png', alt: 'Geliefertes Nivelliersystem mit Clips und Keilen', fit: 'contain' }} className="h-full w-full" /></div>
+            <div className="self-center p-8 sm:p-12"><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">Bereits geliefert</p><h2 className="mt-3 font-display text-4xl font-bold tracking-[-.035em] text-[#10293e]">Nivellierclips und wiederverwendbare Keile nach Rheinfelden.</h2><p className="mt-5 max-w-2xl leading-7 text-[#5d7381]">Eine reale Erstlieferung mit 3-mm-Clips und System-Keilen. Diese Erfahrung fliesst direkt in Verpackung, Mengenplanung, Versand und persönliche Betreuung ein.</p><button onClick={() => onNavigate('baustellenzubehoor')} className="mt-7 inline-flex items-center gap-2 rounded-lg bg-[#004b87] px-6 py-3.5 text-sm font-extrabold text-white">Nivelliersysteme ansehen <ArrowRight size={17} /></button></div>
           </div>
         </div>
       </section>
@@ -76,7 +97,7 @@ function SparteFeature({ sparte, reverse, onNavigate }: { sparte: Sparte; revers
 function CatalogOverview({ onNavigate }: { onNavigate: (page: PageRoute) => void }) {
   return (
     <main className="bg-[#f3f5f6]">
-      <section className="border-b border-[#d9e1e5] bg-white"><div className="mx-auto max-w-[1540px] px-5 py-16 lg:px-10 lg:py-20"><SectionTitle kicker="Gesamtsortiment · 5 Sparten" title="Wählen Sie den richtigen Produktbereich." copy="Jede Sparte enthält ausschliesslich die zugehörigen Produktgruppen und konkreten Artikel. So gelangen Sie ohne Umwege von der Auswahl zur Offerte." /></div></section>
+      <section className="border-b border-[#d9e1e5] bg-white"><div className="mx-auto max-w-[1540px] px-5 py-16 lg:px-10 lg:py-20"><SectionTitle kicker="Gesamtsortiment · 5 Sparten" title="Wählen Sie den richtigen Produktbereich." copy="Jede Sparte enthält ausschliesslich die zugehörigen Produktgruppen und konkreten Artikel. So gelangen Sie ohne Umwege von der Auswahl zur Anfrage." /></div></section>
       <section className="mx-auto max-w-[1540px] space-y-7 px-5 py-12 lg:px-10 lg:py-16">{sparten.map((sparte, index) => <SparteFeature key={sparte.number} sparte={sparte} reverse={index % 2 === 1} onNavigate={onNavigate} />)}</section>
     </main>
   );
