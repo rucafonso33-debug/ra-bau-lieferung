@@ -42,7 +42,6 @@
 
 function ProductCard({ product, inQuote, onSelect, onAdd }: { product: InteriorProduct; inQuote: boolean; onSelect: () => void; onAdd: () => void }) {
   const asset: VisualAsset = { src: product.image, alt: `${product.brand ?? ''} ${product.name}`.trim(), fit: product.imageFit ?? 'cover' };
-  const message = productInquiry(product);
   return (
     <article className="group flex overflow-hidden rounded-[20px] border border-[#d7e0e5] bg-white shadow-[0_10px_32px_rgba(16,41,62,.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(16,41,62,.11)]">
       <div className="flex w-full flex-col">
@@ -56,8 +55,8 @@ function ProductCard({ product, inQuote, onSelect, onAdd }: { product: InteriorP
           <p className="mt-2 text-sm font-semibold leading-6 text-[#506a79]">{product.spec}</p>
           <p className="mt-4 line-clamp-3 text-sm leading-6 text-[#6a7e8a]">{product.details}</p>
           <div className="mt-5 grid grid-cols-2 gap-2 text-[10px] font-semibold text-[#546b79]"><span className="rounded-md bg-[#f1f4f5] px-3 py-2">{product.format}</span><span className="rounded-md bg-[#f1f4f5] px-3 py-2">{product.application}</span></div>
-          <div className="mt-auto flex gap-2 pt-6"><button onClick={onSelect} className="flex-1 rounded-lg border border-[#ccd7de] px-4 py-3 text-xs font-extrabold text-[#004b87] hover:border-[#004b87]">Details</button><button onClick={onAdd} disabled={inQuote} className={`flex-1 rounded-lg px-4 py-3 text-xs font-extrabold ${inQuote ? 'bg-[#e7ecef] text-[#768995]' : 'bg-[#004b87] text-white hover:bg-[#003d70]'}`}>{inQuote ? 'In Anfrage' : 'Zur Offerte'}</button></div>
-          <div className="mt-2 grid grid-cols-3 gap-2"><a href={wa(message)} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 rounded-lg border border-[#d6e0e5] px-2 py-2 text-[10px] font-bold text-[#16734b]"><MessageCircle size={13} /> WhatsApp</a><a href={mail(`Anfrage: ${product.name}`, message)} className="flex items-center justify-center gap-1 rounded-lg border border-[#d6e0e5] px-2 py-2 text-[10px] font-bold text-[#004b87]"><Mail size={13} /> E-Mail</a><a href={sms(message)} className="flex items-center justify-center gap-1 rounded-lg border border-[#d6e0e5] px-2 py-2 text-[10px] font-bold text-[#4d6575]"><Phone size={13} /> SMS</a></div>
+          <div className="mt-auto grid gap-2 pt-6 sm:grid-cols-[.8fr_1.2fr]"><button onClick={onSelect} className="rounded-lg border border-[#ccd7de] px-4 py-3 text-xs font-extrabold text-[#004b87] hover:border-[#004b87]">Details ansehen</button><button onClick={onAdd} disabled={inQuote} className={`rounded-lg px-4 py-3 text-xs font-extrabold ${inQuote ? 'bg-[#e7ecef] text-[#768995]' : 'bg-[#004b87] text-white hover:bg-[#003d70]'}`}>{inQuote ? 'In der Anfrage' : 'Zur Anfrage hinzufügen'}</button></div>
+          <p className="mt-3 text-center text-[10px] leading-4 text-[#738691]">WhatsApp, E-Mail und SMS stehen in den Produktdetails bereit.</p>
         </div>
       </div>
     </article>
