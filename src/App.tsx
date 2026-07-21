@@ -6,7 +6,7 @@ import {
   Truck, X
 } from 'lucide-react';
 import { constructionCategories, interiorCategories } from './data';
-import { InteriorProduct, PageRoute, QuoteItem } from './types';
+import { ConstructionProduct, InteriorProduct, PageRoute, QuoteItem } from './types';
 import { Logo } from './components/Logo';
 
 const PHONE = '41782418913';
@@ -58,6 +58,7 @@ export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [quote, setQuote] = useState<QuoteItem[]>([]);
   const [selected, setSelected] = useState<InteriorProduct | null>(null);
+  const [selectedConstruction, setSelectedConstruction] = useState<ConstructionProduct | null>(null);
   const [search, setSearch] = useState('');
   const [toast, setToast] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -65,6 +66,7 @@ export default function App() {
 
   const allProducts = useMemo(() => interiorCategories.flatMap(c => c.products), []);
   const featured = allProducts.filter(p => p.featured);
+  const featuredConstruction = useMemo(() => constructionCategories.flatMap(c => c.products).filter(p => p.featured), []);
 
   const navigate = (next: PageRoute) => {
     setPage(next);
@@ -104,14 +106,16 @@ export default function App() {
     notify(`${product.name} wurde zur Anfrage hinzugefügt.`);
   };
 
-  const addConstruction = (product: { name: string; application: string; image: string }) => {
+  const addConstruction = (product: ConstructionProduct) => {
     setQuote(current => current.some(item => item.name === product.name) ? current : [...current, {
-      id: `construction-${product.name}`,
+      id: `construction-${product.id}`,
       name: product.name,
-      spec: product.application,
+      spec: product.variants,
+      brand: 'RA Bau Sortiment',
       image: product.image,
-      quantity: '100',
-      unit: 'Stk.'
+      quantity: product.defaultQuantity,
+      unit: product.unit,
+      reference: product.pack
     }]);
     notify(`${product.name} wurde zur Anfrage hinzugefügt.`);
   };
@@ -153,7 +157,7 @@ export default function App() {
       <TopBar />
       <Header page={page} quoteCount={quote.length} mobileOpen={mobileOpen} onMobile={() => setMobileOpen(v => !v)} onNavigate={navigate} />
 
-      {page === 'home' && <Home onNavigate={navigate} featured={featured} onSelect={setSelected} onAdd={addProduct} />}
+      {page === 'home' && <Home onNavigate={navigate} featured={featured} featuredConstruction={featuredConstruction} onSelect={setSelected} onAdd={addProduct} onAddConstruction={addConstruction} />}
       {page === 'interior' && <CatalogOverview onNavigate={navigate} />}
       {categoryForRoute[page] && (
         <CategoryPage
@@ -166,7 +170,7 @@ export default function App() {
           onNavigate={navigate}
         />
       )}
-      {page === 'baustellenzubehoor' && <ConstructionPage quote={quote} onAdd={addConstruction} onNavigate={navigate} />}
+      {page === 'baustellenzubehoor' && <ConstructionPage quote={quote} onAdd={addConstruction} onSelect={setSelectedConstruction} onNavigate={navigate} />}
       {page === 'quote-planner' && <QuotePage quote={quote} sent={sent} submitting={submitting} onSubmit={submitQuote} onUpdate={updateItem} onRemove={id => setQuote(q => q.filter(i => i.id !== id))} onAddCustom={item => setQuote(q => [...q, item])} onNavigate={navigate} />}
       {page === 'contact' && <ContactPage />}
 
@@ -174,12 +178,13 @@ export default function App() {
       <a href={wa('Guten Tag, ich möchte eine Materialanfrage besprechen.')} target="_blank" rel="noreferrer" className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#20bd67] text-white shadow-2xl transition hover:-translate-y-1" aria-label="WhatsApp öffnen"><MessageCircle size={25} /></a>
       {toast && <div className="fixed bottom-6 left-1/2 z-[70] -translate-x-1/2 rounded-full bg-[#132335] px-5 py-3 text-sm font-bold text-white shadow-2xl"><Check className="mr-2 inline h-4 w-4 text-[#d7aa57]" />{toast}</div>}
       {selected && <ProductModal product={selected} inQuote={quote.some(i => i.reference === selected.reference)} onClose={() => setSelected(null)} onAdd={() => addProduct(selected)} />}
+      {selectedConstruction && <ConstructionModal product={selectedConstruction} inQuote={quote.some(i => i.id === `construction-${selectedConstruction.id}`)} onClose={() => setSelectedConstruction(null)} onAdd={() => addConstruction(selectedConstruction)} />}
     </div>
   );
 }
 
 function TopBar() {
-  return <div className="bg-[#132335] px-4 py-2 text-center text-[11px] font-semibold tracking-wide text-white sm:text-xs">Projektmaterial für die Schweiz <span className="mx-2 text-[#d7aa57]">•</span> Herstellerreferenzen aus Portugal & Europa <span className="mx-2 text-[#d7aa57]">•</span> Lieferung und Verzollung auf Anfrage</div>;
+  return <div className="bg-[#132335] px-4 py-2 text-center text-[11px] font-semibold tracking-wide text-white sm:text-xs">Baustellenzubehör & Ausbaumaterial für die Schweiz <span className="mx-2 text-[#d7aa57]">•</span> Konkrete Auswahl plus weitere Produkte auf Anfrage <span className="mx-2 text-[#d7aa57]">•</span> Lieferung und Verzollung kalkuliert</div>;
 }
 
 function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: PageRoute; quoteCount: number; mobileOpen: boolean; onMobile: () => void; onNavigate: (p: PageRoute) => void }) {
@@ -199,26 +204,39 @@ function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: 
   </header>;
 }
 
-function Home({ onNavigate, featured, onSelect, onAdd }: { onNavigate: (p: PageRoute) => void; featured: InteriorProduct[]; onSelect: (p: InteriorProduct) => void; onAdd: (p: InteriorProduct) => void }) {
+function Home({ onNavigate, featured, featuredConstruction, onSelect, onAdd, onAddConstruction }: { onNavigate: (p: PageRoute) => void; featured: InteriorProduct[]; featuredConstruction: ConstructionProduct[]; onSelect: (p: InteriorProduct) => void; onAdd: (p: InteriorProduct) => void; onAddConstruction: (p: ConstructionProduct) => void }) {
   return <main>
     <section className="relative overflow-hidden bg-[#132335] text-white">
       <div className="absolute inset-0 opacity-55"><img src="/images/catalog/recer-pixstone.png" className="h-full w-full object-cover" alt="Recer Pixstone Badezimmer" /><div className="absolute inset-0 bg-gradient-to-r from-[#132335] via-[#132335]/90 to-[#132335]/20" /></div>
       <div className="relative mx-auto grid min-h-[680px] max-w-[1480px] items-center px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-10">
         <div className="max-w-3xl">
-          <p className="mb-5 text-xs font-black uppercase tracking-[.24em] text-[#e0b563]">RA Bau Lieferung · Materialbeschaffung für Profis</p>
-          <h1 className="font-display text-5xl font-bold leading-[.98] tracking-[-.04em] sm:text-6xl lg:text-[78px]">Produkte wählen.<br /><span className="text-[#e0b563]">Projekt anfragen.</span><br />Geliefert bekommen.</h1>
-          <p className="mt-7 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">Feinsteinzeug, Premium Mosaike, SPC und komplette Badlösungen mit realen Referenzen, Formaten und Logistikdaten. Sie stellen zusammen – wir prüfen Preis, Verfügbarkeit und Lieferung in die Schweiz.</p>
+          <p className="mb-5 text-xs font-black uppercase tracking-[.24em] text-[#e0b563]">RA Bau Lieferung · Baustelle bis Innenausbau</p>
+          <h1 className="font-display text-5xl font-bold leading-[.98] tracking-[-.04em] sm:text-6xl lg:text-[78px]">Material wählen.<br /><span className="text-[#e0b563]">Projekt anfragen.</span><br />Geliefert bekommen.</h1>
+          <p className="mt-7 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">Baustellenzubehör für den direkten Bedarf sowie Feinsteinzeug, Premium Mosaike, SPC und komplette Badlösungen für Ihr Projekt. Konkrete Produkte online auswählen – weitere Marken, Masse und Ausführungen beschaffen wir auf Anfrage.</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <button onClick={() => onNavigate('interior')} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d7aa57] px-7 py-4 text-sm font-black text-[#132335] transition hover:bg-[#e4bd70]">Katalog entdecken <ArrowRight size={17} /></button>
+            <button onClick={() => onNavigate('interior')} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d7aa57] px-7 py-4 text-sm font-black text-[#132335] transition hover:bg-[#e4bd70]">Gesamtsortiment <ArrowRight size={17} /></button>
             <button onClick={() => onNavigate('quote-planner')} className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-7 py-4 text-sm font-black backdrop-blur transition hover:bg-white/15"><ClipboardList size={17} /> Projekt zusammenstellen</button>
           </div>
-          <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 border-t border-white/15 pt-6 text-xs text-white/65"><span><strong className="block text-lg text-white">4</strong> Sortimentswelten</span><span><strong className="block text-lg text-white">20</strong> reale Auswahlprodukte</span><span><strong className="block text-lg text-white">1</strong> Projektanfrage</span></div>
+          <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 border-t border-white/15 pt-6 text-xs text-white/65"><span><strong className="block text-lg text-white">5</strong> Sortimentswelten</span><span><strong className="block text-lg text-white">32+</strong> konkrete Auswahlprodukte</span><span><strong className="block text-lg text-white">1</strong> gemeinsame Projektanfrage</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section className="border-b border-[#dedbd2] bg-[#fffefb]">
+      <div className="mx-auto max-w-[1480px] px-5 py-20 lg:px-10">
+        <div className="grid gap-8 xl:grid-cols-[.78fr_1.22fr] xl:items-end">
+          <div>
+            <SectionTitle kicker="Sparte 01 · Die ursprüngliche Stärke" title="Baustellenzubehör für den direkten Bedarf" copy="Die RA Bau Lieferung bleibt auch das, womit sie begonnen hat: ein direkter Ansprechpartner für Nivelliersysteme, Bewehrungszubehör und praxisnahe Verbrauchspakete." />
+            <div className="mt-7 flex flex-wrap gap-2 text-[11px] font-bold text-[#536170]"><span className="rounded-full bg-[#eeeae1] px-3 py-2">Clips & Keile</span><span className="rounded-full bg-[#eeeae1] px-3 py-2">Abstandhalter</span><span className="rounded-full bg-[#eeeae1] px-3 py-2">Drahtbinder & Werkzeug</span><span className="rounded-full bg-[#eeeae1] px-3 py-2">Weitere Varianten auf Anfrage</span></div>
+            <button onClick={() => onNavigate('baustellenzubehoor')} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#132335] px-6 py-3.5 text-sm font-black text-white">Sparte 01 öffnen <ArrowRight size={16} /></button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">{featuredConstruction.slice(0, 3).map(product => <ConstructionMiniCard key={product.id} product={product} onAdd={onAddConstruction} onOpen={() => onNavigate('baustellenzubehoor')} />)}</div>
         </div>
       </div>
     </section>
 
     <section className="mx-auto max-w-[1480px] px-5 py-20 lg:px-10">
-      <SectionTitle kicker="Nach Projektbereich einkaufen" title="Ein Katalog, der zur Offerte führt" copy="Kein PDF-Chaos. Wählen Sie einen Bereich, vergleichen Sie Referenzen und legen Sie Produkte direkt in Ihre Projektanfrage." />
+      <SectionTitle kicker="Sparten 02–05 · Innenausbau" title="Echte Auswahlprodukte, ergänzt durch unser Beschaffungsnetzwerk" copy="Die gezeigten Artikel sind eine kuratierte Auswahl mit realen Herstellerdaten. Andere Marken, Farben, Formate und kompatible Lösungen bleiben ausdrücklich möglich." />
       <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {interiorCategories.map((cat, index) => {
           const hero = cat.products.find(p => p.featured) || cat.products[0];
@@ -249,8 +267,14 @@ function Home({ onNavigate, featured, onSelect, onAdd }: { onNavigate: (p: PageR
 
 function CatalogOverview({ onNavigate }: { onNavigate: (p: PageRoute) => void }) {
   return <main className="mx-auto max-w-[1480px] px-5 py-16 lg:px-10">
-    <SectionTitle kicker="Innenausbau-Katalog" title="Was braucht Ihr Projekt?" copy="Wählen Sie den Projektbereich. Danach können Sie Produkte vergleichen und mit Mengenangabe zur Offerte hinzufügen." />
-    <div className="mt-12 space-y-5">{interiorCategories.map((cat, index) => <button key={cat.germanTitle} onClick={() => onNavigate(routeForCategory[cat.germanTitle])} className="group grid w-full overflow-hidden rounded-[30px] border border-[#dedbd2] bg-[#fffefb] text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl md:grid-cols-[340px_1fr_auto]">
+    <SectionTitle kicker="Gesamtsortiment · 5 Sparten" title="Was braucht Ihr Projekt?" copy="Vom direkten Baustellenbedarf bis zum kompletten Bad: Wählen Sie eine Sparte, legen Sie konkrete Artikel in die Anfrage oder beschreiben Sie ein Produkt ausserhalb der Online-Auswahl." />
+    <div className="mt-12 space-y-5">
+      <button onClick={() => onNavigate('baustellenzubehoor')} className="group grid w-full overflow-hidden rounded-[30px] border border-[#dedbd2] bg-[#fffefb] text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl md:grid-cols-[340px_1fr_auto]">
+        <div className="flex h-64 items-center justify-center bg-[#eeeae1] p-7 md:h-56"><img src="/images/Komplettset.png" alt="Nivellierclips, System-Keile und Systemzange" className="h-full w-full object-contain mix-blend-multiply" /></div>
+        <div className="p-7"><span className="text-[10px] font-black uppercase tracking-[.22em] text-[#a77e34]">Sparte 01</span><h2 className="mt-2 text-3xl font-bold text-[#132335]">Baustellenzubehör</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[#66727e]">Nivelliersysteme, Abstandhalter, Drahtbinder, Bindewerkzeug und konkrete Verbrauchspakete für den direkten Baustellenbedarf.</p><p className="mt-5 text-xs font-bold text-[#132335]">{constructionCategories.flatMap(category => category.products).length} Auswahlprodukte · Varianten und weitere Artikel auf Anfrage</p></div>
+        <div className="hidden items-center px-8 text-[#b58c43] md:flex"><ArrowRight size={28} className="transition group-hover:translate-x-1" /></div>
+      </button>
+      {interiorCategories.map((cat, index) => <button key={cat.germanTitle} onClick={() => onNavigate(routeForCategory[cat.germanTitle])} className="group grid w-full overflow-hidden rounded-[30px] border border-[#dedbd2] bg-[#fffefb] text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl md:grid-cols-[340px_1fr_auto]">
       <img src={cat.products[0].image} alt="" className="h-64 w-full object-cover md:h-56" />
       <div className="p-7"><span className="text-[10px] font-black uppercase tracking-[.22em] text-[#a77e34]">Sparte 0{index + 2}</span><h2 className="mt-2 text-3xl font-bold text-[#132335]">{cat.germanTitle}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[#66727e]">{cat.description}</p><p className="mt-5 text-xs font-bold text-[#132335]">{cat.products.length} ausgewählte Referenzen · weitere Produkte auf Anfrage</p></div>
       <div className="hidden items-center px-8 text-[#b58c43] md:flex"><ArrowRight size={28} className="transition group-hover:translate-x-1" /></div>
@@ -305,12 +329,36 @@ function ProductModal({ product, inQuote, onClose, onAdd }: { product: InteriorP
 
 function Spec({ label, value }: { label: string; value: string }) { return <div className="grid grid-cols-[120px_1fr] gap-4 py-3 text-sm"><span className="text-[#8a9298]">{label}</span><strong className="text-[#263747]">{value}</strong></div>; }
 
-function ConstructionPage({ quote, onAdd, onNavigate }: { quote: QuoteItem[]; onAdd: (p: { name: string; application: string; image: string }) => void; onNavigate: (p: PageRoute) => void }) {
+function ConstructionMiniCard({ product, onAdd, onOpen }: { key?: string; product: ConstructionProduct; onAdd: (product: ConstructionProduct) => void; onOpen: () => void }) {
+  return <article className="overflow-hidden rounded-[24px] border border-[#dedbd2] bg-[#f7f5ef] p-4">
+    <button onClick={onOpen} className="flex h-44 w-full items-center justify-center rounded-[18px] bg-white p-4"><img src={product.image} alt={product.name} className="h-full w-full object-contain mix-blend-multiply" /></button>
+    <h3 className="mt-4 text-base font-black text-[#132335]">{product.name}</h3><p className="mt-1 text-[11px] leading-5 text-[#697580]">{product.pack}</p>
+    <button onClick={() => onAdd(product)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#d7aa57] px-4 py-2.5 text-[11px] font-black text-[#132335]"><Plus size={14} /> Zur Anfrage</button>
+  </article>;
+}
+
+function ConstructionPage({ quote, onAdd, onSelect, onNavigate }: { quote: QuoteItem[]; onAdd: (p: ConstructionProduct) => void; onSelect: (p: ConstructionProduct) => void; onNavigate: (p: PageRoute) => void }) {
   return <main>
-    <section className="bg-[#132335] px-5 py-16 text-white lg:px-10"><div className="mx-auto max-w-[1480px]"><p className="text-xs font-black uppercase tracking-[.22em] text-[#e0b563]">Sparte 01 · Schnellbedarf</p><h1 className="mt-4 font-display text-5xl font-bold sm:text-6xl">Baustellenzubehör</h1><p className="mt-5 max-w-2xl leading-7 text-white/70">Nivelliersysteme sowie Zubehör für Betonbau und Bewehrung. Diese Sparte bleibt auf rasche, direkte Materialanfragen ausgerichtet.</p></div></section>
-    <section className="mx-auto max-w-[1480px] space-y-16 px-5 py-14 lg:px-10">{constructionCategories.map(cat => <div key={cat.title}><div className="mb-7"><h2 className="text-3xl font-bold">{cat.title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-[#68737e]">{cat.description}</p></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{cat.products.map(product => <article key={product.name} className="overflow-hidden rounded-[24px] border border-[#dedbd2] bg-[#fffefb] p-4 shadow-sm"><div className="h-52 rounded-[18px] bg-[#efede7] p-4"><img src={product.image} alt={product.name} className="h-full w-full object-contain mix-blend-multiply" /></div><h3 className="mt-5 text-lg font-bold">{product.name}</h3><p className="mt-2 min-h-10 text-xs leading-5 text-[#6a7580]">{product.description}</p><p className="mt-4 border-y border-[#e5e1d8] py-3 text-xs font-bold">{product.application}</p><button disabled={quote.some(i => i.name === product.name)} onClick={() => onAdd(product)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#d7aa57] px-4 py-3 text-xs font-black disabled:bg-[#e3eadf] disabled:text-[#3c6d43]">{quote.some(i => i.name === product.name) ? <><Check size={15} /> Hinzugefügt</> : <><Plus size={15} /> Zur Anfrage</>}</button></article>)}</div></div>)}</section>
-    <div className="mx-auto mb-16 max-w-[1480px] px-5 lg:px-10"><button onClick={() => onNavigate('quote-planner')} className="flex w-full items-center justify-between rounded-[25px] bg-[#d7aa57] p-7 text-left text-[#132335]"><span><strong className="block text-xl">Zubehörmenge bereits bekannt?</strong><span className="text-sm">Projektanfrage öffnen und Stückzahlen eintragen.</span></span><ArrowRight /></button></div>
+    <section className="bg-[#132335] text-white"><div className="mx-auto grid max-w-[1480px] gap-10 px-5 py-16 lg:grid-cols-[1fr_440px] lg:px-10 lg:py-20"><div className="self-center"><p className="text-xs font-black uppercase tracking-[.22em] text-[#e0b563]">Sparte 01 · Direkter Baustellenbedarf</p><h1 className="mt-4 font-display text-5xl font-bold sm:text-6xl">Baustellenzubehör</h1><p className="mt-5 max-w-3xl leading-7 text-white/70">Die ursprüngliche Sparte der RA Bau Lieferung: Nivelliersysteme, Bewehrungszubehör und konkrete Verbrauchspakete. Online auswählen oder eine andere Grösse, Menge und Ausführung anfragen.</p><div className="mt-7 flex flex-wrap gap-2 text-[11px] font-bold text-white/70"><span className="rounded-full border border-white/20 px-3 py-2">Konkrete Packungen</span><span className="rounded-full border border-white/20 px-3 py-2">Varianten auswählbar</span><span className="rounded-full border border-white/20 px-3 py-2">Weitere Baustellenartikel auf Anfrage</span></div></div><div className="flex h-[320px] items-center justify-center rounded-[28px] bg-[#f1eee7] p-8"><img src="/images/Komplettset.png" alt="Nivellier-Komplettset mit Clips, Keilen und Zange" className="h-full w-full object-contain mix-blend-multiply" /></div></div></section>
+
+    <section className="mx-auto max-w-[1480px] space-y-20 px-5 py-16 lg:px-10">{constructionCategories.map((category, categoryIndex) => <div key={category.title}>
+      <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end"><div><p className="text-[10px] font-black uppercase tracking-[.22em] text-[#a77e34]">Sortimentsgruppe 0{categoryIndex + 1}</p><h2 className="mt-2 text-3xl font-bold">{category.title}</h2><p className="mt-3 max-w-3xl text-sm leading-6 text-[#68737e]">{category.description}</p></div><span className="text-xs font-bold text-[#68737e]">{category.products.length} konkrete Auswahlprodukte</span></div>
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{category.products.map(product => <ConstructionCard key={product.id} product={product} inQuote={quote.some(item => item.id === `construction-${product.id}`)} onAdd={onAdd} onSelect={onSelect} />)}</div>
+    </div>)}</section>
+
+    <section className="mx-auto mb-16 max-w-[1480px] px-5 lg:px-10"><div className="grid overflow-hidden rounded-[30px] bg-[#e6ded0] lg:grid-cols-[1fr_auto]"><div className="p-8 sm:p-10"><p className="text-xs font-black uppercase tracking-[.2em] text-[#80642f]">Nicht aufgeführt?</p><h2 className="mt-2 text-3xl font-bold">Weitere Grössen, Packungen und Baustellenartikel beschaffen wir ebenfalls.</h2><p className="mt-3 max-w-3xl text-sm leading-6 text-[#65717c]">Nennen Sie Produkt, Abmessung, Menge, Einsatz und Lieferort. Die Online-Auswahl zeigt unsere konkreten Schwerpunkte, begrenzt das verfügbare Sortiment aber nicht.</p></div><button onClick={() => onNavigate('quote-planner')} className="flex min-w-64 items-center justify-center gap-3 bg-[#d7aa57] px-8 py-6 text-sm font-black text-[#132335]">Freie Position anfragen <ArrowRight size={17} /></button></div></section>
   </main>;
+}
+
+function ConstructionCard({ product, inQuote, onAdd, onSelect }: { key?: string; product: ConstructionProduct; inQuote: boolean; onAdd: (product: ConstructionProduct) => void; onSelect: (product: ConstructionProduct) => void }) {
+  return <article className="group overflow-hidden rounded-[26px] border border-[#dedbd2] bg-[#fffefb] shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+    <button onClick={() => onSelect(product)} className="relative flex h-[270px] w-full items-center justify-center overflow-hidden bg-[#efede7] p-8"><img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-contain mix-blend-multiply transition duration-500 group-hover:scale-[1.03]" /><div className="absolute left-4 top-4 flex flex-wrap gap-1.5">{product.badges?.map(badge => <span key={badge} className="rounded-full bg-white/95 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#132335] shadow-sm">{badge}</span>)}</div><span className="absolute bottom-4 right-4 rounded-full bg-[#132335]/90 px-3 py-1.5 text-[10px] font-bold text-white">Details ansehen</span></button>
+    <div className="p-5"><p className="text-[10px] font-black uppercase tracking-[.18em] text-[#a77e34]">RA Bau Sortiment</p><h3 className="mt-1 text-xl font-bold text-[#132335]">{product.name}</h3><p className="mt-3 min-h-10 text-xs leading-5 text-[#697580]">{product.description}</p><div className="mt-4 grid grid-cols-2 gap-3 border-y border-[#e4e1d9] py-4 text-[11px]"><div><span className="block text-[#92999f]">Varianten</span><strong className="mt-1 block leading-4 text-[#253647]">{product.variants}</strong></div><div><span className="block text-[#92999f]">Einheit</span><strong className="mt-1 block leading-4 text-[#253647]">{product.pack}</strong></div></div><div className="mt-5 grid grid-cols-[1fr_auto] gap-2"><button onClick={() => onAdd(product)} disabled={inQuote} className={`flex items-center justify-center gap-2 rounded-full px-4 py-3 text-xs font-black ${inQuote ? 'bg-[#e3eadf] text-[#3c6d43]' : 'bg-[#d7aa57] text-[#132335]'}`}>{inQuote ? <><Check size={15} /> Hinzugefügt</> : <><Plus size={15} /> Zur Anfrage</>}</button><button onClick={() => onSelect(product)} className="rounded-full border border-[#d7d3c9] px-4 text-xs font-black">Details</button></div></div>
+  </article>;
+}
+
+function ConstructionModal({ product, inQuote, onClose, onAdd }: { product: ConstructionProduct; inQuote: boolean; onClose: () => void; onAdd: () => void }) {
+  return <div role="dialog" aria-modal="true" aria-label={`Produktdetails: ${product.name}`} className="fixed inset-0 z-[80] flex items-end justify-center bg-[#0a1420]/70 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={event => event.target === event.currentTarget && onClose()}><div className="max-h-[94vh] w-full max-w-5xl overflow-y-auto rounded-t-[30px] bg-[#fffefb] shadow-2xl sm:rounded-[30px]"><div className="grid lg:grid-cols-2"><div className="relative flex min-h-[340px] items-center justify-center bg-[#ebe8e0] p-10"><img src={product.image} alt={product.name} className="h-full max-h-[430px] w-full object-contain mix-blend-multiply" /><button onClick={onClose} aria-label="Produktdetails schliessen" className="absolute left-4 top-4 rounded-full bg-white p-2 shadow"><X size={19} /></button></div><div className="p-7 sm:p-10"><p className="text-xs font-black uppercase tracking-[.2em] text-[#a77e34]">RA Bau Sortiment</p><h2 className="mt-2 font-display text-4xl font-bold tracking-tight">{product.name}</h2><p className="mt-4 leading-7 text-[#65717c]">{product.description}</p><div className="mt-7 divide-y divide-[#e2ded5] border-y border-[#e2ded5]"><Spec label="Ausführung" value={product.variants} /><Spec label="Einheit" value={product.pack} /><Spec label="Einsatz" value={product.application} /><Spec label="Startmenge" value={`${product.defaultQuantity} ${product.unit}`} /></div><p className="mt-5 text-[11px] leading-5 text-[#7c858d]">Ausführung, Verpackung, Verfügbarkeit und Liefertermin werden in der schriftlichen Offerte bestätigt. Andere Grössen und Mengen können direkt in der Anfrage ergänzt werden.</p><div className="mt-7 flex flex-col gap-2 sm:flex-row"><button onClick={onAdd} disabled={inQuote} className={`flex flex-1 items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-black ${inQuote ? 'bg-[#e3eadf] text-[#3c6d43]' : 'bg-[#d7aa57] text-[#132335]'}`}>{inQuote ? <><Check size={17} /> Bereits hinzugefügt</> : <><Plus size={17} /> Zur Projektanfrage</>}</button><a href={wa(`Guten Tag, ich interessiere mich für ${product.name}. Gewünschte Ausführung: ${product.variants}.`)} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-full border border-[#d7d3c9] px-6 py-4 text-sm font-black"><MessageCircle size={17} /> Frage stellen</a></div></div></div></div></div>;
 }
 
 function QuotePage({ quote, sent, submitting, onSubmit, onUpdate, onRemove, onAddCustom, onNavigate }: { quote: QuoteItem[]; sent: boolean; submitting: boolean; onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; onUpdate: (id: string, p: Partial<QuoteItem>) => void; onRemove: (id: string) => void; onAddCustom: (item: QuoteItem) => void; onNavigate: (p: PageRoute) => void }) {
@@ -318,7 +366,7 @@ function QuotePage({ quote, sent, submitting, onSubmit, onUpdate, onRemove, onAd
   return <main className="mx-auto max-w-[1380px] px-5 py-14 lg:px-10">
     <SectionTitle kicker="Offerten-Planer" title="Ihre Projektanfrage" copy="Produkte, Mengen und Lieferort einmal sauber erfassen. Wir antworten mit Preis, Verfügbarkeit, Lieferzeit und möglichen Alternativen." />
     {sent ? <div className="mt-10 rounded-[30px] bg-[#dfe9dc] p-10 text-center"><Check className="mx-auto h-12 w-12 text-[#3f7046]" /><h2 className="mt-4 text-3xl font-bold">Anfrage ist eingegangen.</h2><p className="mt-2 text-[#56655a]">Wir prüfen die Zusammenstellung und melden uns mit den nächsten Schritten.</p></div> : <div className="mt-10 grid gap-8 lg:grid-cols-[1.15fr_.85fr]">
-      <div className="space-y-4">{quote.length === 0 ? <div className="rounded-[28px] border border-dashed border-[#bcb4a5] bg-[#ebe7de] p-12 text-center"><ShoppingBag className="mx-auto text-[#a77e34]" size={38} /><h2 className="mt-4 text-2xl font-bold">Noch keine Produkte ausgewählt</h2><p className="mt-2 text-sm text-[#68737e]">Öffnen Sie den Katalog oder fügen Sie eine freie Position hinzu.</p><button onClick={() => onNavigate('interior')} className="mt-6 rounded-full bg-[#132335] px-6 py-3 text-xs font-black text-white">Zum Katalog</button></div> : quote.map(item => <div key={item.id} className="grid gap-4 rounded-[24px] border border-[#ddd9d0] bg-[#fffefb] p-4 sm:grid-cols-[110px_1fr] sm:p-5"><img src={item.image} alt="" className="h-28 w-full rounded-[16px] object-cover" /><div><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-wider text-[#a77e34]">{item.brand || 'Baustellenzubehör'}</p><h3 className="text-lg font-bold">{item.name}</h3><p className="mt-1 text-xs text-[#737d86]">{item.reference || item.spec}</p></div><button onClick={() => onRemove(item.id)} className="rounded-full p-2 text-[#9b5c55] hover:bg-[#f5e9e7]" aria-label="Entfernen"><Trash2 size={17} /></button></div><div className="mt-4 grid gap-2 sm:grid-cols-[120px_95px_1fr]"><input value={item.quantity} onChange={e => onUpdate(item.id, { quantity: e.target.value })} className="rounded-xl border border-[#d8d3c9] px-3 py-2.5 text-sm font-bold outline-none focus:border-[#a77e34]" aria-label="Menge" /><select value={item.unit} onChange={e => onUpdate(item.id, { unit: e.target.value })} className="rounded-xl border border-[#d8d3c9] bg-white px-3 py-2.5 text-sm font-bold"><option>m²</option><option>Stk.</option><option>Karton</option><option>Palette</option></select><input value={item.customNote || ''} onChange={e => onUpdate(item.id, { customNote: e.target.value })} placeholder="Farbe, Format oder Hinweis" className="rounded-xl border border-[#d8d3c9] px-3 py-2.5 text-sm outline-none focus:border-[#a77e34]" /></div></div></div>)}
+      <div className="space-y-4">{quote.length === 0 ? <div className="rounded-[28px] border border-dashed border-[#bcb4a5] bg-[#ebe7de] p-12 text-center"><ShoppingBag className="mx-auto text-[#a77e34]" size={38} /><h2 className="mt-4 text-2xl font-bold">Noch keine Produkte ausgewählt</h2><p className="mt-2 text-sm text-[#68737e]">Öffnen Sie das Gesamtsortiment oder fügen Sie eine freie Position hinzu.</p><button onClick={() => onNavigate('interior')} className="mt-6 rounded-full bg-[#132335] px-6 py-3 text-xs font-black text-white">Zum Gesamtsortiment</button></div> : quote.map(item => <div key={item.id} className="grid gap-4 rounded-[24px] border border-[#ddd9d0] bg-[#fffefb] p-4 sm:grid-cols-[110px_1fr] sm:p-5"><img src={item.image} alt="" className="h-28 w-full rounded-[16px] object-contain bg-[#efede7] p-2" /><div><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-wider text-[#a77e34]">{item.brand || 'Baustellenzubehör'}</p><h3 className="text-lg font-bold">{item.name}</h3><p className="mt-1 text-xs text-[#737d86]">{item.reference || item.spec}</p></div><button onClick={() => onRemove(item.id)} className="rounded-full p-2 text-[#9b5c55] hover:bg-[#f5e9e7]" aria-label="Entfernen"><Trash2 size={17} /></button></div><div className="mt-4 grid gap-2 sm:grid-cols-[120px_105px_1fr]"><input value={item.quantity} onChange={e => onUpdate(item.id, { quantity: e.target.value })} className="rounded-xl border border-[#d8d3c9] px-3 py-2.5 text-sm font-bold outline-none focus:border-[#a77e34]" aria-label="Menge" /><select value={item.unit} onChange={e => onUpdate(item.id, { unit: e.target.value })} className="rounded-xl border border-[#d8d3c9] bg-white px-3 py-2.5 text-sm font-bold"><option>m²</option><option>Stk.</option><option>Pack</option><option>Rolle</option><option>Set</option><option>Karton</option><option>Palette</option></select><input value={item.customNote || ''} onChange={e => onUpdate(item.id, { customNote: e.target.value })} placeholder="Farbe, Format oder Hinweis" className="rounded-xl border border-[#d8d3c9] px-3 py-2.5 text-sm outline-none focus:border-[#a77e34]" /></div></div></div>)}
         <button onClick={() => setCustom(v => !v)} className="flex w-full items-center justify-between rounded-[22px] border border-dashed border-[#b9b1a1] p-5 text-left"><span><strong className="block text-sm">Freies Produkt hinzufügen</strong><span className="text-xs text-[#788188]">Marke, Referenz oder Beschreibung manuell erfassen</span></span>{custom ? <Minus /> : <Plus />}</button>
         {custom && <CustomItem onAdd={item => { onAddCustom(item); setCustom(false); }} />}
       </div>
@@ -341,5 +389,5 @@ function SectionTitle({ kicker, title, copy }: { kicker: string; title: string; 
 function TrustTile({ icon, title, text, dark = false }: { icon: React.ReactNode; title: string; text: string; dark?: boolean }) { return <div className={`${dark ? 'border border-white/10 bg-white/5' : 'bg-[#fffefb]'} p-6`}><div className="text-[#b58a3d]">{icon}</div><h3 className="mt-4 text-sm font-black">{title}</h3><p className={`mt-1 text-xs ${dark ? 'text-white/55' : 'text-[#778087]'}`}>{text}</p></div>; }
 
 function Footer({ onNavigate }: { onNavigate: (p: PageRoute) => void }) {
-  return <footer className="bg-[#0d1925] px-5 py-12 text-white lg:px-10"><div className="mx-auto grid max-w-[1480px] gap-10 md:grid-cols-[1.2fr_.8fr_.8fr]"><div><Logo /><p className="mt-5 max-w-md text-xs leading-6 text-white/55">Projektbezogene Materialbeschaffung für Schweizer Bau- und Renovationsprojekte. Online auswählen, technisch prüfen lassen und schriftlich offerieren.</p></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Sortiment</h3><div className="mt-4 space-y-2 text-sm text-white/65">{[['porcelain','Feinsteinzeug'],['mosaics','Premium Mosaike'],['spc','SPC-Vinyl'],['bathroom','Bad & Sanitär']].map(([r,l]) => <button key={r} onClick={() => onNavigate(r as PageRoute)} className="block hover:text-white">{l}</button>)}</div></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Kontakt</h3><div className="mt-4 space-y-2 text-sm text-white/65"><a className="block" href={`tel:${PHONE}`}>+41 78 241 89 13</a><a className="block" href={`mailto:${EMAIL}`}>{EMAIL}</a><span className="block">Oensingen, Schweiz</span></div></div></div><div className="mx-auto mt-10 flex max-w-[1480px] flex-col justify-between gap-2 border-t border-white/10 pt-5 text-[10px] text-white/35 sm:flex-row"><span>© 2026 RA Bau Lieferung</span><span>Produkte und Verfügbarkeit werden projektbezogen bestätigt.</span></div></footer>;
+  return <footer className="bg-[#0d1925] px-5 py-12 text-white lg:px-10"><div className="mx-auto grid max-w-[1480px] gap-10 md:grid-cols-[1.2fr_.8fr_.8fr]"><div><Logo /><p className="mt-5 max-w-md text-xs leading-6 text-white/55">Baustellenzubehör und projektbezogene Materialbeschaffung für Schweizer Bau- und Renovationsprojekte. Online auswählen, prüfen lassen und schriftlich offerieren.</p></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Sortiment</h3><div className="mt-4 space-y-2 text-sm text-white/65">{[['baustellenzubehoor','Baustellenzubehör'],['porcelain','Feinsteinzeug'],['mosaics','Premium Mosaike'],['spc','SPC-Vinyl'],['bathroom','Bad & Sanitär']].map(([r,l]) => <button key={r} onClick={() => onNavigate(r as PageRoute)} className="block hover:text-white">{l}</button>)}</div></div><div><h3 className="text-xs font-black uppercase tracking-[.18em] text-[#d7aa57]">Kontakt</h3><div className="mt-4 space-y-2 text-sm text-white/65"><a className="block" href={`tel:${PHONE}`}>+41 78 241 89 13</a><a className="block" href={`mailto:${EMAIL}`}>{EMAIL}</a><span className="block">Oensingen, Schweiz</span></div></div></div><div className="mx-auto mt-10 flex max-w-[1480px] flex-col justify-between gap-2 border-t border-white/10 pt-5 text-[10px] text-white/35 sm:flex-row"><span>© 2026 RA Bau Lieferung</span><span>Ausführung, Preis und Verfügbarkeit werden projektbezogen bestätigt.</span></div></footer>;
 }

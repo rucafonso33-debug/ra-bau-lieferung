@@ -10,10 +10,17 @@ export type PageRoute =
   | 'quote-planner';
 
 export interface ConstructionProduct {
+  id: string;
   name: string;
   description: string;
   application: string;
   image: string;
+  variants: string;
+  pack: string;
+  defaultQuantity: string;
+  unit: 'Stk.' | 'Pack' | 'Rolle' | 'Set';
+  badges?: string[];
+  featured?: boolean;
 }
 
 export interface ConstructionCategory {
