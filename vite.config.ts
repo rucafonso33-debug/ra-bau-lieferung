@@ -1,12 +1,31 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
-import {defineConfig, loadEnv} from 'vite';
+import fs from 'node:fs';
+import path from 'node:path';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 
-export default defineConfig(({mode}) => {
+function generatedStorefront(): Plugin {
+  const virtualId = path.resolve(__dirname, 'src/__generated_storefront.tsx');
+  const partFiles = Array.from({ length: 6 }, (_, index) => path.resolve(__dirname, `src/generated/App.part${index + 1}.txt`));
+
+  return {
+    name: 'generated-storefront',
+    enforce: 'pre',
+    resolveId(id) {
+      if (id === 'virtual:storefront') return virtualId;
+      return null;
+    },
+    load(id) {
+      if (id !== virtualId) return null;
+      return partFiles.map((file) => fs.readFileSync(file, 'utf8')).join('');
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [generatedStorefront(), react(), tailwindcss()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
@@ -16,8 +35,6 @@ export default defineConfig(({mode}) => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
     },
   };

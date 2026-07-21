@@ -1,0 +1,49 @@
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{category.products.map((product) => <ConstructionCard key={product.id} product={product} inQuote={quote.some((item) => item.id === `construction-${product.id}`)} onSelect={() => onSelect(product)} onAdd={() => onAdd(product)} />)}</div>
+          </section>
+        ))}
+      </div>
+    </main>
+  );
+}
+
+function ConstructionCard({ product, inQuote, onSelect, onAdd }: { product: ConstructionProduct; inQuote: boolean; onSelect: () => void; onAdd: () => void }) {
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-[20px] border border-[#d7e0e5] bg-white shadow-[0_10px_32px_rgba(16,41,62,.05)]">
+      <button onClick={onSelect} className="relative aspect-[4/3] overflow-hidden border-b border-[#e0e6e9] bg-white"><SmartImage asset={{ src: product.image, alt: product.name, fit: 'contain' }} className="h-full w-full p-8 transition duration-700 group-hover:scale-[1.035]" />{product.badges?.length ? <div className="absolute left-4 top-4 flex flex-wrap gap-2">{product.badges.slice(0, 2).map((badge) => <span key={badge} className="rounded-full bg-[#eef4f7] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[.12em] text-[#004b87]">{badge}</span>)}</div> : null}</button>
+      <div className="flex flex-1 flex-col p-6"><p className="text-[10px] font-extrabold uppercase tracking-[.17em] text-[#8e6725]">RA Bau Sortiment</p><button onClick={onSelect} className="mt-2 text-left"><h3 className="font-display text-2xl font-bold leading-tight tracking-[-.025em] text-[#10293e]">{product.name}</h3></button><p className="mt-3 text-sm leading-6 text-[#637987]">{product.description}</p><div className="mt-5 space-y-2 text-xs text-[#506a79]"><p><strong>Varianten:</strong> {product.variants}</p><p><strong>Packung:</strong> {product.pack}</p></div><div className="mt-auto flex gap-2 pt-6"><button onClick={onSelect} className="flex-1 rounded-lg border border-[#ccd7de] px-4 py-3 text-xs font-extrabold text-[#004b87]">Details</button><button onClick={onAdd} disabled={inQuote} className={`flex-1 rounded-lg px-4 py-3 text-xs font-extrabold ${inQuote ? 'bg-[#e7ecef] text-[#768995]' : 'bg-[#004b87] text-white'}`}>{inQuote ? 'In Anfrage' : 'Zur Offerte'}</button></div></div>
+    </article>
+  );
+}
+
+function QuotePage({ quote, sent, submitting, onSubmit, onUpdate, onRemove, onAddCustom, onNavigate }: { quote: QuoteItem[]; sent: boolean; submitting: boolean; onSubmit: (event: React.FormEvent<HTMLFormElement>) => void; onUpdate: (id: string, patch: Partial<QuoteItem>) => void; onRemove: (id: string) => void; onAddCustom: (item: QuoteItem) => void; onNavigate: (page: PageRoute) => void }) {
+  const addCustom = () => onAddCustom({ id: `custom-${Date.now()}`, name: 'Weiteres Wunschprodukt', spec: 'Bitte Produkt oder Referenz beschreiben', image: '/images/Komplettset.png', quantity: '1', unit: 'Stk.', customNote: '', isCustom: true });
+
+  return (
+    <main className="bg-[#f3f5f6]">
+      <section className="border-b border-[#d9e1e5] bg-white"><div className="mx-auto max-w-[1200px] px-5 py-14 lg:px-10"><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#9a6e22]">Projektanfrage</p><h1 className="mt-3 font-display text-5xl font-bold tracking-[-.04em] text-[#10293e]">Produkte und Mengen zusammenstellen</h1><p className="mt-5 max-w-3xl text-lg leading-8 text-[#576f7e]">Die Auswahl ist keine Bestellung. Sie bildet die Grundlage für eine schriftliche, projektbezogene Offerte inklusive Verfügbarkeit und Logistik.</p></div></section>
+      <section className="mx-auto grid max-w-[1200px] gap-8 px-5 py-12 lg:grid-cols-[1.15fr_.85fr] lg:px-10 lg:py-16">
+        <div>
+          <div className="flex items-center justify-between"><h2 className="font-display text-3xl font-bold text-[#10293e]">Produktauswahl</h2><span className="text-xs font-bold text-[#5d7381]">{quote.length} Positionen</span></div>
+          <div className="mt-5 space-y-4">
+            {quote.length ? quote.map((item) => <QuoteItemRow key={item.id} item={item} onUpdate={onUpdate} onRemove={onRemove} />) : <div className="rounded-[20px] border border-dashed border-[#c9d6dd] bg-white px-7 py-14 text-center"><ShoppingBag className="mx-auto h-8 w-8 text-[#8ca0ac]" /><p className="mt-4 font-bold text-[#314b5d]">Noch keine Produkte ausgewählt.</p><button onClick={() => onNavigate('interior')} className="mt-5 rounded-lg bg-[#004b87] px-5 py-3 text-xs font-extrabold text-white">Produkte ansehen</button></div>}
+          </div>
+          <button onClick={addCustom} className="mt-5 inline-flex items-center gap-2 rounded-lg border border-[#cbd7de] bg-white px-5 py-3 text-xs font-extrabold text-[#004b87]"><Plus size={15} /> Wunschprodukt ergänzen</button>
+        </div>
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          {sent ? <div className="rounded-[22px] border border-[#bdd8c8] bg-white p-8"><div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e2f3e8] text-[#27784b]"><Check /></div><h2 className="mt-5 font-display text-3xl font-bold text-[#10293e]">Anfrage gesendet</h2><p className="mt-3 leading-7 text-[#607582]">Wir prüfen Produkte, Mengen, Verfügbarkeit und Lieferort und melden uns mit der projektbezogenen Offerte.</p></div> : <form onSubmit={onSubmit} className="rounded-[22px] border border-[#d6e0e5] bg-white p-7 shadow-[0_14px_42px_rgba(16,41,62,.07)]"><h2 className="font-display text-3xl font-bold text-[#10293e]">Projektdaten</h2><div className="mt-6 space-y-4"><Field name="name" label="Name / Firma" required /><Field name="email" label="E-Mail" type="email" required /><Field name="phone" label="Telefon" /><Field name="postcode" label="PLZ / Lieferort" required /><Field name="project" label="Projekt / Baustelle" /><label className="block text-xs font-bold text-[#415b6d]">Bemerkungen<textarea name="message" rows={4} className="mt-2 w-full rounded-lg border border-[#cbd7de] px-4 py-3 text-sm outline-none focus:border-[#004b87]" placeholder="Termin, Etappen, Alternativen oder besondere Anforderungen" /></label></div><button type="submit" disabled={!quote.length || submitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#004b87] px-5 py-4 text-sm font-extrabold text-white disabled:bg-[#aab7bf]">{submitting ? 'Wird gesendet…' : 'Projektanfrage senden'} <ArrowRight size={17} /></button><p className="mt-4 text-center text-[10px] leading-5 text-[#71848f]">Unverbindliche Anfrage. Preis und Liefertermin werden schriftlich bestätigt.</p></form>}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function QuoteItemRow({ item, onUpdate, onRemove }: { item: QuoteItem; onUpdate: (id: string, patch: Partial<QuoteItem>) => void; onRemove: (id: string) => void }) {
+  return (
+    <div className="grid gap-4 rounded-[18px] border border-[#d8e1e6] bg-white p-4 sm:grid-cols-[110px_1fr_auto]">
+      <div className="aspect-square overflow-hidden rounded-xl border border-[#e0e6e9] bg-white"><SmartImage asset={{ src: item.image, alt: item.name, fit: 'contain' }} className="h-full w-full p-3" /></div>
+      <div><p className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#8e6725]">{item.brand}</p><h3 className="mt-1 font-display text-xl font-bold text-[#10293e]">{item.name}</h3><p className="mt-1 text-xs leading-5 text-[#667c89]">{item.reference || item.spec}</p><div className="mt-4 flex flex-wrap gap-2"><input value={item.quantity} onChange={(event) => onUpdate(item.id, { quantity: event.target.value })} className="w-24 rounded-lg border border-[#cbd7de] px-3 py-2 text-sm" aria-label={`Menge ${item.name}`} /><select value={item.unit} onChange={(event) => onUpdate(item.id, { unit: event.target.value })} className="rounded-lg border border-[#cbd7de] px-3 py-2 text-sm"><option>m²</option><option>Stk.</option><option>Pack</option><option>Set</option><option>Rolle</option><option>Kartons</option></select></div><input value={item.customNote || ''} onChange={(event) => onUpdate(item.id, { customNote: event.target.value })} placeholder="Variante, Farbe, Format oder Hinweis" className="mt-3 w-full rounded-lg border border-[#d5dfe4] px-3 py-2 text-xs" /></div>
+      <button onClick={() => onRemove(item.id)} className="self-start rounded-lg p-2 text-[#8a5960] hover:bg-[#f8eeee]" aria-label={`${item.name} entfernen`}><Trash2 size={18} /></button>
+    </div>
+  );
+}
+
