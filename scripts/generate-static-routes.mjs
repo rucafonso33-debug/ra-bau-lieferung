@@ -4,7 +4,7 @@ import path from 'node:path';
 const routes = {
   '/produkte': {
     title: 'Produkte und Raumkonzepte | RA Bau Lieferung',
-    description: 'Vier klar kuratierte Sortimentsbereiche: Keramik und Feinsteinzeug, Badezimmer, SPC-Böden und fünf ehrliche Raumkonzepte.',
+    description: 'Vier klar kuratierte Sortimentsbereiche: Keramik und Feinsteinzeug, Badezimmer, SPC-Böden und fünf verständliche Raumideen.',
     label: 'Produkte',
     image: '/images/categories/recer-pixstone-room.webp',
   },
@@ -16,13 +16,13 @@ const routes = {
   },
   '/feinsteinzeug': {
     title: 'Keramik & Feinsteinzeug Schweiz | RA Bau Lieferung',
-    description: 'Sieben eindeutig bebilderte Referenzen in Travertin-, Carving-, Marmor-, Naturstein- und Terrazzooptik sowie zwei koordinierte Mosaike.',
+    description: 'Sieben kuratierte Referenzen in Travertin-, Carving-, Marmor-, Naturstein- und Terrazzooptik sowie zwei koordinierte Mosaike.',
     label: 'Keramik & Feinsteinzeug',
     image: '/images/categories/recer-pixstone-room.webp',
   },
   '/badezimmer': {
     title: 'Badezimmer Schweiz | RA Bau Lieferung',
-    description: 'Fünf eindeutig bebilderte Badprodukte: Möbel, Armatur, Duschsystem, WC und Duschwanne. Weitere Referenzen werden projektbezogen geprüft.',
+    description: 'Fünf klar dargestellte Badprodukte: Möbel, Armatur, Duschsystem, WC und Duschwanne. Weitere Referenzen werden projektbezogen geprüft.',
     label: 'Badezimmer',
     image: '/images/catalog/rubicer-stria.png',
   },
@@ -34,15 +34,15 @@ const routes = {
   },
   '/raumkonzepte': {
     title: 'Raumkonzepte Schweiz | RA Bau Lieferung',
-    description: 'Genau fünf ehrliche Produktboards aus realen Katalogreferenzen: drei Badezimmer, ein Wohnraum und eine Küche.',
+    description: 'Fünf verständliche Stilwelten aus realen Katalogreferenzen: drei Badezimmer, ein Wohnraum und eine Küche.',
     label: 'Raumkonzepte',
-    image: '/images/concepts/warm-stone-spa.svg',
+    image: '/images/categories/recer-pixstone-room.webp',
   },
   '/projektanfrage': {
     title: 'Projektanfrage zusammenstellen | RA Bau Lieferung',
     description: 'Produkte, Mengen und Projektdaten in einer einzigen persönlichen Anfrage zusammenstellen und jederzeit wieder entfernen.',
     label: 'Projektanfrage',
-    image: '/images/concepts/warm-stone-spa.svg',
+    image: '/images/categories/recer-pixstone-room.webp',
   },
   '/kontakt': {
     title: 'Kontakt & persönliche Projektberatung | RA Bau Lieferung',
