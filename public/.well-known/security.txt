@@ -1,0 +1,5 @@
+Contact: mailto:rodrigo@ra-bau-lieferung.com
+Preferred-Languages: de, pt, en, es
+Canonical: https://ra-bau-lieferung.com/.well-known/security.txt
+Expires: 2027-07-22T00:00:00.000Z
+Policy: https://ra-bau-lieferung.com/datenschutz.html
