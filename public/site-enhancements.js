@@ -1,50 +1,4 @@
 (() => {
-  const routeMap = {
-    '/': 'home',
-    '/produkte': 'interior',
-    '/baustellenzubehoer': 'baustellenzubehoor',
-    '/feinsteinzeug': 'porcelain',
-    '/premium-mosaike': 'mosaics',
-    '/spc-vinyl': 'spc',
-    '/bad-sanitaer': 'bathroom',
-    '/projektanfrage': 'quote-planner',
-    '/kontakt': 'contact'
-  };
-  const labels = {
-    home: 'Startseite', interior: 'Alle Sparten im Überblick', baustellenzubehoor: 'Baustellenzubehör',
-    porcelain: 'Feinsteinzeug', mosaics: 'Premium Mosaike', spc: 'SPC & Vinyl', bathroom: 'Bad & Sanitär',
-    'quote-planner': 'Anfrage zusammenstellen', contact: 'Kontakt'
-  };
-  const paths = Object.fromEntries(Object.entries(routeMap).map(([path, route]) => [route, path]));
-  let internalNavigation = false;
-
-  function clickRoute(route) {
-    const label = labels[route];
-    if (!label) return;
-    const candidates = [...document.querySelectorAll('button')];
-    const button = candidates.find((item) => item.textContent.trim().includes(label));
-    if (button) {
-      internalNavigation = true;
-      button.click();
-      setTimeout(() => { internalNavigation = false; }, 80);
-    }
-  }
-
-  function installNavigation() {
-    document.addEventListener('click', (event) => {
-      const button = event.target.closest('button');
-      if (!button || internalNavigation) return;
-      const text = button.textContent.trim();
-      const route = Object.entries(labels).find(([, label]) => text.includes(label))?.[0];
-      if (route && paths[route] && location.pathname !== paths[route]) {
-        history.pushState({ route }, '', paths[route]);
-      }
-    }, true);
-    window.addEventListener('popstate', () => clickRoute(routeMap[location.pathname] || 'home'));
-    const initial = routeMap[location.pathname];
-    if (initial && initial !== 'home') setTimeout(() => clickRoute(initial), 350);
-  }
-
   function normalizeCopy(root = document) {
     root.querySelectorAll('button, a, p, span').forEach((node) => {
       if (node.childElementCount) return;
@@ -83,6 +37,79 @@
     footer.appendChild(legal);
   }
 
+  function enhanceImages(root = document) {
+    root.querySelectorAll('img').forEach((image) => {
+      if (!image.hasAttribute('decoding')) image.setAttribute('decoding', 'async');
+      if (!image.hasAttribute('loading') && !image.closest('section')?.matches(':first-of-type')) image.setAttribute('loading', 'lazy');
+      image.addEventListener('error', () => image.setAttribute('aria-hidden', 'true'), { once: true });
+    });
+  }
+
+  function enhanceForms(root = document) {
+    root.querySelectorAll('form').forEach((form) => {
+      if (form.dataset.privacyEnhanced) return;
+      form.dataset.privacyEnhanced = 'true';
+      const submit = form.querySelector('button[type="submit"]');
+      if (!submit) return;
+      const note = document.createElement('p');
+      note.className = 'mt-3 text-xs leading-5 text-[#607582]';
+      note.innerHTML = 'Mit dem Absenden erklären Sie sich mit der Bearbeitung Ihrer Angaben zur Beantwortung der Projektanfrage einverstanden. Details finden Sie im <a class="font-bold text-[#004b87] underline" href="/datenschutz.html">Datenschutz</a>.';
+      submit.insertAdjacentElement('afterend', note);
+    });
+  }
+
+  function enhanceDialogs(root = document) {
+    root.querySelectorAll('[role="dialog"]').forEach((dialog) => {
+      if (dialog.dataset.accessible) return;
+      dialog.dataset.accessible = 'true';
+      dialog.setAttribute('aria-modal', 'true');
+      const heading = dialog.querySelector('h2,h3');
+      if (heading) {
+        if (!heading.id) heading.id = `dialog-title-${Math.random().toString(36).slice(2)}`;
+        dialog.setAttribute('aria-labelledby', heading.id);
+      }
+      const focusable = dialog.querySelector('button,a,input,select,textarea');
+      if (focusable) requestAnimationFrame(() => focusable.focus());
+    });
+    document.body.style.overflow = document.querySelector('[role="dialog"]') ? 'hidden' : '';
+  }
+
+  function installKeyboardSupport() {
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      const dialog = document.querySelector('[role="dialog"]');
+      if (!dialog) return;
+      const close = [...dialog.querySelectorAll('button')].find((button) => /schliessen|close|zurück/i.test(button.getAttribute('aria-label') || button.textContent));
+      if (close) close.click();
+    });
+  }
+
+  function installSharing(root = document) {
+    root.querySelectorAll('[role="dialog"]').forEach((dialog) => {
+      if (dialog.querySelector('[data-ra-share]')) return;
+      const heading = dialog.querySelector('h2,h3');
+      const actions = [...dialog.querySelectorAll('button')].find((button) => /anfrage|hinzufügen/i.test(button.textContent));
+      if (!heading || !actions) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.raShare = 'true';
+      button.className = 'mt-3 rounded-lg border border-[#cbd7de] bg-white px-4 py-3 text-sm font-extrabold text-[#004b87] hover:bg-[#eef3f6]';
+      button.textContent = 'Produkt teilen';
+      button.addEventListener('click', async () => {
+        const shareData = { title: `${heading.textContent} | RA Bau Lieferung`, text: `Premium Produkt: ${heading.textContent}`, url: location.href };
+        try {
+          if (navigator.share) await navigator.share(shareData);
+          else {
+            await navigator.clipboard.writeText(location.href);
+            button.textContent = 'Link kopiert';
+            setTimeout(() => { button.textContent = 'Produkt teilen'; }, 1800);
+          }
+        } catch {}
+      });
+      actions.insertAdjacentElement('afterend', button);
+    });
+  }
+
   function installMeasurement() {
     document.addEventListener('click', (event) => {
       const link = event.target.closest('a,button');
@@ -92,16 +119,26 @@
       if (href.includes('wa.me')) type = 'whatsapp';
       else if (href.startsWith('mailto:')) type = 'email';
       else if (href.startsWith('tel:')) type = 'phone';
-      else if (link.textContent.includes('Zur Anfrage')) type = 'add_to_request';
+      else if (/zur anfrage|hinzufügen/i.test(link.textContent)) type = 'add_to_request';
       const events = JSON.parse(localStorage.getItem('ra_interactions') || '[]');
       events.push({ type, label: link.textContent.trim().slice(0, 100), path: location.pathname, at: new Date().toISOString() });
       localStorage.setItem('ra_interactions', JSON.stringify(events.slice(-200)));
     }, true);
   }
 
-  installNavigation();
+  function run() {
+    normalizeCopy();
+    injectAdvisor();
+    enhanceFooter();
+    enhanceImages();
+    enhanceForms();
+    enhanceDialogs();
+    installSharing();
+  }
+
   installMeasurement();
-  const observer = new MutationObserver(() => { normalizeCopy(); injectAdvisor(); enhanceFooter(); });
+  installKeyboardSupport();
+  const observer = new MutationObserver(run);
   observer.observe(document.documentElement, { childList: true, subtree: true });
-  normalizeCopy(); injectAdvisor(); enhanceFooter();
+  run();
 })();

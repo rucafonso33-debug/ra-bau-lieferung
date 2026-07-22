@@ -1,13 +1,106 @@
+  const routePaths: Record<PageRoute, string> = {
+    home: '/',
+    interior: '/produkte',
+    baustellenzubehoor: '/baustellenzubehoer',
+    porcelain: '/feinsteinzeug',
+    mosaics: '/premium-mosaike',
+    spc: '/spc-vinyl',
+    bathroom: '/bad-sanitaer',
+    'quote-planner': '/projektanfrage',
+    contact: '/kontakt',
+  };
+  const pathRoutes = Object.fromEntries(Object.entries(routePaths).map(([route, path]) => [path, route])) as Record<string, PageRoute>;
+  const seo: Record<PageRoute, { title: string; description: string }> = {
+    home: { title: 'RA Bau Lieferung | Premium Bau- und Renovationsmaterial Schweiz', description: 'Kuratiertes Baustellenzubehör, Feinsteinzeug, Premium Mosaike, SPC- und Vinylböden sowie hochwertige Bad- und Sanitärlösungen für Projekte in der Schweiz.' },
+    interior: { title: 'Premium Produkte für Bau und Renovation | RA Bau Lieferung', description: 'Entdecken Sie fünf spezialisierte Sortimentsbereiche mit geprüften Produktdaten, Herstellerreferenzen und persönlicher Projektberatung.' },
+    baustellenzubehoor: { title: 'Baustellenzubehör Schweiz | RA Bau Lieferung', description: 'Nivelliersysteme, Abstandhalter, Drahtbinder, Schutzteile und Werkzeug für professionelle Baustellen und Renovationsprojekte in der Schweiz.' },
+    porcelain: { title: 'Premium Feinsteinzeug Schweiz | RA Bau Lieferung', description: 'Grossformatiges Feinsteinzeug in Marmor-, Travertin-, Stein- und Designoptik für hochwertige Wohn-, Bad-, Hotel- und Objektprojekte.' },
+    mosaics: { title: 'Premium Mosaike Schweiz | RA Bau Lieferung', description: 'Exklusive Mosaike für Dusche, Spa, Hotel und hochwertige Akzentflächen – technisch dokumentiert und projektbezogen lieferbar.' },
+    spc: { title: 'Premium SPC- und Vinylböden Schweiz | RA Bau Lieferung', description: 'Hochwertige SPC-, Vinyl- und Korkböden in Eiche, Fischgrät, XL-Dielen und belastbaren Projektqualitäten.' },
+    bathroom: { title: 'Premium Bad & Sanitär Schweiz | RA Bau Lieferung', description: 'Badmöbel, Armaturen, Duschsysteme, WCs, Duschwannen und Duschabtrennungen für hochwertige Komplettbad- und Einzelproduktlösungen.' },
+    'quote-planner': { title: 'Projektanfrage zusammenstellen | RA Bau Lieferung', description: 'Stellen Sie mehrere Produkte, Mengen und Projektdaten in einer einzigen persönlichen Anfrage zusammen.' },
+    contact: { title: 'Kontakt & persönliche Projektberatung | RA Bau Lieferung', description: 'Kontaktieren Sie Rodrigo Afonso für Produktprüfung, Referenzen, Mengen, Transport, Verzollung und projektbezogene Lieferungen in der Schweiz.' },
+  };
+
+  const [page, setPage] = useState<PageRoute>(() => pathRoutes[window.location.pathname] ?? 'home');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [quote, setQuote] = useState<QuoteItem[]>(() => {
+    try {
+      const saved = window.localStorage.getItem('ra_quote_v1');
+      return saved ? JSON.parse(saved) as QuoteItem[] : [];
+    } catch {
+      return [];
+    }
+  });
+  const [selected, setSelected] = useState<InteriorProduct | null>(null);
+  const [selectedConstruction, setSelectedConstruction] = useState<ConstructionProduct | null>(null);
   const [search, setSearch] = useState('');
   const [toast, setToast] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
+  React.useEffect(() => {
+    window.localStorage.setItem('ra_quote_v1', JSON.stringify(quote));
+  }, [quote]);
+
+  React.useEffect(() => {
+    const onPopState = () => {
+      setPage(pathRoutes[window.location.pathname] ?? 'home');
+      setMobileOpen(false);
+      setSearch('');
+      window.scrollTo({ top: 0 });
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  React.useEffect(() => {
+    const current = seo[page];
+    const canonical = `https://ra-bau-lieferung.com${routePaths[page]}`;
+    document.title = current.title;
+    const setMeta = (selector: string, attribute: string, value: string) => {
+      let element = document.head.querySelector(selector) as HTMLMetaElement | HTMLLinkElement | null;
+      if (!element) {
+        element = selector.startsWith('link') ? document.createElement('link') : document.createElement('meta');
+        if (selector.includes('name="description"')) (element as HTMLMetaElement).name = 'description';
+        if (selector.includes('property="og:title"')) (element as HTMLMetaElement).setAttribute('property', 'og:title');
+        if (selector.includes('property="og:description"')) (element as HTMLMetaElement).setAttribute('property', 'og:description');
+        if (selector.includes('property="og:url"')) (element as HTMLMetaElement).setAttribute('property', 'og:url');
+        if (selector.startsWith('link')) (element as HTMLLinkElement).rel = 'canonical';
+        document.head.appendChild(element);
+      }
+      element.setAttribute(attribute, value);
+    };
+    setMeta('meta[name="description"]', 'content', current.description);
+    setMeta('meta[property="og:title"]', 'content', current.title);
+    setMeta('meta[property="og:description"]', 'content', current.description);
+    setMeta('meta[property="og:url"]', 'content', canonical);
+    setMeta('link[rel="canonical"]', 'href', canonical);
+
+    document.querySelectorAll('script[data-ra-schema]').forEach((node) => node.remove());
+    const schema = document.createElement('script');
+    schema.type = 'application/ld+json';
+    schema.dataset.raSchema = 'true';
+    schema.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': page === 'home' ? 'WebSite' : 'CollectionPage',
+      name: current.title,
+      description: current.description,
+      url: canonical,
+      isPartOf: { '@type': 'WebSite', name: 'RA Bau Lieferung', url: 'https://ra-bau-lieferung.com/' },
+      provider: { '@type': 'LocalBusiness', name: 'RA Bau Lieferung', telephone: '+41782418913', email: EMAIL, address: { '@type': 'PostalAddress', streetAddress: 'Zeughausstrasse 5', postalCode: '4702', addressLocality: 'Oensingen', addressCountry: 'CH' } },
+    });
+    document.head.appendChild(schema);
+  }, [page]);
+
   const navigate = (next: PageRoute) => {
     setPage(next);
     setMobileOpen(false);
     setSearch('');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSent(false);
+    const path = routePaths[next];
+    if (window.location.pathname !== path) window.history.pushState({ route: next }, '', path);
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
 
   const notify = (message: string) => {
@@ -16,7 +109,7 @@
   };
 
   const addProduct = (product: InteriorProduct) => {
-    const pieceProduct = ['Waschtisch', 'Duschsystem', 'Duschwanne', 'WC'].some((type) => product.application.includes(type));
+    const pieceProduct = ['Waschtisch', 'Badmöbel', 'Armatur', 'Duschsystem', 'Duschwanne', 'Duschabtrennung', 'WC'].some((type) => `${product.name} ${product.application}`.includes(type));
     setQuote((current) => {
       if (current.some((item) => item.reference === product.reference)) return current;
       return [...current, {
@@ -77,6 +170,8 @@
       });
       if (!response.ok) throw new Error('submit');
       setSent(true);
+      setQuote([]);
+      window.localStorage.removeItem('ra_quote_v1');
     } catch {
       notify('Senden nicht möglich. Bitte WhatsApp oder E-Mail verwenden.');
     } finally {
@@ -86,38 +181,41 @@
 
   return (
     <div className="min-h-screen bg-[#f3f5f6] text-[#10293e] selection:bg-[#d7aa57] selection:text-[#10293e]">
+      <a href="#main-content" className="sr-only z-[100] rounded-md bg-white px-4 py-3 font-bold text-[#004b87] focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Zum Inhalt springen</a>
       <Header page={page} quoteCount={quote.length} mobileOpen={mobileOpen} onMobile={() => setMobileOpen((value) => !value)} onNavigate={navigate} />
 
-      {page === 'home' && <Home onNavigate={navigate} />}
-      {page === 'interior' && <CatalogOverview onNavigate={navigate} />}
-      {categoryForRoute[page] && (
-        <CategoryPage
-          category={categoryForRoute[page]!}
-          search={search}
-          onSearch={setSearch}
-          quote={quote}
-          onAdd={addProduct}
-          onSelect={setSelected}
-          onNavigate={navigate}
-        />
-      )}
-      {page === 'baustellenzubehoor' && <ConstructionPage quote={quote} onAdd={addConstruction} onSelect={setSelectedConstruction} onNavigate={navigate} />}
-      {page === 'quote-planner' && (
-        <QuotePage
-          quote={quote}
-          sent={sent}
-          submitting={submitting}
-          onSubmit={submitQuote}
-          onUpdate={updateItem}
-          onRemove={(id) => setQuote((items) => items.filter((item) => item.id !== id))}
-          onAddCustom={(item) => setQuote((items) => [...items, item])}
-          onNavigate={navigate}
-        />
-      )}
-      {page === 'contact' && <ContactPage />}
+      <div id="main-content" tabIndex={-1}>
+        {page === 'home' && <Home onNavigate={navigate} />}
+        {page === 'interior' && <CatalogOverview onNavigate={navigate} />}
+        {categoryForRoute[page] && (
+          <CategoryPage
+            category={categoryForRoute[page]!}
+            search={search}
+            onSearch={setSearch}
+            quote={quote}
+            onAdd={addProduct}
+            onSelect={setSelected}
+            onNavigate={navigate}
+          />
+        )}
+        {page === 'baustellenzubehoor' && <ConstructionPage quote={quote} onAdd={addConstruction} onSelect={setSelectedConstruction} onNavigate={navigate} />}
+        {page === 'quote-planner' && (
+          <QuotePage
+            quote={quote}
+            sent={sent}
+            submitting={submitting}
+            onSubmit={submitQuote}
+            onUpdate={updateItem}
+            onRemove={(id) => setQuote((items) => items.filter((item) => item.id !== id))}
+            onAddCustom={(item) => setQuote((items) => [...items, item])}
+            onNavigate={navigate}
+          />
+        )}
+        {page === 'contact' && <ContactPage />}
+      </div>
 
       <Footer onNavigate={navigate} />
-      {toast && <div className="fixed bottom-6 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#10293e] px-5 py-3 text-sm font-bold text-white shadow-2xl"><Check className="h-4 w-4 text-[#e0b75e]" />{toast}</div>}
+      {toast && <div role="status" aria-live="polite" className="fixed bottom-6 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#10293e] px-5 py-3 text-sm font-bold text-white shadow-2xl"><Check className="h-4 w-4 text-[#e0b75e]" />{toast}</div>}
       {selected && <ProductModal product={selected} inQuote={quote.some((item) => item.reference === selected.reference)} onClose={() => setSelected(null)} onAdd={() => addProduct(selected)} />}
       {selectedConstruction && <ConstructionModal product={selectedConstruction} inQuote={quote.some((item) => item.id === `construction-${selectedConstruction.id}`)} onClose={() => setSelectedConstruction(null)} onAdd={() => addConstruction(selectedConstruction)} />}
     </div>
@@ -139,20 +237,20 @@ function Header({ page, quoteCount, mobileOpen, onMobile, onNavigate }: { page: 
         <button onClick={() => onNavigate('home')} className="shrink-0" aria-label="Startseite"><Logo /></button>
         <nav className="ml-auto hidden items-center gap-1 xl:flex" aria-label="Produktsparten">
           {links.map(([route, label], index) => (
-            <button key={route} onClick={() => onNavigate(route)} className={`rounded-lg px-3 py-2.5 text-[12px] font-bold transition ${page === route ? 'bg-[#004b87] text-white' : 'text-[#455e70] hover:bg-[#eef3f6] hover:text-[#004b87]'}`}>
+            <button key={route} onClick={() => onNavigate(route)} aria-current={page === route ? 'page' : undefined} className={`rounded-lg px-3 py-2.5 text-[12px] font-bold transition ${page === route ? 'bg-[#004b87] text-white' : 'text-[#455e70] hover:bg-[#eef3f6] hover:text-[#004b87]'}`}>
               <span className="mr-1.5 text-[9px] opacity-60">0{index + 1}</span>{label}
             </button>
           ))}
         </nav>
-        <button onClick={() => onNavigate('quote-planner')} className="ml-auto flex items-center gap-2 rounded-lg bg-[#d7aa57] px-4 py-3 text-xs font-extrabold text-[#10293e] transition hover:bg-[#e3ba6c] xl:ml-3">
-          <ShoppingBag size={16} /><span className="hidden sm:inline">Offerte zusammenstellen</span><span className="rounded-full bg-[#10293e] px-1.5 py-0.5 text-[10px] text-white">{quoteCount}</span>
+        <button onClick={() => onNavigate('quote-planner')} aria-label={`Projektanfrage mit ${quoteCount} Positionen öffnen`} className="ml-auto flex items-center gap-2 rounded-lg bg-[#d7aa57] px-4 py-3 text-xs font-extrabold text-[#10293e] transition hover:bg-[#e3ba6c] xl:ml-3">
+          <ShoppingBag size={16} /><span className="hidden sm:inline">Anfrage zusammenstellen</span><span className="rounded-full bg-[#10293e] px-1.5 py-0.5 text-[10px] text-white">{quoteCount}</span>
         </button>
-        <button className="rounded-lg p-2.5 text-[#004b87] xl:hidden" onClick={onMobile} aria-label={mobileOpen ? 'Menü schliessen' : 'Menü öffnen'}>{mobileOpen ? <X /> : <Menu />}</button>
+        <button className="rounded-lg p-2.5 text-[#004b87] xl:hidden" onClick={onMobile} aria-expanded={mobileOpen} aria-controls="mobile-navigation" aria-label={mobileOpen ? 'Menü schliessen' : 'Menü öffnen'}>{mobileOpen ? <X /> : <Menu />}</button>
       </div>
       {mobileOpen && (
-        <nav className="border-t border-[#e1e7ea] bg-white px-4 py-4 xl:hidden" aria-label="Produktsparten mobil">
+        <nav id="mobile-navigation" className="border-t border-[#e1e7ea] bg-white px-4 py-4 xl:hidden" aria-label="Produktsparten mobil">
           {links.map(([route, label], index) => (
-            <button key={route} onClick={() => onNavigate(route)} className={`flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-left text-sm font-bold ${page === route ? 'bg-[#004b87] text-white' : 'text-[#314b5e] hover:bg-[#eef3f6]'}`}>
+            <button key={route} onClick={() => onNavigate(route)} aria-current={page === route ? 'page' : undefined} className={`flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-left text-sm font-bold ${page === route ? 'bg-[#004b87] text-white' : 'text-[#314b5e] hover:bg-[#eef3f6]'}`}>
               <span className="text-[10px] opacity-55">0{index + 1}</span>{label}
             </button>
           ))}
