@@ -3,8 +3,8 @@ import path from 'node:path';
 
 const routes = {
   '/produkte': {
-    title: 'Premium Produkte und Raumkonzepte | RA Bau Lieferung',
-    description: 'Vier klar kuratierte Sortimentsbereiche für den Schweizer Premium- und Luxusmarkt: Keramik, Badezimmer, Vinyl/SPC/Kork und komplette Raumkonzepte.',
+    title: 'Produkte und Raumkonzepte | RA Bau Lieferung',
+    description: 'Vier klar kuratierte Sortimentsbereiche: Keramik und Feinsteinzeug, Badezimmer, SPC-Böden und fünf ehrliche Raumkonzepte.',
     label: 'Produkte',
     image: '/images/categories/recer-pixstone-room.webp',
   },
@@ -15,34 +15,34 @@ const routes = {
     image: '/images/Komplettset.png',
   },
   '/feinsteinzeug': {
-    title: 'Keramik & Premium Feinsteinzeug Schweiz | RA Bau Lieferung',
-    description: 'Kuratiertes Feinsteinzeug, Wandkeramik und ausgewählte koordinierte Mosaike in Marmor-, Travertin-, Stein- und Designoptik.',
+    title: 'Keramik & Feinsteinzeug Schweiz | RA Bau Lieferung',
+    description: 'Sieben eindeutig bebilderte Referenzen in Travertin-, Carving-, Marmor-, Naturstein- und Terrazzooptik sowie zwei koordinierte Mosaike.',
     label: 'Keramik & Feinsteinzeug',
     image: '/images/categories/recer-pixstone-room.webp',
   },
   '/badezimmer': {
-    title: 'Premium Badezimmer Schweiz | RA Bau Lieferung',
-    description: 'Hochwertige Badmöbel, Armaturen, Duschsysteme, Glas, WCs und Duschwannen von Rubicer, Roca, Moovlux und IMEX.',
+    title: 'Badezimmer Schweiz | RA Bau Lieferung',
+    description: 'Fünf eindeutig bebilderte Badprodukte: Möbel, Armatur, Duschsystem, WC und Duschwanne. Weitere Referenzen werden projektbezogen geprüft.',
     label: 'Badezimmer',
     image: '/images/catalog/rubicer-stria.png',
   },
   '/spc-vinyl': {
-    title: 'Premium Vinyl, SPC & Kork Schweiz | RA Bau Lieferung',
-    description: 'Fischgrat, XL-Dielen, Contract-Vinyl und natürlicher Kork für hochwertige Wohnungen, Hotels, Büros und Renovationen.',
-    label: 'Vinyl, SPC & Kork',
+    title: 'SPC-Böden Schweiz | RA Bau Lieferung',
+    description: 'Fünf klar unterscheidbare Rubifloor-Lösungen in Fischgrat, XL-Diele, heller Eiche, Projektqualität und Steinoptik.',
+    label: 'SPC-Böden',
     image: '/images/products/rubifloor-herringbone-natural.webp',
   },
   '/raumkonzepte': {
-    title: 'Luxus Raumkonzepte Schweiz | RA Bau Lieferung',
-    description: 'Kuratierte Komplettlösungen für Bad, Wohnen und Küche. Produkte gemeinsam sehen, einzeln auswählen und projektbezogen anfragen.',
+    title: 'Raumkonzepte Schweiz | RA Bau Lieferung',
+    description: 'Genau fünf ehrliche Produktboards aus realen Katalogreferenzen: drei Badezimmer, ein Wohnraum und eine Küche.',
     label: 'Raumkonzepte',
-    image: '/images/premium/signature-gold.svg',
+    image: '/images/concepts/warm-stone-spa.svg',
   },
   '/projektanfrage': {
     title: 'Projektanfrage zusammenstellen | RA Bau Lieferung',
-    description: 'Stellen Sie mehrere Produkte, Mengen und Projektdaten in einer einzigen persönlichen Anfrage zusammen.',
+    description: 'Produkte, Mengen und Projektdaten in einer einzigen persönlichen Anfrage zusammenstellen und jederzeit wieder entfernen.',
     label: 'Projektanfrage',
-    image: '/images/categories/recer-pixstone-room.webp',
+    image: '/images/concepts/warm-stone-spa.svg',
   },
   '/kontakt': {
     title: 'Kontakt & persönliche Projektberatung | RA Bau Lieferung',
@@ -90,6 +90,7 @@ for (const [route, meta] of Object.entries(routes)) {
     .replace(/<meta property="og:description" content="[^"]*"\s*\/>/, `<meta property="og:description" content="${meta.description}" />`)
     .replace(/<meta property="og:url" content="[^"]*"\s*\/>/, `<meta property="og:url" content="${canonical}" />`)
     .replace(/<meta property="og:image" content="[^"]*"\s*\/>/, `<meta property="og:image" content="${image}" />`)
+    .replace(/<meta property="og:image:alt" content="[^"]*"\s*\/>/, `<meta property="og:image:alt" content="${meta.label}" />`)
     .replace(/<meta name="twitter:title" content="[^"]*"\s*\/>/, `<meta name="twitter:title" content="${meta.title}" />`)
     .replace(/<meta name="twitter:description" content="[^"]*"\s*\/>/, `<meta name="twitter:description" content="${meta.description}" />`)
     .replace(/<meta name="twitter:image" content="[^"]*"\s*\/>/, `<meta name="twitter:image" content="${image}" />`)
