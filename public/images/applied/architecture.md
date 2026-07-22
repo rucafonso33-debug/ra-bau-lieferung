@@ -1,0 +1,1 @@
+Every premium product uses a two-layer gallery: (1) applied environment, (2) exact technical product image. Mobile cards expose both layers without hiding the primary conversion action.
