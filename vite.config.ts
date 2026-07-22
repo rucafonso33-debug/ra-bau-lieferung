@@ -54,6 +54,7 @@ function generatedStorefront(): Plugin {
         .replace("const families = expandedFamilies[category] ?? [];", "const families: typeof expandedFamilies[string] = [];")
         .replace("<ProductCard key={product.id} product={product}", "<LuxuryProductCard key={product.id} category={category} product={product}")
         .replace('<section className="border-t border-[#d8e1e6] bg-white">', '<section className="hidden">')
+        .replace('<section className="bg-[#f3f5f6]">', '<section className="hidden">')
         .replace('className="mt-8 grid grid-cols-3 gap-3"', 'className="hidden"')
         .replace('text-5xl font-bold leading-[1.02]', 'text-4xl font-bold leading-[1.02] sm:text-5xl')
         .replace('min-h-[410px] overflow-hidden rounded-[22px]', 'min-h-[260px] overflow-hidden rounded-[18px] sm:min-h-[410px] sm:rounded-[22px]')
