@@ -1,93 +1,104 @@
-import { constructionCategories, interiorCategories as luxuryCategories } from './luxuryData';
+import { constructionCategories, interiorCategories as sourceCategories } from './data';
 import type { InteriorCategory, InteriorProduct } from './types';
 
 export { constructionCategories };
 
-const find = (name: string) => luxuryCategories.find((category) => category.germanTitle === name)?.products ?? [];
-
+const source = (name: string) => sourceCategories.find((category) => category.germanTitle === name)?.products ?? [];
 const byIds = (products: InteriorProduct[], ids: string[]) => {
   const index = new Map(products.map((product) => [product.id, product]));
   return ids.map((id) => index.get(id)).filter((product): product is InteriorProduct => Boolean(product));
 };
 
-const ceramics = byIds(find('Keramik & Feinsteinzeug'), [
-  'rubicer-techstone-white',
-  'rubicer-techstone-cubo',
-  'recer-bluenza-warm-grey',
-  'recer-bluenza-earth-clay',
+const ceramics = byIds(source('Feinsteinzeug'), [
   'rubicer-rapolano-60120',
   'rubicer-toscana-carving',
   'recer-mastery-12060',
-  'rubicer-calacata-supremo',
-  'rubicer-armani-oro-bianco',
-  'gresco-majestic',
+  'recer-bluenza-warm-grey',
   'recer-pixstone-air-warm',
+]).concat(byIds(source('Premium Mosaike'), [
   'recer-mastery-mix',
   'recer-bluenza-mosaic',
-]).map((product) => ({
-  ...product,
-  imageFit: product.image.includes('/categories/') ? 'cover' as const : 'contain' as const,
-}));
+])).map((product) => ({ ...product, imageFit: 'contain' as const }));
 
-const bathrooms = byIds(find('Badezimmer'), [
+const bathrooms = byIds(source('Sanitäre Individuallösungen'), [
   'rubicer-stria-100',
-  'rubicer-stria-horizontal',
-  'rubicer-focus-oak',
-  'roca-targa-everlux',
-  'moovlux-tube-gold',
   'moovlux-tube-tl1001',
   'imex-toscana-bdt064',
-  'rubicer-lux-duschwanne',
-  'roca-line-plus',
   'roca-avant-intank',
-  'rubicer-fly-cappuccino',
-  'rubicer-elegant-black',
+  'rubicer-lux-duschwanne',
 ]);
 
-const flooring = byIds(find('Vinyl, SPC & Kork'), [
+const floors = byIds(source('SPC / Vinyl-Designböden'), [
   'rubifloor-herringbone-natural',
-  'rubifloor-herringbone-dark',
   'rubifloor-xl-home',
-  'rubifloor-xl-city',
   'rubifloor-premium-cream',
-  'rubifloor-premium-milk',
-  'rubifloor-alpha-camel',
   'rubifloor-pro-nordig',
-  'corkart-vinyl-contract',
-  'corkart-natural-cork',
+  'rubifloor-rigid-grey',
 ]);
 
-const concepts = byIds(find('Raumkonzepte'), [
-  'concept-warm-stone-spa',
-  'concept-marble-gold',
-  'concept-soft-minimal',
-  'concept-herringbone-living',
-  'concept-concrete-oak-kitchen',
-]).map((product) => ({ ...product, imageFit: 'cover' as const }));
+const concept = (value: InteriorProduct): InteriorProduct => value;
+const concepts: InteriorProduct[] = [
+  concept({
+    id: 'concept-warm-stone-spa', name: 'Warm Stone Spa Bathroom',
+    spec: 'Bluenza · Stria · Tube · LUX Slim',
+    details: 'Ehrliches Produktboard aus vier realen Katalogreferenzen: Recer Bluenza, Rubicer Stria, Moovlux Tube und Rubicer LUX Slim. Einzelne Bestandteile können in der Anfrage entfernt oder ersetzt werden.',
+    image: '/images/concepts/warm-stone-spa.svg', imageFit: 'cover', brand: 'Raumkonzept',
+    reference: 'Konzept 01 · Komponenten einzeln bestätigbar', format: '1 Komplettkonzept', finish: 'Warm Stone · Oak · Gold/Chrom',
+    application: 'Masterbad · Spa · Hotelsuite', box: 'Produkte einzeln auswählbar', pallet: 'Projektbezogene Lieferung', badges: ['4 reale Produkte', 'Komplettbad'], featured: true,
+  }),
+  concept({
+    id: 'concept-marble-gold', name: 'Marble & Gold Suite',
+    spec: 'Mastery · Walk-in Glas · Tube · Avant',
+    details: 'Luxuriöses Produktboard mit Recer Mastery, Roca Walk-in-Glas, Moovlux Tube und Roca Avant In-Tank. Keine erfundene Raumszene: gezeigt werden die tatsächlich anfragbaren Produktfamilien.',
+    image: '/images/concepts/marble-gold-suite.svg', imageFit: 'cover', brand: 'Raumkonzept',
+    reference: 'Konzept 02 · Komponenten einzeln bestätigbar', format: '1 Komplettkonzept', finish: 'Marmor · Gold/Chrom · Klarglas',
+    application: 'Villa · Penthouse · Boutiquehotel', box: 'Produkte einzeln auswählbar', pallet: 'Projektbezogene Lieferung', badges: ['4 reale Produkte', 'Suite'],
+  }),
+  concept({
+    id: 'concept-soft-minimal', name: 'Soft Minimal Bathroom',
+    spec: 'Pixstone · Stria · Toscana · Walk-in',
+    details: 'Helles, ruhiges Badkonzept aus Recer Pixstone, Rubicer Stria, IMEX Toscana und Roca Walk-in-Glas. Für hochwertige Neubauten und Renovationen mit klarer, zeitloser Materialwahl.',
+    image: '/images/concepts/soft-minimal-bathroom.svg', imageFit: 'cover', brand: 'Raumkonzept',
+    reference: 'Konzept 03 · Komponenten einzeln bestätigbar', format: '1 Komplettkonzept', finish: 'Off White · Oak · Chrome',
+    application: 'Wohnung · Neubau · Renovation', box: 'Produkte einzeln auswählbar', pallet: 'Projektbezogene Lieferung', badges: ['4 reale Produkte', 'Timeless'],
+  }),
+  concept({
+    id: 'concept-herringbone-living', name: 'Natural Herringbone Living',
+    spec: 'Herringbone Natural · Mastery · Premium Cream',
+    details: 'Wohnraumkonzept aus drei realen Oberflächen: Rubifloor Herringbone Natural, Recer Mastery und Rubifloor Premium Cream. Gedacht als kuratierte Materialkombination für elegante Apartments und Altbaurenovationen.',
+    image: '/images/concepts/natural-herringbone-living.svg', imageFit: 'cover', brand: 'Raumkonzept',
+    reference: 'Konzept 04 · Komponenten einzeln bestätigbar', format: '1 Raumkonzept', finish: 'Natural Oak · Warm White',
+    application: 'Wohnzimmer · Essen · Apartment', box: 'Produkte einzeln auswählbar', pallet: 'Projektbezogene Lieferung', badges: ['3 reale Produkte', 'Living'],
+  }),
+  concept({
+    id: 'concept-concrete-oak-kitchen', name: 'Concrete & Oak Kitchen',
+    spec: 'Pixstone · XL Home · Toscana Carving',
+    details: 'Küchen- und Essraumkonzept aus Recer Pixstone, Rubifloor XL Home und Rubicer Toscana Carving. Eine sachliche, hochwertige Kombination für moderne Schweizer Open-Space-Interieurs.',
+    image: '/images/concepts/concrete-oak-kitchen.svg', imageFit: 'cover', brand: 'Raumkonzept',
+    reference: 'Konzept 05 · Komponenten einzeln bestätigbar', format: '1 Raumkonzept', finish: 'Mineral Grey · Oak · Carving',
+    application: 'Küche · Essen · Open Space', box: 'Produkte einzeln auswählbar', pallet: 'Projektbezogene Lieferung', badges: ['3 reale Produkte', 'Kitchen'],
+  }),
+];
 
 export const interiorCategories: InteriorCategory[] = [
   {
-    title: 'Ceramic & Porcelain',
-    germanTitle: 'Keramik & Feinsteinzeug',
-    description: 'Eine begrenzte Schweizer Luxusauswahl: Architekturstein, Travertin, Marmor, Wandrelief und nur zwei koordinierte Mosaiklösungen. Keine Wiederholungen und keine künstliche Katalogfülle.',
+    title: 'Ceramic & Porcelain', germanTitle: 'Keramik & Feinsteinzeug',
+    description: 'Sieben klar unterscheidbare, technisch dokumentierte Referenzen: Travertin, Carving, Marmor, Naturstein, Terrazzo und zwei koordinierte Mosaike. Jede Karte zeigt die tatsächliche Produktfamilie.',
     products: ceramics,
   },
   {
-    title: 'Bathroom',
-    germanTitle: 'Badezimmer',
-    description: 'Ausgewählte Möbel, Armaturen, Duschsysteme, Glas, Duschwannen und WCs für vollständig koordinierte hochwertige Bäder.',
+    title: 'Bathroom', germanTitle: 'Badezimmer',
+    description: 'Fünf reale, eindeutig bebilderte Badprodukte: Möbel, Armatur, Duschsystem, WC und Duschwanne. Weitere Referenzen werden erst ergänzt, wenn die korrekte Herstellerabbildung vorhanden ist.',
     products: bathrooms,
   },
   {
-    title: 'Vinyl, SPC & Cork',
-    germanTitle: 'Vinyl, SPC & Kork',
-    description: 'Zehn klar unterscheidbare Lösungen: Fischgrat, XL-Dielen, helle und warme Eiche, Contract-Vinyl und natürlicher Kork.',
-    products: flooring,
+    title: 'Vinyl, SPC & Cork', germanTitle: 'Vinyl, SPC & Kork',
+    description: 'Fünf eindeutig bebilderte Rubifloor-Lösungen mit unterschiedlichen Formaten und Anwendungen. Corkart bleibt bewusst ausserhalb der Detailkarten, bis verifizierte Originalbilder eingebunden sind.',
+    products: floors,
   },
   {
-    title: 'Complete Room Concepts',
-    germanTitle: 'Raumkonzepte',
-    description: 'Fünf demonstrative Konzepte – drei Badezimmer, ein Wohnraum und eine Küche. Visualisierungen dienen der Inspiration; Referenzen und Produkte werden projektbezogen bestätigt.',
+    title: 'Complete Room Concepts', germanTitle: 'Raumkonzepte',
+    description: 'Genau fünf ehrliche Produktboards: drei Badezimmer, ein Wohnraum und eine Küche. Keine erfundene Raumszene und kein Produkt wird unter einer falschen Abbildung gezeigt.',
     products: concepts,
   },
 ];
