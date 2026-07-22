@@ -19,21 +19,5 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Typecheck
-        id: typecheck
-        continue-on-error: true
-        run: npm run lint > quality.log 2>&1
-      - name: Build
-        id: build
-        continue-on-error: true
-        run: npm run build >> quality.log 2>&1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: quality-log
-          path: quality.log
-      - name: Enforce quality gate
-        if: steps.typecheck.outcome != 'success' || steps.build.outcome != 'success'
-        run: |
-          cat quality.log
-          exit 1
+      - run: npm run lint
+      - run: npm run build
