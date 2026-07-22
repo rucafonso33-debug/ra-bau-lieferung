@@ -17,7 +17,13 @@ function generatedStorefront(): Plugin {
     },
     load(id) {
       if (id !== virtualId) return null;
-      return partFiles.map((file) => fs.readFileSync(file, 'utf8')).join('');
+      return partFiles
+        .map((file) => fs.readFileSync(file, 'utf8'))
+        .join('')
+        .replace(
+          `export default function App() {\n  const [page, setPage] = useState<PageRoute>('home');\n  const [mobileOpen, setMobileOpen] = useState(false);\n  const [quote, setQuote] = useState<QuoteItem[]>([]);\n  const [selected, setSelected] = useState<InteriorProduct | null>(null);\n  const [selectedConstruction, setSelectedConstruction] = useState<ConstructionProduct | null>(null);\n`,
+          'export default function App() {\n',
+        );
     },
   };
 }
