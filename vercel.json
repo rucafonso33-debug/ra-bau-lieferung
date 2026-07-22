@@ -1,14 +1,38 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
+    { "source": "/produkte", "destination": "/produkte/index.html" },
+    { "source": "/baustellenzubehoer", "destination": "/baustellenzubehoer/index.html" },
+    { "source": "/feinsteinzeug", "destination": "/feinsteinzeug/index.html" },
+    { "source": "/premium-mosaike", "destination": "/premium-mosaike/index.html" },
+    { "source": "/spc-vinyl", "destination": "/spc-vinyl/index.html" },
+    { "source": "/bad-sanitaer", "destination": "/bad-sanitaer/index.html" },
+    { "source": "/projektanfrage", "destination": "/projektanfrage/index.html" },
+    { "source": "/kontakt", "destination": "/kontakt/index.html" },
     { "source": "/((?!.*\\..*).*)", "destination": "/index.html" }
   ],
   "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
       ]
     }
   ]
