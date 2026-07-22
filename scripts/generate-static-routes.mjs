@@ -3,8 +3,8 @@ import path from 'node:path';
 
 const routes = {
   '/produkte': {
-    title: 'Premium Produkte für Bau und Renovation | RA Bau Lieferung',
-    description: 'Entdecken Sie fünf spezialisierte Sortimentsbereiche mit geprüften Produktdaten, Herstellerreferenzen und persönlicher Projektberatung.',
+    title: 'Premium Produkte und Raumkonzepte | RA Bau Lieferung',
+    description: 'Vier klar kuratierte Sortimentsbereiche für den Schweizer Premium- und Luxusmarkt: Keramik, Badezimmer, Vinyl/SPC/Kork und komplette Raumkonzepte.',
     label: 'Produkte',
     image: '/images/categories/recer-pixstone-room.webp',
   },
@@ -15,28 +15,28 @@ const routes = {
     image: '/images/Komplettset.png',
   },
   '/feinsteinzeug': {
-    title: 'Premium Feinsteinzeug Schweiz | RA Bau Lieferung',
-    description: 'Grossformatiges Feinsteinzeug in Marmor-, Travertin-, Stein- und Designoptik für hochwertige Wohn-, Bad-, Hotel- und Objektprojekte.',
-    label: 'Feinsteinzeug',
+    title: 'Keramik & Premium Feinsteinzeug Schweiz | RA Bau Lieferung',
+    description: 'Kuratiertes Feinsteinzeug, Wandkeramik und ausgewählte koordinierte Mosaike in Marmor-, Travertin-, Stein- und Designoptik.',
+    label: 'Keramik & Feinsteinzeug',
     image: '/images/categories/recer-pixstone-room.webp',
   },
-  '/premium-mosaike': {
-    title: 'Premium Mosaike Schweiz | RA Bau Lieferung',
-    description: 'Exklusive Mosaike für Dusche, Spa, Hotel und hochwertige Akzentflächen – technisch dokumentiert und projektbezogen lieferbar.',
-    label: 'Premium Mosaike',
-    image: '/images/products/recer-mastery-mosaic.webp',
+  '/badezimmer': {
+    title: 'Premium Badezimmer Schweiz | RA Bau Lieferung',
+    description: 'Hochwertige Badmöbel, Armaturen, Duschsysteme, Glas, WCs und Duschwannen von Rubicer, Roca, Moovlux und IMEX.',
+    label: 'Badezimmer',
+    image: '/images/catalog/rubicer-stria.png',
   },
   '/spc-vinyl': {
-    title: 'Premium SPC- und Vinylböden Schweiz | RA Bau Lieferung',
-    description: 'Hochwertige SPC-, Vinyl- und Korkböden in Eiche, Fischgrät, XL-Dielen und belastbaren Projektqualitäten.',
-    label: 'SPC & Vinyl',
+    title: 'Premium Vinyl, SPC & Kork Schweiz | RA Bau Lieferung',
+    description: 'Fischgrat, XL-Dielen, Contract-Vinyl und natürlicher Kork für hochwertige Wohnungen, Hotels, Büros und Renovationen.',
+    label: 'Vinyl, SPC & Kork',
     image: '/images/products/rubifloor-herringbone-natural.webp',
   },
-  '/bad-sanitaer': {
-    title: 'Premium Bad & Sanitär Schweiz | RA Bau Lieferung',
-    description: 'Badmöbel, Armaturen, Duschsysteme, WCs, Duschwannen und Duschabtrennungen für hochwertige Komplettbad- und Einzelproduktlösungen.',
-    label: 'Bad & Sanitär',
-    image: '/images/catalog/rubicer-stria.png',
+  '/raumkonzepte': {
+    title: 'Luxus Raumkonzepte Schweiz | RA Bau Lieferung',
+    description: 'Kuratierte Komplettlösungen für Bad, Wohnen und Küche. Produkte gemeinsam sehen, einzeln auswählen und projektbezogen anfragen.',
+    label: 'Raumkonzepte',
+    image: '/images/premium/signature-gold.svg',
   },
   '/projektanfrage': {
     title: 'Projektanfrage zusammenstellen | RA Bau Lieferung',

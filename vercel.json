@@ -1,13 +1,17 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/premium-mosaike", "destination": "/badezimmer", "permanent": true },
+    { "source": "/bad-sanitaer", "destination": "/raumkonzepte", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/produkte", "destination": "/produkte/index.html" },
     { "source": "/baustellenzubehoer", "destination": "/baustellenzubehoer/index.html" },
     { "source": "/feinsteinzeug", "destination": "/feinsteinzeug/index.html" },
-    { "source": "/premium-mosaike", "destination": "/premium-mosaike/index.html" },
+    { "source": "/badezimmer", "destination": "/badezimmer/index.html" },
     { "source": "/spc-vinyl", "destination": "/spc-vinyl/index.html" },
-    { "source": "/bad-sanitaer", "destination": "/bad-sanitaer/index.html" },
+    { "source": "/raumkonzepte", "destination": "/raumkonzepte/index.html" },
     { "source": "/projektanfrage", "destination": "/projektanfrage/index.html" },
     { "source": "/kontakt", "destination": "/kontakt/index.html" },
     { "source": "/((?!.*\\..*).*)", "destination": "/index.html" }
@@ -15,15 +19,11 @@
   "headers": [
     {
       "source": "/assets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
       "source": "/images/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
-      ]
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }]
     },
     {
       "source": "/(.*)",
