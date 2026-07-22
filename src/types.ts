@@ -1,13 +1,4 @@
-export type PageRoute = 
-  | 'home' 
-  | 'baustellenzubehoor' 
-  | 'interior' 
-  | 'porcelain' 
-  | 'mosaics' 
-  | 'spc' 
-  | 'bathroom' 
-  | 'contact'
-  | 'quote-planner';
+export type PageRoute = 'home' | 'baustellenzubehoor' | 'interior' | 'porcelain' | 'mosaics' | 'spc' | 'bathroom' | 'contact' | 'quote-planner';
 
 export interface ConstructionProduct {
   id: string;
@@ -30,6 +21,13 @@ export interface ConstructionCategory {
   bannerImage?: string;
 }
 
+export interface ProductVisual {
+  src: string;
+  alt: string;
+  fit?: 'cover' | 'contain';
+  label?: string;
+}
+
 export interface InteriorProduct {
   id: string;
   name: string;
@@ -37,6 +35,7 @@ export interface InteriorProduct {
   details: string;
   image: string;
   imageFit?: 'cover' | 'contain';
+  gallery?: ProductVisual[];
   brand?: string;
   reference: string;
   format: string;
@@ -47,6 +46,7 @@ export interface InteriorProduct {
   lead?: string;
   badges?: string[];
   featured?: boolean;
+  components?: string[];
 }
 
 export interface InteriorCategory {
@@ -63,8 +63,8 @@ export interface QuoteItem {
   brand?: string;
   image: string;
   quantity: string;
-  unit: string; // e.g. 'm²', 'Stk.', 'Laufmeter', 'Kartons'
-  format?: string; // e.g. '60x60', '30x60', '120x120' etc.
+  unit: string;
+  format?: string;
   customNote?: string;
   isCustom?: boolean;
   reference?: string;
