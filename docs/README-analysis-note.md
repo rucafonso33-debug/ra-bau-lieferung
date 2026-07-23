@@ -1,0 +1,1 @@
+Sparte 01 excluded from conversion review.
