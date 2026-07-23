@@ -15,6 +15,9 @@ for (const category of interiorCategories) {
     if (!product.name) errors.push(`${product.id}: missing name.`);
     if (!product.reference) errors.push(`${product.id}: missing reference.`);
     if (!product.image) errors.push(`${product.id}: missing primary image.`);
+    if (!product.sourceCatalog) errors.push(`${product.id}: missing source catalogue.`);
+    if (!product.sourcePage) errors.push(`${product.id}: missing source page.`);
+    if (!product.verificationStatus) errors.push(`${product.id}: missing verification status.`);
 
     const gallery = product.gallery ?? [];
     if (gallery.length < 2) errors.push(`${product.id}: gallery must contain at least two images.`);
@@ -33,8 +36,13 @@ for (const category of interiorCategories) {
       }
     }
 
-    if (product.brand === 'Raumkonzept' && product.format !== '1 Komplettkonzept' && product.format !== '1 Raumkonzept') {
-      errors.push(`${product.id}: room concept must use a one-set format.`);
+    if (product.brand === 'Raumkonzept') {
+      if (product.format !== '1 Komplettkonzept' && product.format !== '1 Raumkonzept') errors.push(`${product.id}: room concept must use a one-set format.`);
+      if (product.verificationStatus !== 'concept-visualisation') errors.push(`${product.id}: concept must be labelled as visualisation.`);
+      if (!product.components?.length) errors.push(`${product.id}: concept requires components.`);
+      if (!product.gallery?.[0]?.label?.includes('Visualisierung')) errors.push(`${product.id}: first gallery label must identify the visualisation.`);
+    } else if (product.verificationStatus !== 'catalogue-verified') {
+      errors.push(`${product.id}: published product must be catalogue verified.`);
     }
   }
 }
