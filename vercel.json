@@ -13,8 +13,7 @@
     { "source": "/spc-vinyl", "destination": "/spc-vinyl/index.html" },
     { "source": "/raumkonzepte", "destination": "/raumkonzepte/index.html" },
     { "source": "/projektanfrage", "destination": "/projektanfrage/index.html" },
-    { "source": "/kontakt", "destination": "/kontakt/index.html" },
-    { "source": "/((?!.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/kontakt", "destination": "/kontakt/index.html" }
   ],
   "headers": [
     {
