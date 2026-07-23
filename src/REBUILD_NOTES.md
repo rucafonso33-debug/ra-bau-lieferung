@@ -1,0 +1,4 @@
+- Sparte 01 untouched
+- Spartes 02-05 rebuilt from verified catalogue data
+- No unsupported claims
+- Mobile and desktop verified before merge
