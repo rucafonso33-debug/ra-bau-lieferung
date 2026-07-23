@@ -1,0 +1,1 @@
+The rebuild will be implemented as normal React modules rather than generated string replacements.
