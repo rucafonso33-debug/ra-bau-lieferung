@@ -4,7 +4,7 @@ import path from 'node:path';
 const routes = {
   '/produkte': {
     title: 'Produkte und Raumkonzepte | RA Bau Lieferung',
-    description: 'Vier klar kuratierte Sortimentsbereiche: Keramik und Feinsteinzeug, Badezimmer, SPC-Böden und fünf verständliche Raumideen.',
+    description: 'Vier klar kuratierte Sortimentsbereiche: Keramik und Feinsteinzeug, Badezimmer, Vinyl- und SPC-Böden sowie fünf verständliche Raumideen.',
     label: 'Produkte',
     image: '/images/categories/recer-pixstone-room.webp',
   },
@@ -16,7 +16,7 @@ const routes = {
   },
   '/feinsteinzeug': {
     title: 'Keramik & Feinsteinzeug Schweiz | RA Bau Lieferung',
-    description: 'Sieben kuratierte Referenzen in Travertin-, Carving-, Marmor-, Naturstein- und Terrazzooptik sowie zwei koordinierte Mosaike.',
+    description: 'Fünf kuratierte Kollektionen in Travertin-, Carving-, Marmor-, Naturstein- und mineralischer Optik. Koordinierte Mosaike erscheinen als Ergänzung der jeweiligen Serie.',
     label: 'Keramik & Feinsteinzeug',
     image: '/images/categories/recer-pixstone-room.webp',
   },
@@ -27,9 +27,9 @@ const routes = {
     image: '/images/catalog/rubicer-stria.png',
   },
   '/spc-vinyl': {
-    title: 'SPC-Böden Schweiz | RA Bau Lieferung',
-    description: 'Fünf klar unterscheidbare Rubifloor-Lösungen in Fischgrat, XL-Diele, heller Eiche, Projektqualität und Steinoptik.',
-    label: 'SPC-Böden',
+    title: 'Vinyl- und SPC-Böden Schweiz | RA Bau Lieferung',
+    description: 'Vier klar unterscheidbare Rubifloor-Lösungen in Fischgrat, XL-Diele, heller Eiche und robuster Projektqualität.',
+    label: 'Vinyl, SPC & Kork',
     image: '/images/products/rubifloor-herringbone-natural.webp',
   },
   '/raumkonzepte': {
