@@ -6,7 +6,7 @@ export const storefront = {
   phoneDisplay: '+41 78 241 89 13',
   phoneDigits: '41782418913',
   email: 'rodrigo@ra-bau-lieferung.com',
-  address: 'Zeughausstrasse 5, 4702 Oensingen',
+  address: 'Schweiz',
   promise: 'Materialwirkung, Herstellerreferenz und Schweizer Projektlogistik in einer klaren Anfrage.',
 } as const;
 

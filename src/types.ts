@@ -77,4 +77,8 @@ export interface QuoteItem {
   reference?: string;
   components?: string[];
   selectedComponents?: string[];
+  optionalComponents?: string[];
+  substitutions?: string[];
+  selectedSubstitutions?: Record<string, string>;
+  isConcept?: boolean;
 }
