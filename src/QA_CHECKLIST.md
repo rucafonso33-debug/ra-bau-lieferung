@@ -1,0 +1,7 @@
+- Desktop routes
+- Mobile routes
+- Product imagery
+- Quote add/remove/edit
+- WhatsApp and email summary
+- SEO and social images
+- Sparte 01 regression
