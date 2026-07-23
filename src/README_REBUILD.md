@@ -1,0 +1,1 @@
+The new storefront architecture applies to Spartes 02-05. The legacy Baustellenzubehör experience remains isolated and untouched.
