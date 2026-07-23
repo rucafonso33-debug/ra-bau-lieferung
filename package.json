@@ -8,9 +8,10 @@
     "validate:data": "tsx scripts/validate-storefront.ts",
     "validate:images": "tsx scripts/validate-storefront.ts --images",
     "check:routes": "tsx scripts/check-routes.ts",
+    "test:quote": "tsx scripts/test-quote-model.ts",
     "lint": "tsc --noEmit",
-    "build": "npm run validate:data && tsc --noEmit && vite build && node scripts/generate-static-routes.mjs",
-    "check:all": "npm run lint && npm run validate:data && npm run build",
+    "build": "npm run validate:data && npm run test:quote && tsc --noEmit && vite build && node scripts/generate-static-routes.mjs",
+    "check:all": "npm run lint && npm run validate:data && npm run validate:images && npm run check:routes && npm run test:quote && npm run build",
     "preview": "vite preview",
     "clean": "rm -rf dist"
   },
