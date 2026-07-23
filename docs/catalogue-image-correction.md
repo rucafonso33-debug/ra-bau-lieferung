@@ -1,0 +1,1 @@
+Correcting product-image matches from original manufacturer catalogues. Sparte 01 remains untouched.
