@@ -4,7 +4,7 @@ import path from 'node:path';
 const routes = {
   '/produkte': {
     title: 'Produkte und Raumkonzepte | RA Bau Lieferung',
-    description: 'Vier klar kuratierte Sortimentsbereiche: Keramik und Feinsteinzeug, Badezimmer, Vinyl- und SPC-Böden sowie fünf verständliche Raumideen.',
+    description: 'Vier klar kuratierte Sortimentsbereiche: drei Keramikkollektionen, eine vollständig belegte Badmöbelreferenz, drei Vinyl- und SPC-Böden sowie fünf ehrliche Materialkonzepte.',
     label: 'Produkte',
     image: '/images/categories/recer-pixstone-room.webp',
   },
@@ -16,25 +16,25 @@ const routes = {
   },
   '/feinsteinzeug': {
     title: 'Keramik & Feinsteinzeug Schweiz | RA Bau Lieferung',
-    description: 'Fünf kuratierte Kollektionen in Travertin-, Carving-, Marmor-, Naturstein- und mineralischer Optik. Koordinierte Mosaike erscheinen als Ergänzung der jeweiligen Serie.',
+    description: 'Drei kataloggeprüfte Recer-Kollektionen in Marmor-, Naturstein- und mineralischer Optik. Koordinierte Mosaike erscheinen als Ergänzung der jeweiligen Serie.',
     label: 'Keramik & Feinsteinzeug',
     image: '/images/categories/recer-pixstone-room.webp',
   },
   '/badezimmer': {
     title: 'Badezimmer Schweiz | RA Bau Lieferung',
-    description: 'Fünf klar dargestellte Badprodukte: Möbel, Armatur, Duschsystem, WC und Duschwanne. Weitere Referenzen werden projektbezogen geprüft.',
+    description: 'Eine bewusst reduzierte, vollständig belegte Rubicer-Stria-Badmöbelreferenz mit Herstellerbild und technischer Produktansicht. Weitere Produkte werden erst nach eindeutiger Bild- und Referenzprüfung veröffentlicht.',
     label: 'Badezimmer',
     image: '/images/catalog/rubicer-stria.png',
   },
   '/spc-vinyl': {
     title: 'Vinyl- und SPC-Böden Schweiz | RA Bau Lieferung',
-    description: 'Vier klar unterscheidbare Rubifloor-Lösungen in Fischgrat, XL-Diele, heller Eiche und robuster Projektqualität.',
+    description: 'Drei klar unterscheidbare Rubifloor-Lösungen: Fischgrat, extralange Eichenoptik und grossformatige Steinoptik.',
     label: 'Vinyl, SPC & Kork',
     image: '/images/products/rubifloor-herringbone-natural.webp',
   },
   '/raumkonzepte': {
     title: 'Raumkonzepte Schweiz | RA Bau Lieferung',
-    description: 'Fünf verständliche Stilwelten aus realen Katalogreferenzen: drei Badezimmer, ein Wohnraum und eine Küche.',
+    description: 'Fünf klar gekennzeichnete Materialvisualisierungen aus kataloggeprüften Herstellerkollektionen. Keine Darstellung wird als real ausgeführtes Referenzprojekt ausgegeben.',
     label: 'Raumkonzepte',
     image: '/images/categories/recer-pixstone-room.webp',
   },
