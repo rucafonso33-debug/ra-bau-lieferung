@@ -89,7 +89,7 @@ const concepts: InteriorProduct[] = [
     image: '/images/catalog/recer-bluenza.png', brand: 'Raumkonzept', reference: 'Konzept 01 · Materialstimmung', format: '1 Komplettkonzept', finish: 'Warm Stone · White', application: 'Badezimmer · Spa', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Badezimmer'],
     components: ['Recer Bluenza Kollektion', 'Rubicer Stria Horizontal 100'], optionalComponents: ['Duschsystem nach Auswahl'], substitutions: ['Stria-Ausführung nach Auswahl'],
     gallery: [
-      visual('/images/catalog/recer-bluenza.png', 'Warm Stone Spa Materialstimmung mit Recer Bluenza', 'Materialstimmung – Herstellerbild'),
+      visual('/images/catalog/recer-bluenza.png', 'Warm Stone Spa Materialstimmung mit Recer Bluenza', 'Visualisierung – Materialstimmung mit Herstellerbild'),
       visual('/images/catalog/rubicer-stria.png', 'Rubicer Stria als Möbelkomponente', 'Badmöbel'),
       visual('/images/catalogue-corrected/stria-product.webp', 'Stria Horizontal 100 technische Ansicht', 'Möbel & Masse', 'contain'),
     ],
@@ -100,7 +100,7 @@ const concepts: InteriorProduct[] = [
     image: '/images/catalog/recer-mastery.png', brand: 'Raumkonzept', reference: 'Konzept 02 · Materialstimmung', format: '1 Komplettkonzept', finish: 'Marmor · White', application: 'Masterbad · Hotelsuite', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Suite'],
     components: ['Recer Mastery Kollektion', 'Rubicer Stria Horizontal 100'], optionalComponents: ['Metalloberfläche nach Auswahl'], substitutions: ['Mastery Natural oder Polished'],
     gallery: [
-      visual('/images/catalog/recer-mastery.png', 'Marble Suite Materialstimmung mit Recer Mastery', 'Materialstimmung – Herstellerbild'),
+      visual('/images/catalog/recer-mastery.png', 'Marble Suite Materialstimmung mit Recer Mastery', 'Visualisierung – Materialstimmung mit Herstellerbild'),
       visual('/images/catalog/rubicer-stria.png', 'Rubicer Stria als Möbelkomponente', 'Badmöbel'),
       visual('/images/products/recer-mastery-mosaic.webp', 'Mastery Mix als optionale Ergänzung', 'Mosaik-Option', 'contain'),
     ],
@@ -111,7 +111,7 @@ const concepts: InteriorProduct[] = [
     image: '/images/categories/recer-pixstone-room.webp', brand: 'Raumkonzept', reference: 'Konzept 03 · Materialstimmung', format: '1 Komplettkonzept', finish: 'Warm White · Mineral', application: 'Badezimmer · Neubau', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Minimal'],
     components: ['Recer Pixstone Air Warm Kollektion', 'Rubicer Stria Horizontal 100'], optionalComponents: ['Mosaik-Akzent'], substitutions: ['Pixstone-Format nach Fläche'],
     gallery: [
-      visual('/images/categories/recer-pixstone-room.webp', 'Soft Minimal Materialstimmung mit Pixstone Air Warm', 'Materialstimmung – Herstellerbild'),
+      visual('/images/categories/recer-pixstone-room.webp', 'Soft Minimal Materialstimmung mit Pixstone Air Warm', 'Visualisierung – Materialstimmung mit Herstellerbild'),
       visual('/images/catalog/rubicer-stria.png', 'Rubicer Stria als Möbelkomponente', 'Badmöbel'),
       visual('/images/catalog/recer-pixstone.png', 'Pixstone Formate und Oberflächen', 'Keramikdetails', 'contain'),
     ],
@@ -122,7 +122,7 @@ const concepts: InteriorProduct[] = [
     image: '/images/products/rubifloor-herringbone-natural.webp', brand: 'Raumkonzept', reference: 'Konzept 04 · Materialstimmung', format: '1 Raumkonzept', finish: 'Natural Oak · Warm White', application: 'Wohnzimmer · Essen', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Living'],
     components: ['Rubifloor Herringbone Natural', 'Recer Mastery Kollektion'], optionalComponents: ['Mastery-Mosaik'], substitutions: ['Keramikfläche nach Projekt'],
     gallery: [
-      visual('/images/products/rubifloor-herringbone-natural.webp', 'Natural Herringbone als verlegter Boden', 'Materialstimmung – Herstellerbild'),
+      visual('/images/products/rubifloor-herringbone-natural.webp', 'Natural Herringbone als verlegter Boden', 'Visualisierung – Materialstimmung mit Herstellerbild'),
       visual('/images/technical/herringbone-natural-board.svg', 'Herringbone Diele und Verlegemuster', 'Bodendetail', 'contain'),
       visual('/images/catalog/recer-mastery.png', 'Mastery als koordinierte Keramik', 'Keramik'),
     ],
@@ -133,7 +133,7 @@ const concepts: InteriorProduct[] = [
     image: '/images/categories/recer-pixstone-room.webp', brand: 'Raumkonzept', reference: 'Konzept 05 · Materialstimmung', format: '1 Raumkonzept', finish: 'Mineral · Oak', application: 'Küche · Essen · Open Space', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Kitchen'],
     components: ['Recer Pixstone Air Warm Kollektion', 'Rubifloor XL1.8 Home'], optionalComponents: ['Mosaik-Akzent'], substitutions: ['XL-Dekor nach Auswahl'],
     gallery: [
-      visual('/images/categories/recer-pixstone-room.webp', 'Mineral and Oak Materialstimmung mit Pixstone', 'Materialstimmung – Herstellerbild'),
+      visual('/images/categories/recer-pixstone-room.webp', 'Mineral and Oak Materialstimmung mit Pixstone', 'Visualisierung – Materialstimmung mit Herstellerbild'),
       visual('/images/products/rubifloor-xl-home.webp', 'XL1.8 Home als verlegter Boden', 'Boden'),
       visual('/images/technical/xl-home-board.svg', 'XL1.8 Home Diele und Aufbau', 'Bodendetail', 'contain'),
     ],
