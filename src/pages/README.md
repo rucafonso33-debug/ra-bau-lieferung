@@ -1,1 +1,0 @@
-Each route owns its content and composes reusable storefront components.

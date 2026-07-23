@@ -1,1 +1,0 @@
-Only verified catalogue-derived and explicitly labelled visualisation assets are referenced here.

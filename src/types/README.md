@@ -1,1 +1,0 @@
-Product, concept and quote contracts are defined here.

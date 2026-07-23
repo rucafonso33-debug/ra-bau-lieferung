@@ -1,1 +1,0 @@
-Only catalogue-verified products and source metadata belong in these modules.

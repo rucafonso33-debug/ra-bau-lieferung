@@ -1,1 +1,0 @@
-The app layer owns routing, quote state and page composition.

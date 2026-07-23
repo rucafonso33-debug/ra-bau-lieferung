@@ -1,1 +1,0 @@
-Validate as private client, architect, installer, mobile user, first-time visitor and reference-led buyer.

@@ -1,1 +1,0 @@
-Every published product must retain source catalogue and page metadata.
