@@ -1,0 +1,11 @@
+- [x] Remove virtual storefront generation
+- [x] Remove Vite string replacements
+- [x] Preserve Sparte 01 data
+- [x] Curate Spartes 02–05
+- [x] Add distinct product galleries
+- [x] Add reversible persistent quote flow
+- [x] Add SEO route generation
+- [x] Add data and route validation
+- [ ] Final CI
+- [ ] Preview verification
+- [ ] Merge and production verification

@@ -28,6 +28,8 @@ export interface ProductVisual {
   label?: string;
 }
 
+export type VerificationStatus = 'catalogue-verified' | 'concept-visualisation';
+
 export interface InteriorProduct {
   id: string;
   name: string;
@@ -47,6 +49,11 @@ export interface InteriorProduct {
   badges?: string[];
   featured?: boolean;
   components?: string[];
+  optionalComponents?: string[];
+  substitutions?: string[];
+  sourceCatalog?: string;
+  sourcePage?: string;
+  verificationStatus?: VerificationStatus;
 }
 
 export interface InteriorCategory {
@@ -68,4 +75,6 @@ export interface QuoteItem {
   customNote?: string;
   isCustom?: boolean;
   reference?: string;
+  components?: string[];
+  selectedComponents?: string[];
 }

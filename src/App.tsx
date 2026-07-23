@@ -1,1 +1,198 @@
-export { default } from 'virtual:storefront';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight, ClipboardList, Mail, Menu, MessageCircle, Minus, Plus, Search, X } from 'lucide-react';
+import { constructionCategories, interiorCategories } from './finalData';
+import { projectEntries, storefront, whatsappUrl } from './storefrontConfig';
+import type { ConstructionProduct, InteriorProduct, ProductVisual, QuoteItem } from './types';
+
+const routeMap: Record<string, string> = {
+  '/': 'home',
+  '/produkte': 'products',
+  '/baustellenzubehoer': 'construction',
+  '/feinsteinzeug': 'ceramics',
+  '/badezimmer': 'bathroom',
+  '/spc-vinyl': 'flooring',
+  '/raumkonzepte': 'concepts',
+  '/projektanfrage': 'quote',
+  '/kontakt': 'contact',
+};
+
+const pageToPath: Record<string, string> = Object.fromEntries(Object.entries(routeMap).map(([path, page]) => [page, path]));
+const oldRedirects: Record<string, string> = { '/premium-mosaike': '/badezimmer', '/bad-sanitaer': '/raumkonzepte' };
+
+function useRoute() {
+  const initialPath = oldRedirects[window.location.pathname] ?? window.location.pathname;
+  const [page, setPage] = useState(routeMap[initialPath] ?? 'not-found');
+
+  useEffect(() => {
+    if (oldRedirects[window.location.pathname]) {
+      window.history.replaceState({}, '', oldRedirects[window.location.pathname]);
+    }
+    const onPop = () => setPage(routeMap[window.location.pathname] ?? 'not-found');
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const navigate = (next: string) => {
+    const path = pageToPath[next] ?? '/';
+    window.history.pushState({}, '', path);
+    setPage(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return { page, navigate };
+}
+
+function useQuote() {
+  const [items, setItems] = useState<QuoteItem[]>(() => {
+    try { return JSON.parse(localStorage.getItem('ra_quote_v2') ?? '[]'); } catch { return []; }
+  });
+  useEffect(() => localStorage.setItem('ra_quote_v2', JSON.stringify(items)), [items]);
+
+  const toggleInterior = (product: InteriorProduct) => {
+    setItems((current) => {
+      if (current.some((item) => item.reference === product.reference)) return current.filter((item) => item.reference !== product.reference);
+      const isConcept = product.brand === 'Raumkonzept';
+      const piece = isConcept || ['Waschtisch', 'Badmöbel', 'Armatur', 'Duschsystem', 'Duschwanne', 'Duschabtrennung', 'WC', 'Bidet'].some((term) => `${product.name} ${product.application}`.includes(term));
+      return [...current, {
+        id: product.id,
+        name: product.name,
+        spec: product.spec,
+        brand: product.brand,
+        image: product.image,
+        quantity: piece ? '1' : '25',
+        unit: isConcept ? 'Set' : piece ? 'Stk.' : 'm²',
+        format: product.format,
+        reference: product.reference,
+      }];
+    });
+  };
+
+  const toggleConstruction = (product: ConstructionProduct) => {
+    setItems((current) => {
+      if (current.some((item) => item.id === product.id)) return current.filter((item) => item.id !== product.id);
+      return [...current, { id: product.id, name: product.name, spec: product.variants, image: product.image, quantity: product.defaultQuantity, unit: product.unit }];
+    });
+  };
+
+  const update = (id: string, patch: Partial<QuoteItem>) => setItems((current) => current.map((item) => item.id === id ? { ...item, ...patch } : item));
+  const remove = (id: string) => setItems((current) => current.filter((item) => item.id !== id));
+  return { items, toggleInterior, toggleConstruction, update, remove };
+}
+
+function Header({ page, navigate, quoteCount }: { page: string; navigate: (page: string) => void; quoteCount: number }) {
+  const [open, setOpen] = useState(false);
+  const links = [
+    ['products', 'Produkte'], ['construction', 'Baustellenzubehör'], ['ceramics', 'Keramik'], ['bathroom', 'Badezimmer'], ['flooring', 'Böden'], ['concepts', 'Raumkonzepte'], ['contact', 'Kontakt'],
+  ];
+  return <header className="sticky top-0 z-50 border-b border-[#dce3e7] bg-white/95 backdrop-blur">
+    <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 lg:h-20 lg:px-8">
+      <button onClick={() => navigate('home')} className="text-left"><span className="block font-display text-lg font-black tracking-[-.03em] text-[#10293e]">RA Bau Lieferung</span><span className="block text-[9px] font-bold uppercase tracking-[.18em] text-[#8e6725]">Schweiz · Projektbezogen</span></button>
+      <nav className="hidden items-center gap-5 xl:flex">{links.map(([key, label]) => <button key={key} onClick={() => navigate(key)} className={`text-xs font-bold ${page === key ? 'text-[#004b87]' : 'text-[#536b79] hover:text-[#004b87]'}`}>{label}</button>)}</nav>
+      <div className="flex items-center gap-2"><button onClick={() => navigate('quote')} className="relative inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#004b87] px-4 text-xs font-extrabold text-white"><ClipboardList size={16} /> Anfrage{quoteCount ? <span className="rounded-full bg-[#d7aa57] px-2 py-0.5 text-[#10293e]">{quoteCount}</span> : null}</button><button aria-label="Menü" onClick={() => setOpen(!open)} className="flex h-11 w-11 items-center justify-center rounded-lg border border-[#d8e1e6] xl:hidden">{open ? <X /> : <Menu />}</button></div>
+    </div>
+    {open ? <nav className="border-t border-[#e2e8eb] bg-white px-4 py-3 xl:hidden">{links.map(([key, label]) => <button key={key} onClick={() => { navigate(key); setOpen(false); }} className="block min-h-11 w-full border-b border-[#eef2f4] text-left text-sm font-bold text-[#10293e]">{label}</button>)}</nav> : null}
+  </header>;
+}
+
+function Hero({ navigate }: { navigate: (page: string) => void }) {
+  return <section className="bg-[#10293e] text-white"><div className="mx-auto grid max-w-[1500px] lg:grid-cols-[.95fr_1.05fr]">
+    <div className="flex flex-col justify-center px-5 py-16 lg:px-12 lg:py-24"><p className="text-[11px] font-extrabold uppercase tracking-[.22em] text-[#d7aa57]">Materialien für anspruchsvolle Schweizer Projekte</p><h1 className="mt-5 max-w-2xl font-display text-5xl font-black leading-[.98] tracking-[-.055em] sm:text-6xl lg:text-7xl">Materialien, die Räume aufwerten.</h1><p className="mt-6 max-w-xl text-base leading-7 text-white/72">Starten Sie beim Raum oder bei einer konkreten Herstellerreferenz. Wir verbinden Materialwirkung, technische Eignung und Schweizer Projektlogistik in einer klaren Anfrage.</p><div className="mt-8 flex flex-wrap gap-3"><button onClick={() => navigate('products')} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-[#d7aa57] px-5 text-sm font-extrabold text-[#10293e]">Produkte entdecken <ArrowRight size={17} /></button><button onClick={() => navigate('quote')} className="inline-flex min-h-12 items-center rounded-lg border border-white/25 px-5 text-sm font-extrabold">Referenz anfragen</button></div><div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-[.14em] text-white/55"><span>Kuratiertes Sortiment</span><span>Herstellerreferenzen</span><span>Persönlicher Kontakt</span></div></div>
+    <div className="relative min-h-[380px] lg:min-h-[680px]"><img src="/images/categories/recer-pixstone-room.webp" alt="Heller hochwertiger Innenraum mit grossformatiger Keramik" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#10293e]/60 via-transparent to-transparent" /></div>
+  </div></section>;
+}
+
+function ProjectEntries({ navigate }: { navigate: (page: string) => void }) {
+  return <section className="bg-white"><div className="mx-auto max-w-[1500px] px-5 py-16 lg:px-10"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Schneller Einstieg</p><h2 className="mt-3 font-display text-4xl font-black tracking-[-.04em] text-[#10293e]">Was möchten Sie gestalten?</h2><div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{projectEntries.map((item) => <button key={item.id} onClick={() => navigate(item.route)} className="group overflow-hidden border border-[#d9e1e5] bg-[#f7f9fa] text-left"><div className="aspect-[16/10] overflow-hidden"><img src={item.image} alt={item.imageAlt} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" /></div><div className="p-5"><p className="text-[9px] font-extrabold uppercase tracking-[.14em] text-[#8e6725]">{item.tag}</p><h3 className="mt-2 font-display text-2xl font-black text-[#10293e]">{item.title}</h3><p className="mt-2 text-sm leading-6 text-[#647985]">{item.copy}</p></div></button>)}</div></div></section>;
+}
+
+const categoryRoutes = [
+  { page: 'ceramics', title: 'Keramik & Feinsteinzeug', category: 'Keramik & Feinsteinzeug', image: '/images/catalog/recer-mastery.png', copy: 'Travertin, Marmor, Naturstein, Mineraloptik, Relief und koordinierte Mosaike.' },
+  { page: 'bathroom', title: 'Badezimmer', category: 'Badezimmer', image: '/images/catalog/rubicer-stria.png', copy: 'Möbel, Armaturen, Dusche, WC und Duschwannen als klar verständliche Auswahl.' },
+  { page: 'flooring', title: 'Vinyl, SPC & Kork', category: 'Vinyl, SPC & Kork', image: '/images/products/rubifloor-herringbone-natural.webp', copy: 'Fischgrat, XL-Dielen, natürliche Eiche und belastbare Projektdekore.' },
+  { page: 'concepts', title: 'Raumkonzepte', category: 'Raumkonzepte', image: '/images/categories/recer-pixstone-room.webp', copy: 'Fünf Stilwelten für Bad, Wohnen und Küche mit realen anfragbaren Komponenten.' },
+];
+
+function Categories({ navigate }: { navigate: (page: string) => void }) {
+  return <section className="bg-[#eef2f3]"><div className="mx-auto max-w-[1500px] px-5 py-16 lg:px-10"><div className="flex items-end justify-between gap-6"><div><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Spartes 02–05</p><h2 className="mt-3 font-display text-4xl font-black tracking-[-.04em] text-[#10293e]">Eine klare Auswahl statt endloser Listen.</h2></div></div><div className="mt-8 grid gap-px bg-[#ccd7dc] lg:grid-cols-2">{categoryRoutes.map((category) => <button key={category.page} onClick={() => navigate(category.page)} className="group grid bg-white text-left sm:grid-cols-[.9fr_1.1fr]"><div className="aspect-[4/3] overflow-hidden sm:aspect-auto"><img src={category.image} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" /></div><div className="flex flex-col justify-center p-7 lg:p-10"><h3 className="font-display text-3xl font-black text-[#10293e]">{category.title}</h3><p className="mt-3 text-sm leading-6 text-[#617783]">{category.copy}</p><span className="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-[#004b87]">Auswahl öffnen <ArrowRight size={15} /></span></div></button>)}</div></div></section>;
+}
+
+function Process() {
+  const steps = ['Produkt oder Raum auswählen.', 'Masse, Menge oder Foto senden.', 'Referenz und Eignung prüfen lassen.', 'Verfügbarkeit, Transport und Einfuhr kalkulieren.', 'Schriftliche Offerte erhalten.', 'Bestellung erst nach Bestätigung.'];
+  return <section className="bg-[#10293e] text-white"><div className="mx-auto max-w-[1500px] px-5 py-16 lg:px-10"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#d7aa57]">So funktioniert die Anfrage</p><div className="mt-8 grid gap-px bg-white/15 sm:grid-cols-2 lg:grid-cols-3">{steps.map((step, index) => <div key={step} className="bg-[#10293e] p-6 lg:p-8"><span className="text-3xl font-black text-[#d7aa57]">0{index + 1}</span><p className="mt-4 text-sm font-bold leading-6">{step}</p></div>)}</div><p className="mt-8 text-sm text-white/65">Muster auf Anfrage. Verfügbarkeit und Kosten werden je Hersteller und Referenz bestätigt.</p></div></section>;
+}
+
+function HomePage({ navigate }: { navigate: (page: string) => void }) {
+  return <><Hero navigate={navigate} /><ProjectEntries navigate={navigate} /><Categories navigate={navigate} /><Process /><Advisor navigate={navigate} /></>;
+}
+
+function Advisor({ navigate, category }: { navigate: (page: string) => void; category?: string }) {
+  const message = `Guten Tag, ich interessiere mich für ${category ?? 'ein Bau- oder Renovationsprojekt'}. Ich sende Raumfoto, ungefähre Masse, Stilwunsch und Lieferort.`;
+  return <section className="bg-white"><div className="mx-auto grid max-w-[1500px] lg:grid-cols-[1.2fr_.8fr]"><div className="px-5 py-14 lg:px-10 lg:py-20"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#9a6e22]">Persönliche Auswahlhilfe</p><h2 className="mt-3 font-display text-4xl font-black tracking-[-.04em] text-[#10293e]">Noch nicht sicher, was passt?</h2><p className="mt-4 max-w-2xl text-base leading-7 text-[#617783]">Senden Sie Raumfoto, ungefähre Masse, gewünschten Stil und Lieferort. Wir grenzen die Auswahl ein, statt Ihnen einfach mehr Produkte zu zeigen.</p></div><div className="flex flex-col justify-center gap-3 bg-[#e9eef0] p-6 lg:p-10"><a href={whatsappUrl(message)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#d7aa57] px-5 text-sm font-extrabold text-[#10293e]"><MessageCircle size={18} /> Auswahl per WhatsApp</a><button onClick={() => navigate('quote')} className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#b8c7cf] bg-white px-5 text-sm font-extrabold text-[#004b87]"><ClipboardList size={18} /> Anfrage zusammenstellen</button></div></div></section>;
+}
+
+function ProductGallery({ product }: { product: InteriorProduct }) {
+  const visuals: ProductVisual[] = product.gallery?.length ? product.gallery : [{ src: product.image, alt: `${product.brand ?? ''} ${product.name}`, fit: product.imageFit ?? 'cover', label: 'Produkt' }];
+  const [index, setIndex] = useState(0);
+  const current = visuals[index];
+  return <div><div className="relative aspect-[4/3] overflow-hidden bg-[#eef2f3]"><img src={current.src} alt={current.alt} className={`h-full w-full ${current.fit === 'contain' ? 'object-contain p-5' : 'object-cover'}`} /><span className="absolute bottom-3 left-3 bg-[#10293e]/90 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[.13em] text-white">{current.label ?? `Bild ${index + 1}`}</span>{visuals.length > 1 ? <><button aria-label="Vorheriges Bild" onClick={() => setIndex((index - 1 + visuals.length) % visuals.length)} className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-white/90"><ChevronLeft /></button><button aria-label="Nächstes Bild" onClick={() => setIndex((index + 1) % visuals.length)} className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-white/90"><ChevronRight /></button></> : null}</div>{visuals.length > 1 ? <div className="flex gap-2 overflow-x-auto py-3">{visuals.map((visual, itemIndex) => <button key={`${visual.src}-${itemIndex}`} onClick={() => setIndex(itemIndex)} className={`h-16 w-24 shrink-0 overflow-hidden border-2 ${itemIndex === index ? 'border-[#004b87]' : 'border-transparent'}`}><img src={visual.src} alt="" className={`h-full w-full ${visual.fit === 'contain' ? 'object-contain p-1' : 'object-cover'}`} /></button>)}</div> : null}</div>;
+}
+
+function ProductCard({ product, selected, onDetails, onToggle }: { product: InteriorProduct; selected: boolean; onDetails: () => void; onToggle: () => void }) {
+  return <article className="border border-[#d8e1e6] bg-white"><button onClick={onDetails} className="block w-full text-left"><div className="aspect-[4/3] overflow-hidden bg-[#eef2f3]"><img src={product.gallery?.[0]?.src ?? product.image} alt={product.gallery?.[0]?.alt ?? product.name} loading="lazy" className={`h-full w-full ${(product.gallery?.[0]?.fit ?? product.imageFit) === 'contain' ? 'object-contain p-5' : 'object-cover'}`} /></div></button><div className="p-5"><p className="text-[9px] font-extrabold uppercase tracking-[.16em] text-[#8e6725]">{product.brand}</p><button onClick={onDetails} className="mt-2 text-left"><h3 className="font-display text-2xl font-black leading-tight text-[#10293e]">{product.name}</h3></button><p className="mt-2 text-sm font-semibold text-[#596f7c]">{product.spec}</p><div className="mt-4 flex flex-wrap gap-2 text-[10px] font-bold text-[#546b79]"><span className="bg-[#f0f4f5] px-3 py-2">{product.format}</span><span className="bg-[#f0f4f5] px-3 py-2">{product.application}</span></div><div className="mt-5 grid grid-cols-[.8fr_1.2fr] gap-2"><button onClick={onDetails} className="min-h-11 border border-[#cbd7dc] text-xs font-extrabold text-[#004b87]">Details</button><button onClick={onToggle} className={`min-h-11 text-xs font-extrabold ${selected ? 'bg-[#fff0ee] text-[#9b3f3b]' : 'bg-[#004b87] text-white'}`}>{selected ? 'Entfernen' : product.brand === 'Raumkonzept' ? 'Konzept anfragen' : 'Zur Anfrage'}</button></div></div></article>;
+}
+
+function CategoryPage({ categoryName, title, intro, quoteItems, toggle, navigate }: { categoryName: string; title: string; intro: string; quoteItems: QuoteItem[]; toggle: (product: InteriorProduct) => void; navigate: (page: string) => void }) {
+  const category = interiorCategories.find((item) => item.germanTitle === categoryName);
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<InteriorProduct | null>(null);
+  const products = useMemo(() => category?.products.filter((product) => `${product.name} ${product.brand} ${product.spec} ${product.application}`.toLowerCase().includes(query.toLowerCase())) ?? [], [category, query]);
+  return <><section className="bg-[#10293e] text-white"><div className="mx-auto grid max-w-[1500px] lg:grid-cols-[1.05fr_.95fr]"><div className="px-5 py-14 lg:px-10 lg:py-20"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#d7aa57]">RA Bau Lieferung · Schweiz</p><h1 className="mt-3 font-display text-5xl font-black tracking-[-.05em]">{title}</h1><p className="mt-5 max-w-2xl text-base leading-7 text-white/70">{intro}</p></div><div className="min-h-[280px]"><img src={category?.products[0]?.gallery?.[0]?.src ?? category?.products[0]?.image} alt="" className="h-full w-full object-cover" /></div></div></section><Advisor navigate={navigate} category={title} /><section className="mx-auto max-w-[1500px] px-5 py-14 lg:px-10"><div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-bold text-[#536b79]">{products.length} kuratierte Produkte</p><p className="mt-1 text-xs text-[#7b8e98]">Raumwirkung zuerst. Produkt und Technik direkt danach.</p></div><label className="flex min-h-12 items-center gap-3 border border-[#ccd7dc] bg-white px-4"><Search size={17} className="text-[#6d818c]" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Produkt, Stil, Marke oder Referenz" className="w-full bg-transparent text-sm outline-none sm:w-72" /></label></div><div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{products.map((product) => <ProductCard key={product.id} product={product} selected={quoteItems.some((item) => item.reference === product.reference)} onDetails={() => setSelected(product)} onToggle={() => toggle(product)} />)}</div></section>{selected ? <ProductModal product={selected} selected={quoteItems.some((item) => item.reference === selected.reference)} onToggle={() => toggle(selected)} onClose={() => setSelected(null)} /> : null}</>;
+}
+
+function ProductModal({ product, selected, onToggle, onClose }: { product: InteriorProduct; selected: boolean; onToggle: () => void; onClose: () => void }) {
+  useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
+  const message = `Guten Tag, ich interessiere mich für ${product.brand ?? ''} ${product.name}, Referenz ${product.reference}. Bitte prüfen Sie Eignung, Verfügbarkeit und Offerte.`;
+  return <div className="fixed inset-0 z-[80] overflow-y-auto bg-[#071927]/75 p-3 sm:p-6" role="dialog" aria-modal="true"><div className="mx-auto grid max-w-5xl bg-white lg:grid-cols-[1.05fr_.95fr]"><div className="p-4 sm:p-6"><ProductGallery product={product} /></div><div className="relative p-6 sm:p-8"><button onClick={onClose} aria-label="Schliessen" className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center border border-[#d8e1e6]"><X /></button><p className="pr-12 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8e6725]">{product.brand} · {product.reference}</p><h2 className="mt-3 font-display text-4xl font-black tracking-[-.04em] text-[#10293e]">{product.name}</h2><p className="mt-3 text-sm font-semibold text-[#536b79]">{product.spec}</p><p className="mt-5 text-sm leading-7 text-[#667b87]">{product.details}</p><dl className="mt-6 grid grid-cols-2 gap-px bg-[#dbe3e7] text-sm"><div className="bg-[#f6f8f9] p-4"><dt className="text-[9px] font-extrabold uppercase tracking-[.14em] text-[#7d8f99]">Format</dt><dd className="mt-2 font-bold text-[#10293e]">{product.format}</dd></div><div className="bg-[#f6f8f9] p-4"><dt className="text-[9px] font-extrabold uppercase tracking-[.14em] text-[#7d8f99]">Oberfläche</dt><dd className="mt-2 font-bold text-[#10293e]">{product.finish}</dd></div><div className="bg-[#f6f8f9] p-4"><dt className="text-[9px] font-extrabold uppercase tracking-[.14em] text-[#7d8f99]">Anwendung</dt><dd className="mt-2 font-bold text-[#10293e]">{product.application}</dd></div><div className="bg-[#f6f8f9] p-4"><dt className="text-[9px] font-extrabold uppercase tracking-[.14em] text-[#7d8f99]">Herstellerkatalog</dt><dd className="mt-2 font-bold text-[#10293e]">Projektbezogen bestätigt</dd></div></dl><p className="mt-5 text-xs leading-5 text-[#6d808b]">Muster auf Anfrage. Verfügbarkeit und Kosten werden je Hersteller und Referenz bestätigt.</p>{product.components?.length ? <div className="mt-5"><p className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#8e6725]">Komponenten</p><div className="mt-2 flex flex-wrap gap-2">{product.components.map((component) => <span key={component} className="border border-[#d7e0e5] bg-[#f6f8f9] px-3 py-2 text-xs font-bold text-[#536b79]">{component}</span>)}</div></div> : null}<div className="mt-7 grid gap-2 sm:grid-cols-2"><button onClick={onToggle} className={`min-h-12 text-sm font-extrabold ${selected ? 'bg-[#fff0ee] text-[#9b3f3b]' : 'bg-[#004b87] text-white'}`}>{selected ? 'Aus Anfrage entfernen' : 'Zur Anfrage hinzufügen'}</button><a href={whatsappUrl(message)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#cbd7dc] text-sm font-extrabold text-[#004b87]"><MessageCircle size={17} /> WhatsApp</a></div></div></div></div>;
+}
+
+function ProductsPage({ navigate }: { navigate: (page: string) => void }) { return <><section className="bg-[#10293e] px-5 py-16 text-white lg:px-10"><div className="mx-auto max-w-[1500px]"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#d7aa57]">Produkte</p><h1 className="mt-3 max-w-4xl font-display text-5xl font-black tracking-[-.05em]">Vier Bereiche. Eine klare Projektanfrage.</h1></div></section><Categories navigate={navigate} /><Process /></>; }
+
+function ConstructionPage({ items, toggle }: { items: QuoteItem[]; toggle: (product: ConstructionProduct) => void }) {
+  return <section className="mx-auto max-w-[1500px] px-5 py-12 lg:px-10"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#8e6725]">Sparte 01</p><h1 className="mt-3 font-display text-5xl font-black text-[#10293e]">Baustellenzubehör</h1>{constructionCategories.map((category) => <div key={category.title} className="mt-12"><h2 className="font-display text-3xl font-black">{category.title}</h2><p className="mt-2 text-sm text-[#637884]">{category.description}</p><div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{category.products.map((product) => <article key={product.id} className="border border-[#d8e1e6] bg-white"><div className="aspect-[4/3] bg-[#eef2f3]"><img src={product.image} alt={product.name} className="h-full w-full object-contain p-5" /></div><div className="p-5"><h3 className="font-display text-2xl font-black">{product.name}</h3><p className="mt-2 text-sm leading-6 text-[#637884]">{product.description}</p><button onClick={() => toggle(product)} className={`mt-5 min-h-11 w-full text-xs font-extrabold ${items.some((item) => item.id === product.id) ? 'bg-[#fff0ee] text-[#9b3f3b]' : 'bg-[#004b87] text-white'}`}>{items.some((item) => item.id === product.id) ? 'Entfernen' : 'Zur Anfrage'}</button></div></article>)}</div></div>)}</section>;
+}
+
+function QuotePage({ items, update, remove }: { items: QuoteItem[]; update: (id: string, patch: Partial<QuoteItem>) => void; remove: (id: string) => void }) {
+  const [customer, setCustomer] = useState({ type: 'Privatkunde', name: '', email: '', phone: '', postal: '', city: '', timeline: '', message: '' });
+  const summary = useMemo(() => {
+    const lines = items.map((item, index) => `${index + 1}. ${item.brand ? `${item.brand} ` : ''}${item.name}\n   ${item.quantity} ${item.unit}${item.reference ? ` · Ref. ${item.reference}` : ''}${item.customNote ? `\n   Notiz: ${item.customNote}` : ''}`);
+    return `Guten Tag,\n\nich möchte eine Projektanfrage senden.\n\nKundentyp: ${customer.type}\nName: ${customer.name || '-'}\nE-Mail: ${customer.email || '-'}\nTelefon: ${customer.phone || '-'}\nOrt: ${customer.postal} ${customer.city}\nZeitraum: ${customer.timeline || '-'}\n\nProdukte:\n${lines.join('\n')}\n\nProjekt: ${customer.message || '-'}\n\nBitte prüfen Sie Referenzen, Eignung, Verfügbarkeit, Transport und Offerte.`;
+  }, [items, customer]);
+  return <section className="mx-auto max-w-[1200px] px-5 py-12 lg:px-10"><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#8e6725]">Projektanfrage</p><h1 className="mt-3 font-display text-5xl font-black tracking-[-.05em]">Produkte, Mengen und Projektdaten.</h1><p className="mt-4 max-w-2xl text-sm leading-6 text-[#637884]">Keine automatische Bestellung. Jede Position wird vor der schriftlichen Offerte geprüft.</p>{items.length ? <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_.8fr]"><div className="space-y-4">{items.map((item) => <article key={item.id} className="grid gap-4 border border-[#d8e1e6] bg-white p-4 sm:grid-cols-[100px_1fr_auto]"><img src={item.image} alt="" className="h-24 w-full object-contain bg-[#eef2f3]" /><div><h3 className="font-bold text-[#10293e]">{item.name}</h3><p className="mt-1 text-xs text-[#6a7e89]">{item.spec}</p><div className="mt-3 flex flex-wrap gap-2"><input aria-label={`Menge ${item.name}`} value={item.quantity} onChange={(event) => update(item.id, { quantity: event.target.value })} className="h-11 w-24 border border-[#ccd7dc] px-3 text-sm" /><span className="flex h-11 items-center border border-[#ccd7dc] bg-[#f5f7f8] px-4 text-sm font-bold">{item.unit}</span></div><textarea value={item.customNote ?? ''} onChange={(event) => update(item.id, { customNote: event.target.value })} placeholder="Notiz zu diesem Produkt" className="mt-3 min-h-20 w-full border border-[#ccd7dc] p-3 text-sm" /></div><button aria-label={`${item.name} entfernen`} onClick={() => remove(item.id)} className="flex h-11 w-11 items-center justify-center text-[#9b3f3b]"><X /></button></article>)}</div><div><div className="bg-[#eef2f3] p-5 sm:p-6"><h2 className="font-display text-2xl font-black">Projektdaten</h2><div className="mt-5 grid gap-3"><select value={customer.type} onChange={(event) => setCustomer({ ...customer, type: event.target.value })} className="h-12 border border-[#ccd7dc] bg-white px-3"><option>Privatkunde</option><option>Architekt / Innenarchitekt</option><option>Bauunternehmen / Verarbeiter</option></select>{[['name','Name'],['email','E-Mail'],['phone','Telefon'],['postal','PLZ'],['city','Ort'],['timeline','Gewünschter Zeitraum']].map(([key, label]) => <input key={key} value={customer[key as keyof typeof customer]} onChange={(event) => setCustomer({ ...customer, [key]: event.target.value })} placeholder={label} className="h-12 border border-[#ccd7dc] bg-white px-3 text-sm" />)}<textarea value={customer.message} onChange={(event) => setCustomer({ ...customer, message: event.target.value })} placeholder="Raum, Stil, Masse oder Foto beschreiben" className="min-h-28 border border-[#ccd7dc] bg-white p-3 text-sm" /></div><div className="mt-5 grid gap-2"><a href={whatsappUrl(summary)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#d7aa57] px-4 text-sm font-extrabold text-[#10293e]"><MessageCircle size={17} /> Per WhatsApp senden</a><a href={`mailto:${storefront.email}?subject=${encodeURIComponent('Projektanfrage RA Bau Lieferung')}&body=${encodeURIComponent(summary)}`} className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#004b87] px-4 text-sm font-extrabold text-white"><Mail size={17} /> E-Mail vorbereiten</a></div></div></div></div> : <div className="mt-10 border border-[#d8e1e6] bg-white p-10 text-center"><ClipboardList className="mx-auto text-[#8aa0ac]" size={40} /><h2 className="mt-4 font-display text-2xl font-black">Noch keine Produkte ausgewählt.</h2><p className="mt-2 text-sm text-[#637884]">Öffnen Sie eine Sparte und fügen Sie Produkte oder ein Raumkonzept hinzu.</p></div>}</section>;
+}
+
+function ContactPage() { const message = 'Guten Tag, ich möchte mein Bau- oder Renovationsprojekt besprechen.'; return <section className="mx-auto grid max-w-[1200px] gap-10 px-5 py-16 lg:grid-cols-2 lg:px-10"><div><p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#8e6725]">Kontakt</p><h1 className="mt-3 font-display text-5xl font-black tracking-[-.05em]">Persönlich statt anonym.</h1><p className="mt-5 text-base leading-7 text-[#637884]">Senden Sie eine Referenz, ein Raumfoto, ungefähre Masse und den Lieferort. Die Anfrage wird persönlich geprüft.</p><div className="mt-8 space-y-3 text-sm font-bold"><p>Rodrigo Afonso</p><p>Schweiz</p><p><a href={`tel:+${storefront.phoneDigits}`}>{storefront.phoneDisplay}</a></p><p><a href={`mailto:${storefront.email}`}>{storefront.email}</a></p></div></div><div className="flex flex-col justify-center gap-3 bg-[#10293e] p-8 text-white"><a href={whatsappUrl(message)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#d7aa57] px-5 text-sm font-extrabold text-[#10293e]"><MessageCircle size={18} /> WhatsApp</a><a href={`mailto:${storefront.email}`} className="inline-flex min-h-12 items-center justify-center gap-2 border border-white/20 px-5 text-sm font-extrabold"><Mail size={18} /> E-Mail</a><p className="mt-3 text-xs leading-5 text-white/55">Muster auf Anfrage. Verfügbarkeit und Kosten werden je Hersteller und Referenz bestätigt.</p></div></section>; }
+
+function Footer({ navigate }: { navigate: (page: string) => void }) { return <footer className="border-t border-[#d8e1e6] bg-[#0c2233] text-white"><div className="mx-auto grid max-w-[1500px] gap-8 px-5 py-12 lg:grid-cols-3 lg:px-10"><div><p className="font-display text-xl font-black">RA Bau Lieferung</p><p className="mt-3 text-sm leading-6 text-white/55">Projektbezogene Materialien und persönliche Auswahlhilfe für die Schweiz.</p></div><div className="grid grid-cols-2 gap-2 text-xs font-bold text-white/65">{[['products','Produkte'],['construction','Baustellenzubehör'],['ceramics','Keramik'],['bathroom','Badezimmer'],['flooring','Böden'],['concepts','Raumkonzepte'],['quote','Projektanfrage'],['contact','Kontakt']].map(([key,label]) => <button key={key} onClick={() => navigate(key)} className="text-left hover:text-white">{label}</button>)}</div><div className="text-sm text-white/65"><p>{storefront.phoneDisplay}</p><p className="mt-2">{storefront.email}</p><p className="mt-4 text-xs">Nicht im Handelsregister eingetragen · Nicht MWST-pflichtig</p></div></div></footer>; }
+
+export default function App() {
+  const { page, navigate } = useRoute();
+  const quote = useQuote();
+  useEffect(() => {
+    const titleMap: Record<string,string> = { home: 'RA Bau Lieferung | Materialien, die Räume aufwerten', products: 'Produkte | RA Bau Lieferung', construction: 'Baustellenzubehör | RA Bau Lieferung', ceramics: 'Keramik & Feinsteinzeug | RA Bau Lieferung', bathroom: 'Badezimmer | RA Bau Lieferung', flooring: 'Vinyl, SPC & Kork | RA Bau Lieferung', concepts: 'Raumkonzepte | RA Bau Lieferung', quote: 'Projektanfrage | RA Bau Lieferung', contact: 'Kontakt | RA Bau Lieferung' };
+    document.title = titleMap[page] ?? 'RA Bau Lieferung';
+  }, [page]);
+
+  let content: React.ReactNode;
+  if (page === 'home') content = <HomePage navigate={navigate} />;
+  else if (page === 'products') content = <ProductsPage navigate={navigate} />;
+  else if (page === 'construction') content = <ConstructionPage items={quote.items} toggle={quote.toggleConstruction} />;
+  else if (page === 'ceramics') content = <CategoryPage categoryName="Keramik & Feinsteinzeug" title="Keramik & Feinsteinzeug" intro="Kuratierte Oberflächen für Wand, Boden, Bad, Küche und hochwertige Innenräume. Mosaike erscheinen nur als koordinierte Ergänzung der jeweiligen Kollektion." quoteItems={quote.items} toggle={quote.toggleInterior} navigate={navigate} />;
+  else if (page === 'bathroom') content = <CategoryPage categoryName="Badezimmer" title="Badezimmer" intro="Möbel, Armaturen, Duschsysteme, WC und Duschwannen – verständlich dargestellt und projektbezogen bestätigt." quoteItems={quote.items} toggle={quote.toggleInterior} navigate={navigate} />;
+  else if (page === 'flooring') content = <CategoryPage categoryName="Vinyl, SPC & Kork" title="Vinyl, SPC & Kork" intro="Fischgrat, XL-Dielen, natürliche Holzdekore und robuste Projektlösungen. Raumwirkung zuerst, Produktaufbau danach." quoteItems={quote.items} toggle={quote.toggleInterior} navigate={navigate} />;
+  else if (page === 'concepts') content = <CategoryPage categoryName="Raumkonzepte" title="Raumkonzepte" intro="Fünf kuratierte Stilwelten: drei Badezimmer, ein Wohnraum und eine Küche. Visualisierungen werden als solche gekennzeichnet; reale Komponenten bleiben einzeln anfragbar." quoteItems={quote.items} toggle={quote.toggleInterior} navigate={navigate} />;
+  else if (page === 'quote') content = <QuotePage items={quote.items} update={quote.update} remove={quote.remove} />;
+  else if (page === 'contact') content = <ContactPage />;
+  else content = <section className="mx-auto max-w-3xl px-5 py-24 text-center"><h1 className="font-display text-5xl font-black">Seite nicht gefunden.</h1><button onClick={() => navigate('home')} className="mt-6 min-h-12 bg-[#004b87] px-6 text-sm font-extrabold text-white">Zur Startseite</button></section>;
+
+  return <div className="min-h-screen overflow-x-hidden bg-[#f3f5f6]"><Header page={page} navigate={navigate} quoteCount={quote.items.length} /><main>{content}</main>{quote.items.length && page !== 'quote' ? <div className="fixed inset-x-3 z-[60] md:hidden" style={{ bottom: 'max(.75rem, env(safe-area-inset-bottom))' }}><button onClick={() => navigate('quote')} className="flex min-h-14 w-full items-center justify-between bg-[#10293e] px-4 text-left text-white shadow-2xl"><span className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d7aa57] font-black text-[#10293e]">{quote.items.length}</span><span><span className="block text-xs font-extrabold">Projektanfrage öffnen</span><span className="block text-[10px] text-white/55">Mengen und Notizen prüfen</span></span></span><ArrowRight size={18} /></button></div> : null}<Footer navigate={navigate} /></div>;
+}
