@@ -1,0 +1,1 @@
+Shared quote and responsive behavior hooks live here.
