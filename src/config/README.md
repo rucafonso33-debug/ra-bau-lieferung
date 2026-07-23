@@ -1,0 +1,1 @@
+Shared business identity, navigation and SEO are maintained here.
