@@ -22,7 +22,7 @@ const routes = {
   },
   '/badezimmer': {
     title: 'Badezimmer Schweiz | RA Bau Lieferung',
-    description: 'Eine bewusst reduzierte, vollständig belegte Rubicer-Stria-Badmöbelreferenz mit Herstellerbild und technischer Produktansicht. Weitere Produkte werden erst nach eindeutiger Bild- und Referenzprüfung veröffentlicht.',
+    description: 'Eine vollständig belegte Rubicer-Stria-Badmöbelreferenz mit Herstellerbild und technischer Produktansicht. Weitere Sanitärprodukte werden projektbezogen nach konkreter Referenz- und Bildprüfung ausgewählt.',
     label: 'Badezimmer',
     image: '/images/catalog/rubicer-stria.png',
   },

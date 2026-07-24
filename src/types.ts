@@ -1,4 +1,4 @@
-export type PageRoute = 'home' | 'baustellenzubehoor' | 'interior' | 'porcelain' | 'mosaics' | 'spc' | 'bathroom' | 'contact' | 'quote-planner';
+export type PageRoute = 'home' | 'products' | 'construction' | 'ceramics' | 'bathroom' | 'flooring' | 'concepts' | 'contact' | 'quote';
 
 export interface ConstructionProduct {
   id: string;

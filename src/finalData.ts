@@ -106,17 +106,6 @@ const concepts: InteriorProduct[] = [
     ],
   }),
   concept({
-    id: 'concept-soft-minimal', name: 'Soft Minimal Bathroom', spec: 'Pixstone · Stria',
-    details: 'Helle mineralische Flächen und ein reduziertes Badmöbel für Neubau und Renovation. Alle sichtbaren Produktbilder stammen aus den jeweiligen Herstellerunterlagen.',
-    image: '/images/categories/recer-pixstone-room.webp', brand: 'Raumkonzept', reference: 'Konzept 03 · Materialstimmung', format: '1 Komplettkonzept', finish: 'Warm White · Mineral', application: 'Badezimmer · Neubau', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Minimal'],
-    components: ['Recer Pixstone Air Warm Kollektion', 'Rubicer Stria Horizontal 100'], optionalComponents: ['Mosaik-Akzent'], substitutions: ['Pixstone-Format nach Fläche'],
-    gallery: [
-      visual('/images/categories/recer-pixstone-room.webp', 'Soft Minimal Materialstimmung mit Pixstone Air Warm', 'Visualisierung – Materialstimmung mit Herstellerbild'),
-      visual('/images/catalog/rubicer-stria.png', 'Rubicer Stria als Möbelkomponente', 'Badmöbel'),
-      visual('/images/catalog/recer-pixstone.png', 'Pixstone Formate und Oberflächen', 'Keramikdetails', 'contain'),
-    ],
-  }),
-  concept({
     id: 'concept-herringbone-living', name: 'Natural Herringbone Living', spec: 'Herringbone Natural · Mastery',
     details: 'Fischgratboden als Hauptdarsteller, ergänzt durch eine ruhige helle Keramik. Die Bilder zeigen die realen Herstellerkollektionen, nicht ein erfundenes Referenzprojekt.',
     image: '/images/products/rubifloor-herringbone-natural.webp', brand: 'Raumkonzept', reference: 'Konzept 04 · Materialstimmung', format: '1 Raumkonzept', finish: 'Natural Oak · Warm White', application: 'Wohnzimmer · Essen', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Living'],
@@ -127,22 +116,11 @@ const concepts: InteriorProduct[] = [
       visual('/images/catalog/recer-mastery.png', 'Mastery als koordinierte Keramik', 'Keramik'),
     ],
   }),
-  concept({
-    id: 'concept-concrete-oak', name: 'Mineral & Oak Kitchen', spec: 'Pixstone · XL1.8 Home',
-    details: 'Mineralische Keramik und eine extralange Eichenoptik für Küche und offenen Essbereich. Die Auswahl bleibt bewusst auf zwei klar belegte Kollektionen reduziert.',
-    image: '/images/categories/recer-pixstone-room.webp', brand: 'Raumkonzept', reference: 'Konzept 05 · Materialstimmung', format: '1 Raumkonzept', finish: 'Mineral · Oak', application: 'Küche · Essen · Open Space', box: 'Komponenten einzeln bestätigbar', pallet: 'Projektbezogene Lieferung', badges: ['Materialstimmung', 'Kitchen'],
-    components: ['Recer Pixstone Air Warm Kollektion', 'Rubifloor XL1.8 Home'], optionalComponents: ['Mosaik-Akzent'], substitutions: ['XL-Dekor nach Auswahl'],
-    gallery: [
-      visual('/images/categories/recer-pixstone-room.webp', 'Mineral and Oak Materialstimmung mit Pixstone', 'Visualisierung – Materialstimmung mit Herstellerbild'),
-      visual('/images/products/rubifloor-xl-home.webp', 'XL1.8 Home als verlegter Boden', 'Boden'),
-      visual('/images/technical/xl-home-board.svg', 'XL1.8 Home Diele und Aufbau', 'Bodendetail', 'contain'),
-    ],
-  }),
 ];
 
 export const interiorCategories: InteriorCategory[] = [
   { title: 'Ceramic & Porcelain', germanTitle: 'Keramik & Feinsteinzeug', description: 'Drei klar belegte Recer-Kollektionen. Jede Auswahl zeigt die reale Raumwirkung und eine passende Produkt- oder Ergänzungsansicht.', products: ceramics },
   { title: 'Bathroom', germanTitle: 'Badezimmer', description: 'Eine bewusst reduzierte, vollständig belegte Badmöbelreferenz. Weitere Produkte werden erst nach korrekter Zuordnung von Raum- und Produktbild veröffentlicht.', products: bathrooms },
   { title: 'Vinyl, SPC & Cork', germanTitle: 'Vinyl, SPC & Kork', description: 'Drei deutlich unterschiedliche Rubifloor-Lösungen: Fischgrat, extralange Eiche und grossformatige Steinoptik.', products: floors },
-  { title: 'Complete Room Concepts', germanTitle: 'Raumkonzepte', description: 'Fünf ehrliche Materialstimmungen aus den veröffentlichten Herstellerkollektionen. Keine Darstellung wird als real ausgeführtes Projekt ausgegeben.', products: concepts },
+  { title: 'Complete Room Concepts', germanTitle: 'Raumkonzepte', description: 'Drei klar unterschiedliche Materialstimmungen aus veröffentlichten Herstellerkollektionen: Natursteinbad, Marmorsuite und Fischgrat-Wohnraum.', products: concepts },
 ];
