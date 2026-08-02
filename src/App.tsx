@@ -23,14 +23,17 @@ const routeByCategory: Record<CategoryId, string> = {
   keramik: '/feinsteinzeug',
   mosaik: '/mosaike',
   badmoebel: '/badmoebel',
-  sanitaer: '/sanitaerkeramik',
-  armaturen: '/armaturen-duschen',
-  duschloesungen: '/duschloesungen',
+  bad: '/bad-sanitaer',
   boden: '/spc-vinyl',
   baustelle: '/baustellenzubehoer',
 };
 
-const categoryByPath = Object.fromEntries(Object.entries(routeByCategory).map(([id, path]) => [path, id])) as Record<string, CategoryId>;
+const categoryByPath: Record<string, CategoryId> = {
+  ...Object.fromEntries(Object.entries(routeByCategory).map(([id, path]) => [path, id])) as Record<string, CategoryId>,
+  '/sanitaerkeramik': 'bad',
+  '/armaturen-duschen': 'bad',
+  '/duschloesungen': 'bad',
+};
 
 const emptyInquiry: InquiryData = {
   requestType: 'Preisofferte',

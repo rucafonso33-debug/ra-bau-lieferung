@@ -3,8 +3,10 @@
   "trailingSlash": false,
   "redirects": [
     { "source": "/premium-mosaike", "destination": "/mosaike", "permanent": true },
-    { "source": "/badezimmer", "destination": "/badmoebel", "permanent": true },
-    { "source": "/bad-sanitaer", "destination": "/sanitaerkeramik", "permanent": true },
+    { "source": "/badezimmer", "destination": "/bad-sanitaer", "permanent": true },
+    { "source": "/sanitaerkeramik", "destination": "/bad-sanitaer", "permanent": true },
+    { "source": "/armaturen-duschen", "destination": "/bad-sanitaer", "permanent": true },
+    { "source": "/duschloesungen", "destination": "/bad-sanitaer", "permanent": true },
     { "source": "/produkte", "destination": "/#sortiment", "permanent": true },
     { "source": "/raumkonzepte", "destination": "/#sortiment", "permanent": true },
     { "source": "/projektanfrage", "destination": "/#anfrage", "permanent": true },
@@ -16,9 +18,7 @@
     { "source": "/feinsteinzeug", "destination": "/feinsteinzeug/index.html" },
     { "source": "/mosaike", "destination": "/mosaike/index.html" },
     { "source": "/badmoebel", "destination": "/badmoebel/index.html" },
-    { "source": "/sanitaerkeramik", "destination": "/sanitaerkeramik/index.html" },
-    { "source": "/armaturen-duschen", "destination": "/armaturen-duschen/index.html" },
-    { "source": "/duschloesungen", "destination": "/duschloesungen/index.html" },
+    { "source": "/bad-sanitaer", "destination": "/bad-sanitaer/index.html" },
     { "source": "/spc-vinyl", "destination": "/spc-vinyl/index.html" }
   ],
   "headers": [
