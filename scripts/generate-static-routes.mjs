@@ -7,9 +7,7 @@ const routes = {
   '/feinsteinzeug': ['Keramik & Feinsteinzeug Schweiz | RA Bau Lieferung', 'Ausgewählte Stein-, Marmor-, Beton- und Holzoptiken für langlebige Bau- und Renovationsprojekte.', 'Keramik & Feinsteinzeug', '/images/showcase/ceramic-travertine.webp'],
   '/mosaike': ['Premium-Mosaik & Steinfliesen Schweiz | RA Bau Lieferung', 'Mosaike und Fliesen in Travertin-, Kalkstein- und Marmoroptik für hochwertige Wand- und Bodenflächen.', 'Premium-Mosaik und Steinfliesen', '/images/showcase/stone-tile-grand.webp'],
   '/badmoebel': ['Badmöbel Schweiz | RA Bau Lieferung', 'Ausgewählte Waschtische, Hochschränke und Spiegel für ruhige, hochwertige Badkompositionen.', 'Badmöbel', '/images/showcase/furniture-natural.webp'],
-  '/sanitaerkeramik': ['Sanitärkeramik Schweiz | RA Bau Lieferung', 'Waschtische, WCs und abgestimmte Sanitärlösungen für private und gewerbliche Bäder.', 'Sanitärkeramik', '/images/showcase/washbasins-modern.webp'],
-  '/armaturen-duschen': ['Armaturen & Duschen Schweiz | RA Bau Lieferung', 'Ausgewählte Waschtisch-, Wannen- und Duschlösungen in abgestimmten Oberflächen.', 'Armaturen & Duschen', '/images/showcase/shower-black.webp'],
-  '/duschloesungen': ['Duschwannen & Nischen Schweiz | RA Bau Lieferung', 'Flache Duschwannen, Ablagen und Nischen für durchgängige, moderne Badgestaltung.', 'Duschwannen & Nischen', '/images/showcase/shower-tray-slim.webp'],
+  '/bad-sanitaer': ['Bad, Sanitär & Armaturen Schweiz | RA Bau Lieferung', 'WCs, Bidets, Waschtische, Armaturen, Duschsysteme, Duschwannen und Badzubehör in einer klaren Sparte.', 'Bad, Sanitär und Armaturen', '/images/showcase/washbasins-modern.webp'],
   '/spc-vinyl': ['SPC & Vinyl Schweiz | RA Bau Lieferung', 'Pflegeleichte Holz- und Steinoptiken als Ergänzung für Renovationen und belastbare Innenräume.', 'SPC & Vinyl', '/images/showcase/spc-herringbone.webp'],
   '/baustellenzubehoer': ['Baustellenzubehör Schweiz | RA Bau Lieferung', 'Nivellier-, Distanz-, Schutz- und Befestigungslösungen für Fliesen-, Bewehrungs- und Betonarbeiten.', 'Baustellenzubehör', '/images/showcase/construction-site.webp'],
 };

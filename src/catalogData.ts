@@ -3,9 +3,7 @@ export type CategoryId =
   | 'keramik'
   | 'mosaik'
   | 'badmoebel'
-  | 'sanitaer'
-  | 'armaturen'
-  | 'duschloesungen'
+  | 'bad'
   | 'boden'
   | 'baustelle';
 
@@ -69,28 +67,12 @@ export const categories: Category[] = [
     priority: 'primary',
   },
   {
-    id: 'sanitaer',
-    title: 'Sanitärkeramik',
-    eyebrow: 'Klar & funktional',
-    description: 'Waschtische, WCs und ergänzende Produkte für private und gewerbliche Bäder.',
+    id: 'bad',
+    title: 'Bad, Sanitär & Armaturen',
+    eyebrow: 'Alles fürs Bad',
+    description: 'WCs, Bidets, Waschtische, Armaturen, Duschsysteme, Duschwannen und Badzubehör in einer klaren Sparte.',
     image: '/images/showcase/washbasins-modern.webp',
-    imageAlt: 'Moderne Waschtische in einem hellen Bad',
-  },
-  {
-    id: 'armaturen',
-    title: 'Armaturen & Duschen',
-    eyebrow: 'Präzise abgestimmt',
-    description: 'Waschtisch-, Wannen- und Duschlösungen in ausgewählten Oberflächen und Ausführungen.',
-    image: '/images/showcase/shower-black.webp',
-    imageAlt: 'Badezimmer mit mattschwarzen Armaturen und Dusche',
-  },
-  {
-    id: 'duschloesungen',
-    title: 'Duschwannen & Nischen',
-    eyebrow: 'Bodennah geplant',
-    description: 'Flache Duschwannen, Ablagen und Nischen für eine ruhige, durchgängige Badgestaltung.',
-    image: '/images/showcase/shower-tray-slim.webp',
-    imageAlt: 'Bodennahe helle Duschwanne in einem modernen Badezimmer',
+    imageAlt: 'Modernes Badezimmer mit Waschtisch, Sanitärkeramik und Armaturen',
   },
   {
     id: 'boden',
@@ -148,32 +130,16 @@ export const products: Product[] = [
   { id: 'bm-audrey', category: 'badmoebel', name: 'Audrey Walnut', description: 'Klare Walnussfront mit rechteckigem Aufsatzbecken für eine reduzierte, wohnliche Badarchitektur.', image: '/images/products-2026/furniture-audrey-walnut.webp', imageAlt: 'Hängendes Badmöbel in Walnussoptik mit rechteckigem Aufsatzbecken', specs: ['Aufsatzbecken', 'hängend', 'Spiegelschrank optional'] },
   { id: 'bm-monello', category: 'badmoebel', name: 'Monello Graphite', description: 'Breites Möbel in Graphit mit ruhiger Front und grosszügigem Spiegel für moderne Familienbäder.', image: '/images/products-2026/furniture-monello-grey.webp', imageAlt: 'Breites graphitgraues Badmöbel mit grossem Spiegel', specs: ['Doppelplatz möglich', 'Graphit matt', 'Stauraum'] },
 
-  { id: 'sa-fly-taupe', category: 'sanitaer', name: 'Fly Taupe', description: 'Bodenstehendes WC und Bidet in warmem Taupe für charaktervolle, farblich abgestimmte Bäder.', image: '/images/products-2026/sanitary-fly-taupe.webp', imageAlt: 'Bodenstehendes WC und Bidet in warmem Taupe', specs: ['Rimless', 'Soft-Close', 'Taupe matt'] },
-  { id: 'sa-fly-white', category: 'sanitaer', name: 'Fly White', description: 'Weiche Geometrie und kompakte Proportionen als zeitlose Lösung für moderne Badezimmer.', image: '/images/products-2026/sanitary-fly-white.webp', imageAlt: 'Modernes bodenstehendes WC und Bidet in Weiss', specs: ['Rimless', 'Soft-Close', 'weiss'] },
-  { id: 'sa-elegant-taupe', category: 'sanitaer', name: 'Elegant Graphite', description: 'Monolithische Form und dunkle Oberfläche für hochwertige Bäder mit starkem Materialkontrast.', image: '/images/products-2026/sanitary-elegant-taupe.webp', imageAlt: 'Bodenstehendes WC und Bidet in dunkler Graphitoptik', specs: ['verdeckte Befestigung', 'Soft-Close', 'Graphit'] },
-  { id: 'sa-glamic-grey', category: 'sanitaer', name: 'Glamic Pearl', description: 'Sanft gerundete Keramik in hellem Grau für ruhige, wohnliche Badkonzepte.', image: '/images/products-2026/sanitary-glamic-grey.webp', imageAlt: 'Gerundetes WC und Bidet in hellem Grau', specs: ['Rimless', 'pflegeleicht', 'hellgrau'] },
-  { id: 'sa-glamic-black', category: 'sanitaer', name: 'Glamic Black', description: 'Schwarze Sanitärkeramik als präziser Kontrast zu Naturstein, Holz und hellen Oberflächen.', image: '/images/products-2026/sanitary-glamic-black.webp', imageAlt: 'Modernes WC und Bidet in mattem Schwarz', specs: ['Rimless', 'Soft-Close', 'schwarz matt'] },
-  { id: 'sa-bohemia', category: 'sanitaer', name: 'Bohemia Classic', description: 'Traditionelle Linien mit moderner Funktion für klassische Renovationen und Boutique-Hotellerie.', image: '/images/products-2026/sanitary-bohemia.webp', imageAlt: 'Klassisches WC und Bidet in einem eleganten Badezimmer', specs: ['klassische Form', 'WC & Bidet', 'weiss'] },
-  { id: 'sa-ultra', category: 'sanitaer', name: 'Ultra Compact', description: 'Kompakte Keramik mit schlanker Silhouette für kleine und mittlere Grundrisse.', image: '/images/products-2026/sanitary-ultra.webp', imageAlt: 'Kompaktes WC und Bidet in weisser Keramik', specs: ['platzsparend', 'Soft-Close', 'weiss'] },
-  { id: 'sa-moon', category: 'sanitaer', name: 'Moon Wall', description: 'Wandhängende WC- und Bidetlösung für einen leichten Raumeindruck und einfachere Bodenreinigung.', image: '/images/products-2026/sanitary-moon-wall.webp', imageAlt: 'Wandhängendes WC und Bidet in einem hellen Bad', specs: ['wandhängend', 'Rimless', 'verdeckte Befestigung'] },
-
-  { id: 'ar-shiny', category: 'armaturen', name: 'Shiny Basin Gold', description: 'Aufsatzbecken und hohe Armatur in gebürstetem Gold als luxuriöser Mittelpunkt des Waschtischs.', image: '/images/products-2026/faucet-shiny-basin.webp', imageAlt: 'Rundes Aufsatzbecken und hohe Armatur in gebürstetem Gold', specs: ['gebürstetes Gold', 'hoher Auslauf', 'Aufsatzbecken'] },
-  { id: 'ar-kendra', category: 'armaturen', name: 'Kendra Slim', description: 'Schlanke Waschtischarmatur mit reduziertem Griffbild für elegante Einzelwaschplätze.', image: '/images/products-2026/faucet-kendra.webp', imageAlt: 'Schlanke goldfarbene Waschtischarmatur vor rundem Spiegel', specs: ['Einhebelmischer', 'schlanke Form', 'mehrere Oberflächen'] },
-  { id: 'ar-kaiser', category: 'armaturen', name: 'Kaiser Wall', description: 'Wandmontierte Armatur über einem geometrischen Aufsatzbecken für klare, fugenarme Waschtische.', image: '/images/products-2026/faucet-kaiser.webp', imageAlt: 'Wandarmatur in gebürstetem Gold über einem weissen Aufsatzbecken', specs: ['Wandmontage', 'Unterputz', 'gebürstetes Gold'] },
-  { id: 'ar-rs-smart', category: 'armaturen', name: 'Smart Thermostat', description: 'Komplette Duschsäule mit Kopf- und Handbrause für kontrollierte Temperatur und täglichen Komfort.', image: '/images/products-2026/shower-rs-smart.webp', imageAlt: 'Thermostatische Duschsäule mit Kopf- und Handbrause', specs: ['Thermostat', 'Kopfbrause', 'Handbrause'] },
-  { id: 'ar-column-black', category: 'armaturen', name: 'Black Column', description: 'Mattschwarze Duschsäule mit grosser Kopfbrause als klarer Kontrast in hellen Steinbädern.', image: '/images/products-2026/shower-column-black.webp', imageAlt: 'Mattschwarze Duschsäule mit grosser Kopfbrause', specs: ['schwarz matt', 'Kopfbrause', 'schlanke Säule'] },
-  { id: 'ar-blautherm', category: 'armaturen', name: 'Brushed Therm', description: 'Thermostatische Säule in gebürsteter Metalloptik für ruhige, langlebige Duschkonzepte.', image: '/images/products-2026/shower-blautherm.webp', imageAlt: 'Thermostatische Duschsäule in gebürsteter Metalloptik', specs: ['Thermostat', 'gebürstet', 'Kopf- & Handbrause'] },
-  { id: 'ar-hydro', category: 'armaturen', name: 'Hydrotherapy Concealed', description: 'Unterputz-Duschsystem mit mehreren Auslässen für grosszügige private Spa-Bereiche.', image: '/images/products-2026/shower-hydrotherapy.webp', imageAlt: 'Dunkles Spa-Bad mit integriertem Unterputz-Duschsystem', specs: ['Unterputz', 'Mehrfachauslass', 'Projektplanung'] },
-  { id: 'ar-ergos', category: 'armaturen', name: 'Ergos Black', description: 'Abgestimmte schwarze Waschtischarmatur für minimalistische Becken und dunkle Badkonzepte.', image: '/images/products-2026/accessory-ergos.webp', imageAlt: 'Schwarze Waschtischarmatur über einem weissen Aufsatzbecken', specs: ['schwarz matt', 'Einhebelmischer', 'Aufsatzbecken'] },
-
-  { id: 'du-tray', category: 'duschloesungen', name: 'Slim Shower Base', description: 'Flache Duschwanne für einen ruhigen Übergang und reduzierte Badarchitektur.', image: '/images/showcase/shower-tray-slim.webp', imageAlt: 'Flache helle Duschwanne in einem modernen Bad', specs: ['bodennah', 'mehrere Formate', 'rutschhemmend'] },
-  { id: 'du-lux', category: 'duschloesungen', name: 'Lux Linear', description: 'Sehr flache Duschwanne mit linearer Ablaufwirkung für reduzierte, grosszügige Duschen.', image: '/images/products-2026/shower-lux.webp', imageAlt: 'Flache Duschwanne mit linearer Ablaufzone in einem warmen Bad', specs: ['ultraflach', 'Linearablauf', 'mehrere Farben'] },
-  { id: 'du-mineral', category: 'duschloesungen', name: 'Mineral Stone', description: 'Strukturierte Duschwanne in heller oder dunkler Steinoptik für sichere, pflegeleichte Nassbereiche.', image: '/images/products-2026/shower-mineral.webp', imageAlt: 'Rechteckige Duschwannen in heller und dunkler Steinoptik', specs: ['Steintextur', 'rutschhemmend', 'mehrere Formate'] },
-  { id: 'du-level', category: 'duschloesungen', name: 'Level Up', description: 'Bodennahes Modell mit präziser Geometrie für barrierearme Umbauten und moderne Neubäder.', image: '/images/products-2026/shower-level-up.webp', imageAlt: 'Weisse bodennahe Duschwanne in einem modernen Bad', specs: ['bodennah', 'barrierearm', 'zuschneidbar'] },
-  { id: 'du-upside', category: 'duschloesungen', name: 'Upside Texture', description: 'Fein strukturierte Oberfläche mit dezentem Ablauf für sichere, ruhige Duschflächen.', image: '/images/products-2026/shower-upside.webp', imageAlt: 'Strukturierte helle Duschwanne mit dezentem Ablauf', specs: ['strukturierte Fläche', 'rutschhemmend', 'flach'] },
-  { id: 'du-edge', category: 'duschloesungen', name: 'Edge White', description: 'Integrierte Duschfläche mit klarer Randgeometrie für fugenarme, architektonische Bäder.', image: '/images/products-2026/shower-edge.webp', imageAlt: 'Helle integrierte Duschfläche in einem Bad mit schwarzer Armatur', specs: ['integrierter Ablauf', 'weiss matt', 'Projektformat'] },
-  { id: 'du-niche-black', category: 'duschloesungen', name: 'Niche Black', description: 'Schwarze Einbaunische als präziser Stauraum und Kontrast in keramischen Duschwänden.', image: '/images/products-2026/shower-niche-black.webp', imageAlt: 'Schwarze Einbaunische in einer grünen keramischen Wand', specs: ['Einbauprodukt', 'schwarz', 'mehrere Grössen'] },
-  { id: 'du-niche-solid', category: 'duschloesungen', name: 'Niche Solid', description: 'Helle Wandnischen in mehreren Proportionen für Badewanne, Dusche und durchgängige Ablagekonzepte.', image: '/images/products-2026/shower-niche-solid.webp', imageAlt: 'Helles Bad mit mehreren integrierten Wandnischen', specs: ['Solid Surface', 'mehrere Formate', 'pflegeleicht'] },
+  { id: 'sa-fly-white', category: 'bad', name: 'Fly White', description: 'Weiche Geometrie und kompakte Proportionen als zeitlose WC- und Bidetlösung für moderne Badezimmer.', image: '/images/products-2026/sanitary-fly-white.webp', imageAlt: 'Modernes bodenstehendes WC und Bidet in Weiss', specs: ['WC & Bidet', 'Rimless', 'Soft-Close'] },
+  { id: 'sa-glamic-black', category: 'bad', name: 'Glamic Black', description: 'Schwarze Sanitärkeramik als präziser Kontrast zu Naturstein, Holz und hellen Oberflächen.', image: '/images/products-2026/sanitary-glamic-black.webp', imageAlt: 'Modernes WC und Bidet in mattem Schwarz', specs: ['WC & Bidet', 'Rimless', 'schwarz matt'] },
+  { id: 'sa-bohemia', category: 'bad', name: 'Bohemia Classic', description: 'Traditionelle WC- und Bidetformen mit moderner Funktion für klassische Renovationen und Boutique-Hotellerie.', image: '/images/products-2026/sanitary-bohemia.webp', imageAlt: 'Klassisches WC und Bidet in einem eleganten Badezimmer', specs: ['WC & Bidet', 'klassische Form', 'weiss'] },
+  { id: 'sa-moon', category: 'bad', name: 'Moon Wall', description: 'Wandhängende WC- und Bidetlösung für einen leichten Raumeindruck und einfachere Bodenreinigung.', image: '/images/products-2026/sanitary-moon-wall.webp', imageAlt: 'Wandhängendes WC und Bidet in einem hellen Bad', specs: ['WC & Bidet', 'wandhängend', 'Rimless'] },
+  { id: 'ar-shiny', category: 'bad', name: 'Shiny Basin Gold', description: 'Aufsatzwaschtisch und hohe Armatur in gebürstetem Gold als abgestimmter Mittelpunkt des Waschplatzes.', image: '/images/products-2026/faucet-shiny-basin.webp', imageAlt: 'Runder Aufsatzwaschtisch und hohe Armatur in gebürstetem Gold', specs: ['Aufsatzwaschtisch', 'hohe Armatur', 'gebürstetes Gold'] },
+  { id: 'ar-kaiser', category: 'bad', name: 'Kaiser Wall', description: 'Wandmontierte Waschtischarmatur über einem geometrischen Aufsatzbecken für klare Badarchitektur.', image: '/images/products-2026/faucet-kaiser.webp', imageAlt: 'Wandarmatur in gebürstetem Gold über einem weissen Aufsatzbecken', specs: ['Waschtischarmatur', 'Unterputz', 'Wandmontage'] },
+  { id: 'ar-rs-smart', category: 'bad', name: 'Smart Thermostat', description: 'Komplette Duschsäule mit Kopf- und Handbrause für kontrollierte Temperatur und täglichen Komfort.', image: '/images/products-2026/shower-rs-smart.webp', imageAlt: 'Thermostatische Duschsäule mit Kopf- und Handbrause', specs: ['Duschsystem', 'Thermostat', 'Kopf- & Handbrause'] },
+  { id: 'du-lux', category: 'bad', name: 'Lux Linear', description: 'Sehr flache Duschwanne mit linearer Ablaufwirkung für reduzierte, grosszügige Duschen.', image: '/images/products-2026/shower-lux.webp', imageAlt: 'Flache Duschwanne mit linearer Ablaufzone in einem warmen Bad', specs: ['Duschwanne', 'ultraflach', 'Linearablauf'] },
+  { id: 'du-mineral', category: 'bad', name: 'Mineral Stone', description: 'Strukturierte Duschwanne in heller oder dunkler Steinoptik für sichere, pflegeleichte Nassbereiche.', image: '/images/products-2026/shower-mineral.webp', imageAlt: 'Rechteckige Duschwannen in heller und dunkler Steinoptik', specs: ['Duschwanne', 'rutschhemmend', 'mehrere Formate'] },
+  { id: 'du-niche-black', category: 'bad', name: 'Niche Black', description: 'Schwarze Einbaunische als praktisches Badzubehör und klarer Kontrast in keramischen Duschwänden.', image: '/images/products-2026/shower-niche-black.webp', imageAlt: 'Schwarze Einbaunische in einer grünen keramischen Wand', specs: ['Badzubehör', 'Einbaunische', 'mehrere Grössen'] },
 
   { id: 'bo-rigid-grey', category: 'boden', name: 'Rigid Grey', description: 'Grosszügige Steinoptik für pflegeleichte Wohn-, Eingangs- und Gewerbeflächen.', image: '/images/products-2026/floor-rigid-grey.webp', imageAlt: 'Heller SPC-Boden in ruhiger grauer Steinoptik', specs: ['60 × 60 cm', '6,5 mm', '0,7 mm Nutzschicht'] },
   { id: 'bo-xl-home', category: 'boden', name: 'XL Home', description: 'Helle extralange Eichenoptik für grosszügige Wohnräume mit ruhigem Fugenbild.', image: '/images/products-2026/floor-xl-home.webp', imageAlt: 'Heller SPC-Boden mit extralangen Dielen in Eichenoptik', specs: ['XL-Diele', '8 mm', 'EIR-Struktur'] },
@@ -188,7 +154,6 @@ export const products: Product[] = [
   { id: 'ba-wedges', category: 'baustelle', name: 'System-Keile', description: 'Mehrfach verwendbare Keile für kontrollierten Anpressdruck im Clip-Nivelliersystem.', image: '/images/showcase/construction-wedges.webp', imageAlt: 'Roter Systemkeil mit Nivellierclip', specs: ['wiederverwendbar', '500 Stück', 'Systemzubehör'], imageFit: 'contain' },
   { id: 'ba-screw', category: 'baustelle', name: 'Dreh-Schraubsystem', description: 'Von Hand regulierbare Drehkappe für die kontrollierte Nivellierung von Keramik und Naturstein.', image: '/images/showcase/construction-screw.webp', imageAlt: 'Rote Drehkappe für ein Fliesen-Nivelliersystem', specs: ['zangenfrei', 'wiederverwendbar', 'Keramik & Stein'], imageFit: 'contain' },
   { id: 'ba-crosses', category: 'baustelle', name: 'Fliesen-Fugenkreuze', description: 'Kunststoff-Abstandhalter für gleichmässige Fugen bei Wand- und Bodenplatten.', image: '/images/showcase/construction-crosses.webp', imageAlt: 'Weisse Fugenkreuze für Fliesenarbeiten', specs: ['2,0–5,0 mm', 'mehrere Grössen', 'Wand & Boden'], imageFit: 'contain' },
-  { id: 'ba-starter', category: 'baustelle', name: "Starterset 1'000 + 500", description: 'Einstiegspaket aus Nivellierclips, wiederverwendbaren Keilen und Systemzange.', image: '/images/showcase/construction-set.webp', imageAlt: 'Komplettset mit Clips, Keilen und Systemzange', specs: ["1'000 Clips", '500 Keile', 'inkl. Zange'], imageFit: 'contain' },
   { id: 'ba-tower', category: 'baustelle', name: 'Abstandhalter-Turm', description: 'Punktuelle Kunststoffauflage zur definierten Betondeckung bei horizontaler Bewehrung.', image: '/images/showcase/construction-tower.webp', imageAlt: 'Kunststoff-Abstandhalter für horizontale Bewehrung', specs: ['20–50 mm', 'Decken & Bodenplatten', 'Projektmengen'], imageFit: 'contain' },
   { id: 'ba-star', category: 'baustelle', name: 'Klemmstern', description: 'Aufsteckbarer Rundabstandhalter für gleichmässige Betondeckung an Wänden und Stützen.', image: '/images/showcase/construction-star.webp', imageAlt: 'Runder Klemmstern auf einem Armierungseisen', specs: ['Wand & Stütze', 'mehrere Deckungen', 'Bewehrung'], imageFit: 'contain' },
   { id: 'ba-rail', category: 'baustelle', name: 'Distanzleiste Linear', description: 'Lineare Kunststoffleiste zur flächigen Abstützung der unteren Bewehrungslage.', image: '/images/showcase/construction-rail.webp', imageAlt: 'Lineare Distanzleiste für Bewehrungsarbeiten', specs: ['2 m Leiste', 'mehrere Höhen', 'Bodenplatten'], imageFit: 'contain' },

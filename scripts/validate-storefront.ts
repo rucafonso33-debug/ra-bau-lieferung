@@ -5,8 +5,8 @@ import { categories, products } from '../src/catalogData';
 const errors: string[] = [];
 const forbidden = /\b(?:Rubicer|Gresco|Recer|Roca|Moovlux|Ramon\s+Soler|Corkart|Rubifloor|IMEX)\b/i;
 
-if (categories.length !== 9) errors.push(`Expected 9 categories, found ${categories.length}.`);
-if (products.length < 25) errors.push(`Expected at least 25 curated products, found ${products.length}.`);
+if (categories.length !== 7) errors.push(`Expected 7 categories, found ${categories.length}.`);
+if (products.length < 40) errors.push(`Expected at least 40 curated products, found ${products.length}.`);
 if (products.filter((product) => product.featured && product.category === 'grossformat').length < 4) errors.push('Expected four featured gross-format products.');
 
 const duplicateIds = products.filter((product, index) => products.findIndex((candidate) => candidate.id === product.id) !== index);
@@ -20,6 +20,7 @@ for (const category of categories) {
   if (!category.title || !category.description || !category.image) errors.push(`${category.id}: incomplete category.`);
   const categoryProducts = products.filter((product) => product.category === category.id);
   if (categoryProducts.length < 6) errors.push(`${category.id}: expected at least 6 products, found ${categoryProducts.length}.`);
+  if (categoryProducts.length > 10) errors.push(`${category.id}: expected at most 10 products, found ${categoryProducts.length}.`);
   if (forbidden.test(JSON.stringify(category))) errors.push(`${category.id}: public manufacturer name detected.`);
 }
 
