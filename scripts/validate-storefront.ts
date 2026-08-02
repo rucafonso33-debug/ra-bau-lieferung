@@ -9,9 +9,17 @@ if (categories.length !== 9) errors.push(`Expected 9 categories, found ${categor
 if (products.length < 25) errors.push(`Expected at least 25 curated products, found ${products.length}.`);
 if (products.filter((product) => product.featured && product.category === 'grossformat').length < 4) errors.push('Expected four featured gross-format products.');
 
+const duplicateIds = products.filter((product, index) => products.findIndex((candidate) => candidate.id === product.id) !== index);
+const duplicateNames = products.filter((product, index) => products.findIndex((candidate) => candidate.name.trim().toLocaleLowerCase('de-CH') === product.name.trim().toLocaleLowerCase('de-CH')) !== index);
+const duplicateImages = products.filter((product, index) => products.findIndex((candidate) => candidate.image === product.image) !== index);
+if (duplicateIds.length) errors.push(`Duplicate product IDs: ${duplicateIds.map((product) => product.id).join(', ')}.`);
+if (duplicateNames.length) errors.push(`Duplicate product names: ${duplicateNames.map((product) => product.name).join(', ')}.`);
+if (duplicateImages.length) errors.push(`Repeated product images: ${duplicateImages.map((product) => product.image).join(', ')}.`);
+
 for (const category of categories) {
   if (!category.title || !category.description || !category.image) errors.push(`${category.id}: incomplete category.`);
-  if (!products.some((product) => product.category === category.id)) errors.push(`${category.id}: category has no products.`);
+  const categoryProducts = products.filter((product) => product.category === category.id);
+  if (categoryProducts.length < 6) errors.push(`${category.id}: expected at least 6 products, found ${categoryProducts.length}.`);
   if (forbidden.test(JSON.stringify(category))) errors.push(`${category.id}: public manufacturer name detected.`);
 }
 

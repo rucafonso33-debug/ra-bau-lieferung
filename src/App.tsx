@@ -262,8 +262,7 @@ function ProductCard({ product, onRequest, onCatalog }: { product: Product; onRe
 }
 
 function ProductSelection({ activeCategory, onCategory, onRequest, onCatalog }: { activeCategory: CategoryId; onCategory: (id: CategoryId) => void; onRequest: (product: Product) => void; onCatalog: (product: Product) => void }) {
-  const visibleProducts = useMemo(() => products.filter((product) => product.category === activeCategory && !product.featured), [activeCategory]);
-  const allVisible = visibleProducts.length ? visibleProducts : products.filter((product) => product.category === activeCategory);
+  const visibleProducts = useMemo(() => products.filter((product) => product.category === activeCategory), [activeCategory]);
   const active = categoryById[activeCategory];
 
   return (
@@ -287,7 +286,7 @@ function ProductSelection({ activeCategory, onCategory, onRequest, onCatalog }: 
           </button>
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {allVisible.map((product) => <ProductCard key={product.id} product={product} onRequest={onRequest} onCatalog={onCatalog} />)}
+          {visibleProducts.map((product) => <ProductCard key={product.id} product={product} onRequest={onRequest} onCatalog={onCatalog} />)}
         </div>
       </div>
     </section>
