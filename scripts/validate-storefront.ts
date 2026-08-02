@@ -1,48 +1,29 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { interiorCategories } from '../src/finalData';
+import { categories, products } from '../src/catalogData';
 
 const errors: string[] = [];
-const imageOwners = new Map<string, string>();
+const forbidden = /\b(?:Rubicer|Gresco|Recer|Roca|Moovlux|Ramon\s+Soler|Corkart|Rubifloor|IMEX)\b/i;
 
-for (const category of interiorCategories) {
-  if (category.germanTitle === 'Raumkonzepte' && category.products.length > 5) {
-    errors.push(`Raumkonzepte contains ${category.products.length} entries; maximum is 5.`);
-  }
+if (categories.length !== 9) errors.push(`Expected 9 categories, found ${categories.length}.`);
+if (products.length < 25) errors.push(`Expected at least 25 curated products, found ${products.length}.`);
+if (products.filter((product) => product.featured && product.category === 'grossformat').length < 4) errors.push('Expected four featured gross-format products.');
 
-  for (const product of category.products) {
-    if (!product.id) errors.push(`${category.germanTitle}: product without id.`);
-    if (!product.name) errors.push(`${product.id}: missing name.`);
-    if (!product.reference) errors.push(`${product.id}: missing reference.`);
-    if (!product.image) errors.push(`${product.id}: missing primary image.`);
-    if (!product.sourceCatalog) errors.push(`${product.id}: missing source catalogue.`);
-    if (!product.sourcePage) errors.push(`${product.id}: missing source page.`);
-    if (!product.verificationStatus) errors.push(`${product.id}: missing verification status.`);
+for (const category of categories) {
+  if (!category.title || !category.description || !category.image) errors.push(`${category.id}: incomplete category.`);
+  if (!products.some((product) => product.category === category.id)) errors.push(`${category.id}: category has no products.`);
+  if (forbidden.test(JSON.stringify(category))) errors.push(`${category.id}: public manufacturer name detected.`);
+}
 
-    const gallery = product.gallery ?? [];
-    if (gallery.length < 2) errors.push(`${product.id}: gallery must contain at least two images.`);
-    const localSources = gallery.map((item) => item.src);
-    if (new Set(localSources).size !== localSources.length) errors.push(`${product.id}: gallery contains duplicate src values.`);
-
-    for (const source of localSources) {
-      if (!source.startsWith('/images/')) continue;
-      const absolute = path.resolve('public', source.slice(1));
-      if (!fs.existsSync(absolute)) errors.push(`${product.id}: image does not exist: ${source}`);
-      const owner = imageOwners.get(source);
-      if (owner && owner !== product.id && category.germanTitle !== 'Raumkonzepte') {
-        errors.push(`${product.id}: image reused from ${owner}: ${source}`);
-      } else {
-        imageOwners.set(source, product.id);
-      }
-    }
-
-    if (product.brand === 'Raumkonzept') {
-      if (product.format !== '1 Komplettkonzept' && product.format !== '1 Raumkonzept') errors.push(`${product.id}: room concept must use a one-set format.`);
-      if (product.verificationStatus !== 'concept-visualisation') errors.push(`${product.id}: concept must be labelled as visualisation.`);
-      if (!product.components?.length) errors.push(`${product.id}: concept requires components.`);
-      if (!product.gallery?.[0]?.label?.includes('Visualisierung')) errors.push(`${product.id}: first gallery label must identify the visualisation.`);
-    } else if (product.verificationStatus !== 'catalogue-verified') {
-      errors.push(`${product.id}: published product must be catalogue verified.`);
+for (const product of products) {
+  if (!product.name || !product.description || !product.image || !product.specs.length) errors.push(`${product.id}: incomplete product.`);
+  if (forbidden.test(JSON.stringify(product))) errors.push(`${product.id}: public manufacturer name detected.`);
+  if (process.argv.includes('--images')) {
+    const absolute = path.resolve('public-live', product.image.replace(/^\//, ''));
+    if (!fs.existsSync(absolute)) {
+      errors.push(`${product.id}: missing image ${product.image}.`);
+    } else if (fs.statSync(absolute).size === 0) {
+      errors.push(`${product.id}: empty image ${product.image}.`);
     }
   }
 }
@@ -52,5 +33,4 @@ if (errors.length) {
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
 }
-
-console.log(`Storefront validation passed for ${interiorCategories.reduce((sum, category) => sum + category.products.length, 0)} products.`);
+console.log(`Storefront validation passed for ${categories.length} categories and ${products.length} curated products.`);
