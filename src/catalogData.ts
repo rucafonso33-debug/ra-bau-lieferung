@@ -28,6 +28,7 @@ export interface Product {
   imageAlt: string;
   specs: string[];
   featured?: boolean;
+  imageFit?: 'cover' | 'contain';
 }
 
 export const categories: Category[] = [
@@ -51,11 +52,11 @@ export const categories: Category[] = [
   },
   {
     id: 'mosaik',
-    title: 'Premium-Mosaike',
-    eyebrow: 'Architektonische Details',
-    description: 'Reliefs, lineare Formate und Natursteinwirkungen für Nischen, Duschen und Akzentflächen.',
-    image: '/images/showcase/mosaic-linear.webp',
-    imageAlt: 'Lineares helles Premium-Mosaik in einer Küche',
+    title: 'Premium-Mosaik & Steinfliesen',
+    eyebrow: 'Natursteinwirkung',
+    description: 'Mosaike und Fliesen in Travertin-, Kalkstein- und Marmoroptik für hochwertige Wand- und Bodenflächen.',
+    image: '/images/showcase/stone-tile-grand.webp',
+    imageAlt: 'Hochwertiges Bad mit Fliesen in heller Natursteinoptik',
     priority: 'primary',
   },
   {
@@ -105,8 +106,8 @@ export const categories: Category[] = [
     title: 'Baustellenzubehör',
     eyebrow: 'Für die Ausführung',
     description: 'Nivellier-, Distanz- und Befestigungslösungen für eine saubere Verarbeitung.',
-    image: '/images/showcase/construction-leveling.webp',
-    imageAlt: 'Nivelliersystem für die professionelle Fliesenverlegung',
+    image: '/images/showcase/construction-site.webp',
+    imageAlt: 'Baustelle mit Bewehrung und Abstandhaltern',
   },
 ];
 
@@ -121,10 +122,10 @@ export const products: Product[] = [
   { id: 'ke-concrete', category: 'keramik', name: 'Concrete Light', description: 'Gleichmässige Betonoptik für reduzierte Küchen, Bäder und offene Wohnflächen.', image: '/images/showcase/ceramic-concrete.webp', imageAlt: 'Moderner Raum mit grossformatiger Keramik in Betonoptik', specs: ['120 × 120 cm', 'rektifiziert', 'matt'] },
   { id: 'ke-wood', category: 'keramik', name: 'Oak Porcelain', description: 'Holzwirkung mit der Widerstandsfähigkeit von Feinsteinzeug für stark genutzte Bereiche.', image: '/images/showcase/ceramic-wood.webp', imageAlt: 'Boden aus Feinsteinzeug in natürlicher Holzoptik', specs: ['Dielenformat', 'pflegeleicht', 'innen & aussen'] },
 
-  { id: 'mo-linear', category: 'mosaik', name: 'Linear Pearl', description: 'Schmale, vertikale Elemente für hochwertige Nischen, Küchenrückwände und Duschbereiche.', image: '/images/showcase/mosaic-linear.webp', imageAlt: 'Lineares helles Mosaik in einer modernen Küche', specs: ['Reliefstruktur', 'Akzentfläche', 'helle Glasur'] },
-  { id: 'mo-natural', category: 'mosaik', name: 'Natural Stone Mix', description: 'Natürlich changierende Steine für warme Spa-Atmosphäre und individuelle Details.', image: '/images/showcase/mosaic-natural.webp', imageAlt: 'Duschbereich mit Mosaik aus natürlich wirkenden Steinen', specs: ['Natursteinwirkung', 'Duschwand', 'warme Töne'] },
-  { id: 'mo-sand', category: 'mosaik', name: 'Terrazzo Sand', description: 'Fein abgestimmtes Raster mit mineralischer Körnung für ruhige, moderne Flächen.', image: '/images/showcase/mosaic-sand.webp', imageAlt: 'Beiges Mosaik mit mineralischer Terrazzo-Wirkung', specs: ['Rasterformat', 'matt', 'beige'] },
-  { id: 'mo-travertine', category: 'mosaik', name: 'Travertin Lines', description: 'Lineare Steinstruktur als präzise Ergänzung zu grossformatigen Travertinflächen.', image: '/images/showcase/mosaic-travertine.webp', imageAlt: 'Lineares Mosaik in warmer Travertin-Optik', specs: ['lineares Format', 'Wand', 'naturwarm'] },
+  { id: 'mo-travertin-brick', category: 'mosaik', name: 'Travertin Brick', description: 'Fein abgestimmtes Stäbchenmosaik in warmer Travertinoptik für Duschen, Nischen und Spa-Bereiche.', image: '/images/showcase/stone-mosaic-travertin.webp', imageAlt: 'Stäbchenmosaik in warmer Travertinoptik', specs: ['Mosaik', 'Travertinoptik', 'warm matt'] },
+  { id: 'mo-marble-diamond', category: 'mosaik', name: 'Calacatta Diamond', description: 'Geometrisches Mosaik in heller Marmoroptik für elegante Duschen, Nischen und exklusive Akzentwände.', image: '/images/showcase/stone-mosaic-grand.webp', imageAlt: 'Geometrisches Mosaik in heller Calacatta-Marmoroptik', specs: ['Mosaik', 'Marmoroptik', 'Wand & Dusche'] },
+  { id: 'mo-grand-tile', category: 'mosaik', name: 'Grand Stone Ivory', description: 'Helle Steinfliese für durchgängige Bad- und Wohnflächen mit natürlicher, zurückhaltender Bewegung.', image: '/images/showcase/stone-tile-grand.webp', imageAlt: 'Helles Badezimmer mit grosszügigen Fliesen in Steinoptik', specs: ['Steinfliese', 'Wand & Boden', 'rektifiziert'] },
+  { id: 'mo-vein-tile', category: 'mosaik', name: 'Limestone Vein', description: 'Elegante Fliese mit feiner Kalksteinaderung für ruhige Premiumflächen und koordinierte Wandkonzepte.', image: '/images/showcase/stone-tile-vein.webp', imageAlt: 'Helle Fliese mit feiner natürlicher Kalksteinaderung', specs: ['Steinfliese', 'Kalksteinoptik', 'matt'] },
 
   { id: 'bm-walnut-double', category: 'badmoebel', name: 'Walnut Double 120', description: 'Schwebender Doppelwaschtisch mit gerillter Front und ruhiger, dunkler Holzoptik.', image: '/images/showcase/furniture-natural.webp', imageAlt: 'Schwebender Doppelwaschtisch mit gerillter dunkler Holzfront', specs: ['Doppelbecken', 'Hochschrank optional', 'Spiegel nach Wahl'] },
   { id: 'bm-oak-compact', category: 'badmoebel', name: 'Natural Oak 80', description: 'Kompakte Kombination aus Waschtisch, Rundspiegel und optionalem Hochschrank.', image: '/images/showcase/furniture-oak.webp', imageAlt: 'Kompaktes Badmöbel in heller Eiche mit Rundspiegel', specs: ['ca. 80 cm', 'hängend', 'gerillte Front'] },
@@ -144,9 +145,18 @@ export const products: Product[] = [
   { id: 'bo-oak', category: 'boden', name: 'Oak XL', description: 'Ruhige, extralange Dielenoptik für grosszügige Wohn- und Arbeitsbereiche.', image: '/images/showcase/spc-oak.webp', imageAlt: 'SPC-Boden mit extralanger Dielenoptik in Eiche', specs: ['XL-Diele', 'Holzoptik', 'Nutzschicht'] },
   { id: 'bo-stone', category: 'boden', name: 'Mineral Stone', description: 'Robuste Steinoptik für pflegeleichte Eingangs-, Wohn- und Gewerbeflächen.', image: '/images/showcase/spc-stone.webp', imageAlt: 'SPC-Boden in grauer mineralischer Steinoptik', specs: ['Steinoptik', 'wasserbeständig', 'Projektboden'] },
 
-  { id: 'ba-level', category: 'baustelle', name: 'Nivelliersystem', description: 'Clips und Keile für gleichmässige Fugen und plan liegende Keramikflächen.', image: '/images/showcase/leveling-system.webp', imageAlt: 'Komplettes Nivelliersystem mit Clips und Keilen', specs: ['Clips & Keile', 'mehrere Fugenbreiten', 'wiederverwendbar'] },
-  { id: 'ba-spacers', category: 'baustelle', name: 'Distanzhalter', description: 'Stern-, Turm- und Fugendistanzen für präzise Abstände auf der Baustelle.', image: '/images/showcase/spacer-system.webp', imageAlt: 'Sternförmige Distanzhalter für Fliesenarbeiten', specs: ['mehrere Typen', 'präzise Abstände', 'Projektmengen'] },
-  { id: 'ba-wire', category: 'baustelle', name: 'Bindedraht & Haken', description: 'Verbrauchsmaterial für Armierungs- und Betonarbeiten in abgestimmten Mengen.', image: '/images/showcase/binding-wire.webp', imageAlt: 'Bindedraht für Armierungsarbeiten', specs: ['Rollenware', 'passende Haken', 'Baustellenbedarf'] },
+  { id: 'ba-clips', category: 'baustelle', name: 'Nivellierclips', description: 'Einweg-Zuglaschen für gleichmässige Fugen und eine plane Verlegung von Wand- und Bodenplatten.', image: '/images/showcase/construction-clips.webp', imageAlt: 'Transparenter Nivellierclip für Fliesen', specs: ['1,0–3,0 mm', "1'000 Stück", 'Wand & Boden'], imageFit: 'contain' },
+  { id: 'ba-wedges', category: 'baustelle', name: 'System-Keile', description: 'Mehrfach verwendbare Keile für kontrollierten Anpressdruck im Clip-Nivelliersystem.', image: '/images/showcase/construction-wedges.webp', imageAlt: 'Roter Systemkeil mit Nivellierclip', specs: ['wiederverwendbar', '500 Stück', 'Systemzubehör'], imageFit: 'contain' },
+  { id: 'ba-screw', category: 'baustelle', name: 'Dreh-Schraubsystem', description: 'Von Hand regulierbare Drehkappe für die kontrollierte Nivellierung von Keramik und Naturstein.', image: '/images/showcase/construction-screw.webp', imageAlt: 'Rote Drehkappe für ein Fliesen-Nivelliersystem', specs: ['zangenfrei', 'wiederverwendbar', 'Keramik & Stein'], imageFit: 'contain' },
+  { id: 'ba-crosses', category: 'baustelle', name: 'Fliesen-Fugenkreuze', description: 'Kunststoff-Abstandhalter für gleichmässige Fugen bei Wand- und Bodenplatten.', image: '/images/showcase/construction-crosses.webp', imageAlt: 'Weisse Fugenkreuze für Fliesenarbeiten', specs: ['2,0–5,0 mm', 'mehrere Grössen', 'Wand & Boden'], imageFit: 'contain' },
+  { id: 'ba-starter', category: 'baustelle', name: "Starterset 1'000 + 500", description: 'Einstiegspaket aus Nivellierclips, wiederverwendbaren Keilen und Systemzange.', image: '/images/showcase/construction-set.webp', imageAlt: 'Komplettset mit Clips, Keilen und Systemzange', specs: ["1'000 Clips", '500 Keile', 'inkl. Zange'], imageFit: 'contain' },
+  { id: 'ba-project', category: 'baustelle', name: "Projektset 2'500 + 500", description: 'Verbrauchspaket für grössere Flächen mit hoher Clip-Menge und wiederverwendbarer Keilbasis.', image: '/images/showcase/construction-set.webp', imageAlt: 'Projektset mit Clips, Keilen und Systemzange', specs: ["2'500 Clips", '500 Keile', 'Projektmenge'], imageFit: 'contain' },
+  { id: 'ba-tower', category: 'baustelle', name: 'Abstandhalter-Turm', description: 'Punktuelle Kunststoffauflage zur definierten Betondeckung bei horizontaler Bewehrung.', image: '/images/showcase/construction-tower.webp', imageAlt: 'Kunststoff-Abstandhalter für horizontale Bewehrung', specs: ['20–50 mm', 'Decken & Bodenplatten', 'Projektmengen'], imageFit: 'contain' },
+  { id: 'ba-star', category: 'baustelle', name: 'Klemmstern', description: 'Aufsteckbarer Rundabstandhalter für gleichmässige Betondeckung an Wänden und Stützen.', image: '/images/showcase/construction-star.webp', imageAlt: 'Runder Klemmstern auf einem Armierungseisen', specs: ['Wand & Stütze', 'mehrere Deckungen', 'Bewehrung'], imageFit: 'contain' },
+  { id: 'ba-rail', category: 'baustelle', name: 'Distanzleiste Linear', description: 'Lineare Kunststoffleiste zur flächigen Abstützung der unteren Bewehrungslage.', image: '/images/showcase/construction-rail.webp', imageAlt: 'Lineare Distanzleiste für Bewehrungsarbeiten', specs: ['2 m Leiste', 'mehrere Höhen', 'Bodenplatten'], imageFit: 'contain' },
+  { id: 'ba-caps', category: 'baustelle', name: 'Armierungs-Schutzkappen', description: 'Gut sichtbare Kunststoffkappen zum Abdecken freiliegender Armierungs- und Stabenden.', image: '/images/showcase/construction-caps.webp', imageAlt: 'Rote Schutzkappen für Armierungseisen', specs: ['temporärer Schutz', 'mehrere Durchmesser', 'Baustellensicherheit'], imageFit: 'contain' },
+  { id: 'ba-wire', category: 'baustelle', name: 'Doppeldrahtbinder 14 cm', description: 'Vorgefertigte Drahtbinder mit zwei Ösen zum schnellen Verbinden von Armierungseisen.', image: '/images/showcase/construction-wire.webp', imageAlt: 'Rolle mit Doppeldrahtbindern für Armierungsarbeiten', specs: ['14 cm', 'Rollenware', 'Armierung'], imageFit: 'contain' },
+  { id: 'ba-hook', category: 'baustelle', name: 'Drill-Bindehaken', description: 'Mechanischer Bindehaken zum schnellen Verdrillen von Doppeldrahtbindern.', image: '/images/showcase/construction-hook.webp', imageAlt: 'Bindehaken mit Holzgriff für Drahtbinder', specs: ['Holzgriff', 'rotierender Schaft', 'passend zu Drahtbindern'], imageFit: 'contain' },
 ];
 
 export const categoryById = Object.fromEntries(categories.map((category) => [category.id, category])) as Record<CategoryId, Category>;
