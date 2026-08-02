@@ -47,7 +47,8 @@ const emptyInquiry: InquiryData = {
 };
 
 function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
 }
 
 function Header({ onRequest }: { onRequest: () => void }) {
@@ -108,7 +109,7 @@ function Hero({ onRequest, onCatalog }: { onRequest: () => void; onCatalog: () =
             Materialien, die ein Projekt sichtbar aufwerten.
           </h1>
           <p className="mt-7 max-w-xl text-base leading-7 text-white/72 sm:text-lg sm:leading-8">
-            Grossformatplatten, Keramik, Premium-Mosaike und Badlösungen – persönlich ausgewählt, projektbezogen kalkuliert und in die Schweiz geliefert.
+            Grossformatplatten, Keramik, Premium-Mosaik, Steinfliesen und Badlösungen – persönlich ausgewählt, projektbezogen kalkuliert und in die Schweiz geliefert.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <button onClick={onRequest} className="inline-flex min-h-13 items-center gap-2 rounded-full bg-[#d7b46a] px-6 text-sm font-black text-[#102f3f]">
@@ -180,7 +181,7 @@ function CategoryGrid({ onSelect }: { onSelect: (id: CategoryId) => void }) {
   return (
     <section id="sortiment" className="scroll-mt-24 bg-[#f2f0e9]">
       <div className="mx-auto max-w-[1500px] px-5 py-18 sm:px-8 lg:px-10 lg:py-24">
-        <SectionHeading eyebrow="Sortiment" title="Die richtigen Kategorien. Klar geordnet." copy="Der Schwerpunkt liegt auf Keramik, Grossformat, Mosaik und Bad. Böden und Baustellenzubehör ergänzen Projekte, ohne die Auswahl unnötig aufzublähen." />
+        <SectionHeading eyebrow="Sortiment" title="Die richtigen Kategorien. Klar geordnet." copy="Der Schwerpunkt liegt auf Keramik, Grossformat, Mosaik, Steinfliesen und Bad. Böden und Baustellenzubehör ergänzen Projekte, ohne die Auswahl unnötig aufzublähen." />
         <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {categories.map((category, index) => (
             <button key={category.id} onClick={() => onSelect(category.id)} className={`group relative overflow-hidden rounded-[22px] bg-[#17384b] text-left ${index === 0 ? 'md:col-span-2 xl:col-span-2' : ''}`}>
@@ -242,7 +243,7 @@ function ProductCard({ product, onRequest, onCatalog }: { product: Product; onRe
   return (
     <article className="group overflow-hidden rounded-[22px] border border-[#dce3e3] bg-white shadow-[0_8px_30px_rgba(23,56,75,.06)]">
       <div className="aspect-[4/3] overflow-hidden bg-[#edf0ef]">
-        <img src={product.image} alt={product.imageAlt} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
+        <img src={product.image} alt={product.imageAlt} loading="lazy" decoding="async" className={`h-full w-full transition duration-700 group-hover:scale-[1.025] ${product.imageFit === 'contain' ? 'object-contain p-5' : 'object-cover'}`} />
       </div>
       <div className="p-5 sm:p-6">
         <p className="text-[9px] font-black uppercase tracking-[.18em] text-[#a87828]">{categoryById[product.category].title}</p>
@@ -434,10 +435,10 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
-  const selectCategory = (id: CategoryId) => {
+  const selectCategory = (id: CategoryId, moveToSelection = false) => {
     setActiveCategory(id);
     window.history.pushState({}, '', routeByCategory[id]);
-    window.setTimeout(() => scrollToId('auswahl'), 0);
+    if (moveToSelection) window.setTimeout(() => scrollToId('auswahl'), 0);
   };
 
   const request = (kind: 'Preisofferte' | 'Katalog', selection = '') => {
@@ -465,9 +466,9 @@ export default function App() {
       <main>
         <Hero onRequest={() => request('Preisofferte')} onCatalog={() => request('Katalog')} />
         <ConfidenceStrip />
-        <CategoryGrid onSelect={selectCategory} />
+        <CategoryGrid onSelect={(id) => selectCategory(id, true)} />
         <LargeFormat onRequest={requestProduct} />
-        <ProductSelection activeCategory={activeCategory} onCategory={selectCategory} onRequest={requestProduct} onCatalog={requestCatalog} />
+        <ProductSelection activeCategory={activeCategory} onCategory={(id) => selectCategory(id)} onRequest={requestProduct} onCatalog={requestCatalog} />
         <Process />
         <InquiryForm data={inquiry} setData={setInquiry} error={error} onSubmit={submit} />
       </main>
