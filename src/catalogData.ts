@@ -1,3 +1,5 @@
+import { additionalCatalogProducts } from './additionalCatalogProducts';
+
 export type CategoryId =
   | 'grossformat'
   | 'keramik'
@@ -17,6 +19,8 @@ export interface Category {
   priority?: 'primary' | 'secondary';
 }
 
+export type ProductSegment = 'Armaturen' | 'Duschsysteme' | 'Sanitärkeramik' | 'Duschwannen' | 'Badzubehör';
+
 export interface Product {
   id: string;
   category: CategoryId;
@@ -27,13 +31,18 @@ export interface Product {
   specs: string[];
   featured?: boolean;
   imageFit?: 'cover' | 'contain';
+  brand?: string;
+  reference?: string;
+  catalog?: string;
+  catalogPage?: number;
+  segment?: ProductSegment;
 }
 
 export const categories: Category[] = [
   {
     id: 'grossformat',
-    title: 'Grossformatplatten',
-    eyebrow: 'Premium-Auswahl',
+    title: 'Premium-Grossformatplatten',
+    eyebrow: 'Premium-Laminatkeramik',
     description: 'Dünne Keramikplatten für fugenarme Wände, Böden, Duschen und Möbeloberflächen.',
     image: '/images/showcase/calacatta-gold.webp',
     imageAlt: 'Heller Raum mit grossformatiger Keramik in Calacatta-Optik',
@@ -50,8 +59,8 @@ export const categories: Category[] = [
   },
   {
     id: 'mosaik',
-    title: 'Premium-Mosaik & Steinfliesen',
-    eyebrow: 'Natursteinwirkung',
+    title: 'Mosaik & Steinfliesen',
+    eyebrow: 'Ausgewählte Qualität',
     description: 'Mosaike und Fliesen in Travertin-, Kalkstein- und Marmoroptik für hochwertige Wand- und Bodenflächen.',
     image: '/images/showcase/stone-tile-grand.webp',
     imageAlt: 'Hochwertiges Bad mit Fliesen in heller Natursteinoptik',
@@ -93,7 +102,7 @@ export const categories: Category[] = [
   },
 ];
 
-export const products: Product[] = [
+const baseProducts: Product[] = [
   { id: 'gf-calacatta-gold', category: 'grossformat', name: 'Calacatta Gold', description: 'Warme Goldadern auf hellem Grund für repräsentative Wände, Duschen und Wohnbereiche.', image: '/images/showcase/calacatta-gold.webp', imageAlt: 'Grossformatplatte in heller Marmoroptik mit goldener Aderung', specs: ['bis 120 × 260 cm', '6 mm', 'poliert'], featured: true },
   { id: 'gf-calacatta-vein', category: 'grossformat', name: 'Calacatta Vein', description: 'Markante, durchlaufende Zeichnung für fugenarme Flächen mit architektonischer Wirkung.', image: '/images/showcase/calacatta-vein.webp', imageAlt: 'Grossformatige Marmoroptik mit markanter grauer Aderung', specs: ['bis 120 × 260 cm', '6 mm', 'poliert'], featured: true },
   { id: 'gf-onyx-white', category: 'grossformat', name: 'Onyx White', description: 'Transluzente Steinwirkung für elegante Bäder, Empfangsbereiche und Akzentwände.', image: '/images/showcase/onyx-white.webp', imageAlt: 'Eleganter Raum mit grossformatiger Onyx-Optik', specs: ['bis 120 × 260 cm', '6 mm', 'poliert'], featured: true },
@@ -161,5 +170,7 @@ export const products: Product[] = [
   { id: 'ba-wire', category: 'baustelle', name: 'Doppeldrahtbinder 14 cm', description: 'Vorgefertigte Drahtbinder mit zwei Ösen zum schnellen Verbinden von Armierungseisen.', image: '/images/showcase/construction-wire.webp', imageAlt: 'Rolle mit Doppeldrahtbindern für Armierungsarbeiten', specs: ['14 cm', 'Rollenware', 'Armierung'], imageFit: 'contain' },
   { id: 'ba-hook', category: 'baustelle', name: 'Drill-Bindehaken', description: 'Mechanischer Bindehaken zum schnellen Verdrillen von Doppeldrahtbindern.', image: '/images/showcase/construction-hook.webp', imageAlt: 'Bindehaken mit Holzgriff für Drahtbinder', specs: ['Holzgriff', 'rotierender Schaft', 'passend zu Drahtbindern'], imageFit: 'contain' },
 ];
+
+export const products: Product[] = [...baseProducts, ...additionalCatalogProducts];
 
 export const categoryById = Object.fromEntries(categories.map((category) => [category.id, category])) as Record<CategoryId, Category>;

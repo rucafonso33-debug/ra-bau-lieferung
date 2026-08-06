@@ -250,8 +250,8 @@ export const interiorCategories: InteriorCategory[] = [
     ]
   },
   {
-    title: "Premium Mosaics",
-    germanTitle: "Premium Mosaike",
+    title: "Mosaics",
+    germanTitle: "Mosaike",
     description: "Echte, koordinierte Mosaikserien aus den Herstellerkatalogen – für Duschen, Spa, Akzentwände und exklusive Innenräume.",
     products: [
       {

@@ -9,13 +9,14 @@ import {
   Menu,
   MessageCircle,
   Phone,
+  Search,
   ShieldCheck,
   Sparkles,
   Truck,
   X,
 } from 'lucide-react';
 import { categories, categoryById, products, type CategoryId, type Product } from './catalogData';
-import { emailHref, whatsappHref, type InquiryData, type InquiryTopic } from './inquiry';
+import { type InquiryData, type InquiryTopic } from './inquiry';
 import { trackConversion } from './analytics';
 import { Logo } from './components/Logo';
 import { storefront } from './storefrontConfig';
@@ -43,7 +44,7 @@ const titleByPath: Record<string, string> = {
   '/kataloge': 'Produktkataloge für Fachbetriebe | RA Bau Lieferung',
   '/ablauf': 'So funktioniert die Produktanfrage | RA Bau Lieferung',
   '/kontakt': 'Preis, Verfügbarkeit & Konditionen anfragen | RA Bau Lieferung',
-  '/grossformatplatten': 'Grossformatplatten für Fachbetriebe Schweiz | RA Bau Lieferung',
+  '/grossformatplatten': 'Premium-Grossformatplatten für Fachbetriebe Schweiz | RA Bau Lieferung',
   '/feinsteinzeug': 'Feinsteinzeug & Fliesen Grosshandel Schweiz | RA Bau Lieferung',
   '/mosaike': 'Mosaik & Steinfliesen für Fachbetriebe Schweiz | RA Bau Lieferung',
   '/badmoebel': 'Badmöbel Grosshandel Schweiz | RA Bau Lieferung',
@@ -66,19 +67,20 @@ const emptyInquiry: InquiryData = {
   timeline: '',
   message: '',
   attachmentName: '',
+  preferredChannel: 'whatsapp',
 };
 
 function Header({ currentPath, onNavigate, onRequest }: { currentPath: string; onNavigate: (path: string) => void; onRequest: () => void }) {
   const [open, setOpen] = useState(false);
   const links = [
     ['/produkte', 'Sortiment'],
-    ['/grossformatplatten', 'Grossformat'],
+    ['/grossformatplatten', 'Premium-Grossformat'],
     ['/kataloge', 'Kataloge'],
     ['/ablauf', 'Ablauf'],
     ['/kontakt', 'Kontakt'],
   ];
   const productLinks: [string, string][] = [
-    ['/grossformatplatten', 'Grossformat'],
+    ['/grossformatplatten', 'Premium-Grossformat'],
     ['/mosaike', 'Mosaik'],
     ['/bad-sanitaer', 'Sanitär & Bad'],
     ['/badmoebel', 'Badmöbel'],
@@ -288,7 +290,7 @@ function LargeFormat({ onRequest }: { onRequest: (product: Product) => void }) {
     <section id="grossformat" className="scroll-mt-24 bg-[#102f3f] text-white">
       <div className="mx-auto max-w-[1500px] px-5 py-18 sm:px-8 lg:px-10 lg:py-24">
         <div className="grid gap-8 lg:grid-cols-[.76fr_1.24fr] lg:items-end">
-          <SectionHeading eyebrow="Premium-Grossformat" title="Weniger Fugen. Mehr Materialwirkung." copy="Grossformatplatten für Wände, Böden, Duschen, Küchen und Möbeloberflächen. Preis, Verfügbarkeit und Liefermöglichkeiten bestätigen wir nach Referenz und Menge." />
+          <SectionHeading eyebrow="Premium-Grossformat" title="Ausgewählte Platten. Maximale Materialwirkung." copy="Premium-Grossformatplatten für Wände, Böden, Duschen, Küchen und Möbeloberflächen. Jede gezeigte Referenz stammt aus den verfügbaren Herstellerkatalogen; Preis und Verfügbarkeit bestätigen wir nach Referenz und Menge." />
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {featured.map((product, index) => (
               <article key={product.id} className={`group relative overflow-hidden rounded-[20px] bg-white/5 ${index === 0 ? 'col-span-2' : ''}`}>
@@ -349,10 +351,11 @@ function ProductCard({ product, onRequest, onCatalog }: { product: Product; onRe
       </div>
       <div className="p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[9px] font-black uppercase tracking-[.18em] text-[#a87828]">{categoryById[product.category].title}</p>
+          <p className="text-[9px] font-black uppercase tracking-[.18em] text-[#a87828]">{product.brand ? `${product.brand} · ` : ''}{categoryById[product.category].title}</p>
           <span className="text-[9px] font-black uppercase tracking-[.12em] text-[#60757c]">Verfügbarkeit auf Anfrage</span>
         </div>
         <h3 className="mt-2 font-display text-2xl font-black tracking-[-.025em] text-[#17384b]">{product.name}</h3>
+        {product.reference ? <p className="mt-1 text-[10px] font-bold text-[#60757c]">Ref. {product.reference}{product.catalogPage ? ` · Katalog S. ${product.catalogPage}` : ''}</p> : null}
         <p className="mt-3 min-h-[3.75rem] text-sm leading-6 text-[#66797f]">{product.description}</p>
         <div className="mt-4 flex flex-wrap gap-2" aria-label="Verfügbare Produktangaben">
           {product.specs.map((spec) => <span key={spec} className="rounded-full bg-[#f0f2ef] px-3 py-1.5 text-[10px] font-bold text-[#53676e]">{spec}</span>)}
@@ -371,8 +374,37 @@ function ProductCard({ product, onRequest, onCatalog }: { product: Product; onRe
 }
 
 function ProductSelection({ activeCategory, onCategory, onRequest, onCatalog }: { activeCategory: CategoryId; onCategory: (id: CategoryId) => void; onRequest: (product: Product) => void; onCatalog: (product: Product) => void }) {
-  const visibleProducts = useMemo(() => products.filter((product) => product.category === activeCategory), [activeCategory]);
+  const [query, setQuery] = useState('');
+  const [segment, setSegment] = useState('Alle');
+  const [visibleCount, setVisibleCount] = useState(12);
+  const badSegments = ['Alle', 'Armaturen', 'Duschsysteme', 'Sanitärkeramik', 'Duschwannen', 'Badzubehör'] as const;
+  const productSegment = (item: Product) => {
+    if (item.segment) return item.segment;
+    if (item.id === 'ar-rs-smart') return 'Duschsysteme';
+    if (item.id.startsWith('sa-')) return 'Sanitärkeramik';
+    if (item.id.startsWith('ar-')) return 'Armaturen';
+    if (item.id === 'du-lux' || item.id === 'du-mineral') return 'Duschwannen';
+    return 'Badzubehör';
+  };
+  const filteredProducts = useMemo(() => {
+    const normalized = query.trim().toLocaleLowerCase('de-CH');
+    return products.filter((item) => {
+      if (item.category !== activeCategory) return false;
+      if (activeCategory === 'bad' && segment !== 'Alle' && productSegment(item) !== segment) return false;
+      if (!normalized) return true;
+      return [item.name, item.brand, item.reference, item.description, ...item.specs].filter(Boolean).join(' ').toLocaleLowerCase('de-CH').includes(normalized);
+    });
+  }, [activeCategory, query, segment]);
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
   const active = categoryById[activeCategory];
+
+  useEffect(() => {
+    setQuery('');
+    setSegment('Alle');
+    setVisibleCount(12);
+  }, [activeCategory]);
+
+  useEffect(() => setVisibleCount(12), [query, segment]);
 
   return (
     <section id="auswahl" className="scroll-mt-24 bg-[#fbfaf7]">
@@ -398,9 +430,24 @@ function ProductSelection({ activeCategory, onCategory, onRequest, onCatalog }: 
             <Download size={15} /> {activeCategory === 'baustelle' ? 'Gesamten Katalog anfordern' : 'Katalog anfragen'}
           </button>
         </div>
+        <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-[#dce3e3] bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
+          <label className="relative block w-full lg:max-w-md">
+            <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#73868b]" />
+            <span className="sr-only">Produkte oder Referenz suchen</span>
+            <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Produkt, Marke oder Referenz suchen" className="h-12 w-full rounded-full border border-[#cbd5d7] bg-[#fbfaf7] pl-11 pr-4 text-sm outline-none focus:border-[#004b87]" />
+          </label>
+          {activeCategory === 'bad' ? (
+            <div className="flex gap-2 overflow-x-auto pb-1" aria-label="Badprodukte filtern">
+              {badSegments.map((item) => <button key={item} type="button" aria-pressed={segment === item} onClick={() => setSegment(item)} className={`min-h-10 shrink-0 rounded-full border px-4 text-[11px] font-black ${segment === item ? 'border-[#004b87] bg-[#004b87] text-white' : 'border-[#cad5d7] text-[#53676e]'}`}>{item}</button>)}
+            </div>
+          ) : null}
+        </div>
+        <p className="mt-5 text-xs font-bold text-[#60757c]">{filteredProducts.length} geprüfte Referenzen{segment !== 'Alle' ? ` · ${segment}` : ''}</p>
         <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {visibleProducts.map((product) => <ProductCard key={product.id} product={product} onRequest={onRequest} onCatalog={onCatalog} />)}
         </div>
+        {visibleCount < filteredProducts.length ? <button type="button" onClick={() => setVisibleCount((count) => count + 12)} className="mx-auto mt-9 flex min-h-12 items-center justify-center rounded-full border border-[#17384b] bg-white px-7 text-sm font-black text-[#17384b]">Weitere Produkte anzeigen ({filteredProducts.length - visibleCount})</button> : null}
+        {!filteredProducts.length ? <div className="mt-8 rounded-2xl border border-[#dce3e3] bg-white p-8 text-center text-sm text-[#60757c]">Keine passende Referenz gefunden. Senden Sie uns die gesuchte Marke, Referenz oder ein Foto über die Anfrage.</div> : null}
       </div>
     </section>
   );
@@ -471,7 +518,7 @@ function Process() {
   );
 }
 
-function InquiryForm({ data, setData, error, onSubmit, onNavigate }: { data: InquiryData; setData: (data: InquiryData) => void; error: string; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onNavigate: (path: string) => void }) {
+function InquiryForm({ data, setData, error, status, onSubmit, onNavigate }: { data: InquiryData; setData: (data: InquiryData) => void; error: string; status: 'idle' | 'submitting' | 'success'; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onNavigate: (path: string) => void }) {
   const [step, setStep] = useState<1 | 2>(1);
   const [stepError, setStepError] = useState('');
   const update = (key: keyof InquiryData, value: string) => setData({ ...data, [key]: value });
@@ -527,12 +574,25 @@ function InquiryForm({ data, setData, error, onSubmit, onNavigate }: { data: Inq
           </div>
         </div>
         <form onSubmit={onSubmit} className="rounded-[24px] bg-[#fbfaf7] p-5 text-[#17384b] shadow-2xl sm:p-8">
+          <label className="absolute -left-[9999px]" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
           <div className="flex items-center justify-between gap-4 border-b border-[#dce3e3] pb-5">
             <div><p className="text-[10px] font-black uppercase tracking-[.18em] text-[#a87828]">Schritt {step} von 2</p><p className="mt-1 text-sm font-black">{step === 1 ? 'Was benötigen Sie?' : 'Wohin dürfen wir antworten?'}</p></div>
             <div className="flex gap-2" aria-label={`Schritt ${step} von 2`}><span className="h-1.5 w-9 rounded-full bg-[#d7b46a]" /><span className={`h-1.5 w-9 rounded-full ${step === 2 ? 'bg-[#d7b46a]' : 'bg-[#dce3e3]'}`} /></div>
           </div>
 
-          {step === 1 ? (
+          {status === 'success' ? (
+            <div className="flex min-h-[500px] flex-col items-center justify-center px-2 py-12 text-center" aria-live="polite">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#e6f3ec] text-[#16734b]"><Check size={30} /></span>
+              <p className="mt-7 text-[10px] font-black uppercase tracking-[.18em] text-[#a87828]">Anfrage gesendet</p>
+              <h3 className="mt-3 max-w-xl font-display text-3xl font-black text-[#17384b]">Anfrage erfolgreich gesendet.</h3>
+              <p className="mt-4 max-w-lg text-sm leading-6 text-[#66797f]">
+                {data.preferredChannel === 'whatsapp'
+                  ? 'Wir haben Ihre vollständigen Angaben erhalten und kontaktieren Sie per WhatsApp.'
+                  : 'Wir haben Ihre vollständigen Angaben erhalten und melden uns schnellstmöglich per E-Mail.'}
+              </p>
+              <button type="button" onClick={() => onNavigate('/produkte')} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#004b87] px-6 text-sm font-black text-white">Produkte ansehen <ArrowRight size={17} /></button>
+            </div>
+          ) : step === 1 ? (
             <div className="pt-6">
               <fieldset>
                 <legend className="text-sm font-black">Mehrfachauswahl möglich</legend>
@@ -574,6 +634,23 @@ function InquiryForm({ data, setData, error, onSubmit, onNavigate }: { data: Inq
                 <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-[#a87828]">Ihre Auswahl</p><p className="mt-2 text-xs font-bold leading-5">{data.requestTypes.join(' · ')}</p>{data.productAreas.length ? <div className="mt-2 flex flex-wrap gap-2">{data.productAreas.map((area) => <button key={area} type="button" onClick={() => openArea(area)} className="text-[10px] font-black text-[#004b87] underline decoration-[#9fb8c8] underline-offset-2">{area} ansehen</button>)}</div> : null}</div>
                 <button type="button" onClick={() => setStep(1)} className="shrink-0 text-[11px] font-black text-[#004b87]">Ändern</button>
               </div>
+              <fieldset className="mt-5">
+                <legend className="text-xs font-black">Wie dürfen wir Sie kontaktieren?</legend>
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  {([
+                    ['whatsapp', 'WhatsApp', 'Antwort direkt auf Ihre Nummer', MessageCircle],
+                    ['email', 'E-Mail', 'Antwort an Ihre E-Mail-Adresse', Mail],
+                  ] as const).map(([value, label, copy, Icon]) => {
+                    const selected = data.preferredChannel === value;
+                    return (
+                      <button key={value} type="button" aria-pressed={selected} onClick={() => update('preferredChannel', value)} className={`flex min-h-[82px] items-start gap-3 rounded-2xl border p-4 text-left transition ${selected ? 'border-[#004b87] bg-[#eaf3f8] shadow-[0_0_0_1px_#004b87]' : 'border-[#d3dcde] bg-white hover:border-[#8fa4aa]'}`}>
+                        <Icon size={18} className={selected ? 'text-[#004b87]' : 'text-[#718388]'} />
+                        <span><span className="block text-xs font-black">{selected ? '✓ ' : ''}{label}</span><span className="mt-1 block text-[10px] leading-4 text-[#6d7c80]">{copy}</span></span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2 text-xs font-black">Vorname und Nachname *
                   <input required autoComplete="name" value={data.name} onChange={(event) => update('name', event.target.value)} className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
@@ -581,11 +658,11 @@ function InquiryForm({ data, setData, error, onSubmit, onNavigate }: { data: Inq
                 <label className="grid gap-2 text-xs font-black">Firma <span className="font-normal text-[#6d7c80]">(optional)</span>
                   <input autoComplete="organization" value={data.company} onChange={(event) => update('company', event.target.value)} className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
                 </label>
-                <label className="grid gap-2 text-xs font-black">Telefonnummer
-                  <input type="tel" autoComplete="tel" value={data.phone} onChange={(event) => update('phone', event.target.value)} placeholder="Für eine schnelle Rückfrage" className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
+                <label className="grid gap-2 text-xs font-black">Telefonnummer {data.preferredChannel === 'whatsapp' ? '*' : <span className="font-normal text-[#6d7c80]">(optional)</span>}
+                  <input type="tel" required={data.preferredChannel === 'whatsapp'} autoComplete="tel" value={data.phone} onChange={(event) => update('phone', event.target.value)} placeholder="z. B. +41 79 000 00 00" className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
                 </label>
-                <label className="grid gap-2 text-xs font-black">E-Mail
-                  <input type="email" autoComplete="email" value={data.email} onChange={(event) => update('email', event.target.value)} className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
+                <label className="grid gap-2 text-xs font-black">E-Mail {data.preferredChannel === 'email' ? '*' : <span className="font-normal text-[#6d7c80]">(optional)</span>}
+                  <input type="email" required={data.preferredChannel === 'email'} autoComplete="email" value={data.email} onChange={(event) => update('email', event.target.value)} className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
                 </label>
                 <label className="grid gap-2 text-xs font-black">Gewünschte Menge
                   <input value={data.quantity} onChange={(event) => update('quantity', event.target.value)} placeholder="z. B. 45 m² oder 2 Stück" className="h-12 rounded-xl border border-[#cbd5d7] bg-white px-4 text-base font-normal sm:text-sm" />
@@ -603,16 +680,15 @@ function InquiryForm({ data, setData, error, onSubmit, onNavigate }: { data: Inq
                   <textarea value={data.message} onChange={(event) => update('message', event.target.value)} placeholder="Varianten, Ausführung oder weitere Angaben" className="min-h-24 rounded-xl border border-[#cbd5d7] bg-white p-4 text-base font-normal sm:text-sm" />
                 </label>
                 <label className="mt-4 grid gap-2 text-xs font-black">Datei
-                  <span className="relative flex min-h-12 items-center rounded-xl border border-dashed border-[#aab9bd] bg-white px-4 text-sm font-normal text-[#53676e]"><input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => update('attachmentName', event.target.files?.[0]?.name ?? '')} className="absolute inset-0 cursor-pointer opacity-0" />{data.attachmentName || 'PDF, JPG, PNG oder WEBP auswählen'}</span>
+                  <span className="relative flex min-h-12 items-center rounded-xl border border-dashed border-[#aab9bd] bg-white px-4 text-sm font-normal text-[#53676e]"><input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => update('attachmentName', event.target.files?.[0]?.name ?? '')} className="absolute inset-0 cursor-pointer opacity-0" />{data.attachmentName || 'PDF, JPG, PNG oder WEBP auswählen'}</span>
                 </label>
-                <p className="mt-2 text-[10px] leading-5 text-[#6d7c80]">Die Datei nach dem Öffnen separat in WhatsApp oder E-Mail beifügen.</p>
+                <p className="mt-2 text-[10px] leading-5 text-[#6d7c80]">Optional, maximal 2,5 MB. Die Datei wird zusammen mit der Anfrage übermittelt.</p>
               </details>
               {error ? <p role="alert" className="mt-4 rounded-xl bg-[#fff0ed] p-3 text-xs font-bold text-[#9a4035]">{error}</p> : null}
-              <p className="mt-4 text-[11px] leading-5 text-[#6d7c80]">Mindestens E-Mail oder Telefonnummer angeben. Preis, Verfügbarkeit und Lieferung werden separat bestätigt.</p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_.8fr]">
-                <button type="submit" name="channel" value="whatsapp" className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#d7b46a] px-5 text-sm font-black text-[#102f3f]"><MessageCircle size={17} /> In WhatsApp senden</button>
-                <button type="submit" name="channel" value="email" className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#004b87] px-5 text-sm font-black text-white"><Mail size={17} /> Per E-Mail senden</button>
-              </div>
+              <p className="mt-4 text-[11px] leading-5 text-[#6d7c80]">Die vollständige Anfrage wird direkt an RA Bau Lieferung gesendet. Preis, Verfügbarkeit und Lieferung werden separat bestätigt.</p>
+              <button type="submit" disabled={status === 'submitting'} className="mt-5 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-[#004b87] px-5 text-sm font-black text-white transition disabled:cursor-wait disabled:opacity-65">
+                {status === 'submitting' ? 'Anfrage wird gesendet …' : 'Anfrage senden'} <ArrowRight size={17} />
+              </button>
             </div>
           )}
         </form>
@@ -654,6 +730,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<CategoryId>(initialCategory);
   const [inquiry, setInquiry] = useState<InquiryData>(emptyInquiry);
   const [error, setError] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
   useEffect(() => {
     const onPop = () => {
@@ -690,30 +767,61 @@ export default function App() {
     if (kind === 'Kataloganfrage') trackConversion('catalog_request_click', { source, selection: selection || 'general' });
     setInquiry((current) => ({ ...current, requestTypes: [kind], productAreas: productArea ? [productArea] : current.productAreas, selection }));
     setError('');
+    setSubmitStatus('idle');
     navigate('/kontakt');
   };
 
   const requestProduct = (product: Product) => request('Preisanfrage', `${product.name} · ${categoryById[product.category].title}`, 'product_card', categoryById[product.category].title);
   const requestCatalog = (product: Product) => request('Kataloganfrage', categoryById[product.category].title, 'product_card', categoryById[product.category].title);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!inquiry.email.trim() && !inquiry.phone.trim()) {
-      setError('Bitte geben Sie eine E-Mail-Adresse oder Telefonnummer an.');
+    if (inquiry.preferredChannel === 'whatsapp' && !inquiry.phone.trim()) {
+      setError('Bitte geben Sie die Telefonnummer an, über die wir Sie per WhatsApp kontaktieren dürfen.');
       return;
     }
+    if (inquiry.preferredChannel === 'email' && !inquiry.email.trim()) {
+      setError('Bitte geben Sie die E-Mail-Adresse an, über die wir Sie kontaktieren dürfen.');
+      return;
+    }
+    const form = new FormData(event.currentTarget);
+    const file = form.get('attachment');
+    let attachment: { name: string; type: string; content: string } | undefined;
+    if (file instanceof File && file.size > 0) {
+      if (file.size > 2_500_000) {
+        setError('Die Datei ist grösser als 2,5 MB. Bitte wählen Sie eine kleinere Datei.');
+        return;
+      }
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Bitte laden Sie eine PDF-, JPG-, PNG- oder WEBP-Datei hoch.');
+        return;
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      let binary = '';
+      for (let index = 0; index < bytes.length; index += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+      }
+      attachment = { name: file.name, type: file.type, content: window.btoa(binary) };
+    }
+
     setError('');
-    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-    const channel = submitter?.value === 'email' ? 'email' : 'whatsapp';
-    const requestTypes = inquiry.requestTypes.join('|');
-    trackConversion('form_submit', { channel, request_type: requestTypes });
-    if (channel === 'email') {
-      trackConversion('email_click', { source: 'inquiry_form', request_type: requestTypes });
-      window.location.href = emailHref(storefront.email, inquiry);
-      return;
+    setSubmitStatus('submitting');
+    try {
+      const response = await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...inquiry, website: String(form.get('website') ?? ''), attachment }),
+      });
+      if (!response.ok) throw new Error('submission_failed');
+      const requestTypes = inquiry.requestTypes.join('|');
+      trackConversion('form_submit', { channel: inquiry.preferredChannel, request_type: requestTypes });
+      setSubmitStatus('success');
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch {
+      setSubmitStatus('idle');
+      setError('Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt per Telefon oder WhatsApp.');
     }
-    trackConversion('whatsapp_click', { source: 'inquiry_form', request_type: requestTypes });
-    window.open(whatsappHref(storefront.phoneDigits, inquiry), '_blank', 'noopener,noreferrer');
   };
 
   let page: ReactNode;
@@ -744,7 +852,7 @@ export default function App() {
   } else if (currentPath === '/ablauf') {
     page = <Process />;
   } else if (currentPath === '/kontakt') {
-    page = <InquiryForm data={inquiry} setData={setInquiry} error={error} onSubmit={submit} onNavigate={navigate} />;
+    page = <InquiryForm data={inquiry} setData={setInquiry} error={error} status={submitStatus} onSubmit={submit} onNavigate={navigate} />;
   } else {
     page = <CategoryGrid onSelect={selectCategory} />;
   }

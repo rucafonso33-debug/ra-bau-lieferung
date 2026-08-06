@@ -21,6 +21,7 @@ export interface InquiryData {
   timeline: string;
   message: string;
   attachmentName: string;
+  preferredChannel: 'email' | 'whatsapp';
 }
 
 export function buildInquiryMessage(data: InquiryData) {
@@ -35,6 +36,7 @@ export function buildInquiryMessage(data: InquiryData) {
     `Unternehmen: ${data.company || '-'}`,
     `E-Mail: ${data.email || '-'}`,
     `Telefon: ${data.phone || '-'}`,
+    `Bevorzugter Kontakt: ${data.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail'}`,
     `Gewünschte Menge: ${data.quantity || '-'}`,
     `Lieferort: ${data.location || '-'}`,
     `Gewünschter Lieferzeitraum: ${data.timeline || '-'}`,

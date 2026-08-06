@@ -2,7 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/premium-mosaike", "destination": "/mosaike", "permanent": true },
     { "source": "/badezimmer", "destination": "/bad-sanitaer", "permanent": true },
     { "source": "/sanitaerkeramik", "destination": "/bad-sanitaer", "permanent": true },
     { "source": "/armaturen-duschen", "destination": "/bad-sanitaer", "permanent": true },

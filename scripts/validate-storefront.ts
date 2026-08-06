@@ -1,12 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { categories, products } from '../src/catalogData';
 
 const errors: string[] = [];
-const forbidden = /\b(?:Rubicer|Gresco|Recer|Roca|Moovlux|Ramon\s+Soler|Corkart|Rubifloor|IMEX)\b/i;
-
 if (categories.length !== 7) errors.push(`Expected 7 categories, found ${categories.length}.`);
-if (products.length < 40) errors.push(`Expected at least 40 curated products, found ${products.length}.`);
+if (products.length < 160) errors.push(`Expected at least 160 curated products, found ${products.length}.`);
 if (products.filter((product) => product.featured && product.category === 'grossformat').length < 4) errors.push('Expected four featured gross-format products.');
 
 const duplicateIds = products.filter((product, index) => products.findIndex((candidate) => candidate.id === product.id) !== index);
@@ -19,14 +18,13 @@ if (duplicateImages.length) errors.push(`Repeated product images: ${duplicateIma
 for (const category of categories) {
   if (!category.title || !category.description || !category.image) errors.push(`${category.id}: incomplete category.`);
   const categoryProducts = products.filter((product) => product.category === category.id);
-  if (categoryProducts.length < 6) errors.push(`${category.id}: expected at least 6 products, found ${categoryProducts.length}.`);
-  if (categoryProducts.length > 10) errors.push(`${category.id}: expected at most 10 products, found ${categoryProducts.length}.`);
-  if (forbidden.test(JSON.stringify(category))) errors.push(`${category.id}: public manufacturer name detected.`);
+  const required = ({ grossformat: 20, mosaik: 20, badmoebel: 20 } as Partial<Record<typeof category.id, number>>)[category.id] ?? 6;
+  if (categoryProducts.length < required) errors.push(`${category.id}: expected at least ${required} products, found ${categoryProducts.length}.`);
 }
 
 for (const product of products) {
   if (!product.name || !product.description || !product.image || !product.specs.length) errors.push(`${product.id}: incomplete product.`);
-  if (forbidden.test(JSON.stringify(product))) errors.push(`${product.id}: public manufacturer name detected.`);
+  if (product.image.startsWith('/images/catalog-2026/') && (!product.brand || !product.catalog || !product.catalogPage)) errors.push(`${product.id}: catalogue source metadata missing.`);
   if (process.argv.includes('--images')) {
     const absolute = path.resolve('public-live', product.image.replace(/^\//, ''));
     if (!fs.existsSync(absolute)) {
@@ -35,6 +33,29 @@ for (const product of products) {
       errors.push(`${product.id}: empty image ${product.image}.`);
     }
   }
+}
+
+const inferBadSegment = (product: (typeof products)[number]) => {
+  if (product.segment) return product.segment;
+  if (product.id === 'ar-rs-smart') return 'Duschsysteme';
+  if (product.id.startsWith('sa-')) return 'Sanitärkeramik';
+  if (product.id.startsWith('ar-')) return 'Armaturen';
+  if (product.id === 'du-lux' || product.id === 'du-mineral') return 'Duschwannen';
+  return 'Badzubehör';
+};
+for (const segment of ['Armaturen', 'Duschsysteme', 'Sanitärkeramik', 'Duschwannen'] as const) {
+  const count = products.filter((product) => product.category === 'bad' && inferBadSegment(product) === segment).length;
+  if (count < 20) errors.push(`bad/${segment}: expected at least 20 products, found ${count}.`);
+}
+
+const protectedFingerprints = {
+  boden: 'ee90a720e77a6ff5696f61bbd377a4fc95fa4c147a8ee0ef58b64a38fe5bca14',
+  baustelle: 'd7d573b0f9e8d21dcb697e33ae33dc836db14b9b4eb38f82547c6a10ff4e1cd9',
+} as const;
+for (const [category, fingerprint] of Object.entries(protectedFingerprints)) {
+  const protectedProducts = products.filter((product) => product.category === category);
+  const current = createHash('sha256').update(JSON.stringify(protectedProducts)).digest('hex');
+  if (current !== fingerprint) errors.push(`${category}: protected product data changed.`);
 }
 
 if (errors.length) {

@@ -103,17 +103,6 @@
     bar.innerHTML = `<div><strong class="block text-sm">${total} ${total === 1 ? 'Produkt ausgewählt' : 'Produkte ausgewählt'}</strong><span class="text-[11px] text-white/65">Auswahl prüfen oder direkt anfragen</span></div><div class="flex gap-2"><a href="/projektanfrage" class="rounded-lg border border-white/25 px-3 py-2 text-xs font-extrabold text-white">Öffnen</a><a href="https://wa.me/41782418913?text=${encodeURIComponent(message)}" target="_blank" rel="noreferrer" class="rounded-lg bg-[#d7aa57] px-3 py-2 text-xs font-extrabold text-[#10293e]">WhatsApp</a></div>`;
   }
 
-  function addMosaicGuidance() {
-    if (location.pathname !== '/premium-mosaike' || document.querySelector('[data-ra-mosaic-guidance]')) return;
-    const section = document.querySelector('main section.mx-auto');
-    if (!section) return;
-    const box = document.createElement('div');
-    box.dataset.raMosaicGuidance = 'true';
-    box.className = 'mb-8 rounded-[18px] border border-[#d9c393] bg-[#fffaf0] p-5 sm:p-6';
-    box.innerHTML = `<p class="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#8e6725]">Klare Premium-Kriterien</p><h2 class="mt-2 text-xl font-extrabold text-[#10293e]">Nicht jedes Kleinformat ist automatisch Premium.</h2><p class="mt-3 text-sm leading-6 text-[#5d7381]">Wir unterscheiden zwischen <strong>Design-Akzenten</strong> mit besonderer Material-, Relief- oder Finishwirkung und <strong>koordinierten Serienmosaiken</strong>, die technisch zu einer Flächenserie passen. Für exklusive Projekte priorisieren wir Mastery Mix, Relief- und dekorative Lösungen; Standardquadrate bleiben als funktionale Ergänzung sichtbar.</p>`;
-    section.prepend(box);
-  }
-
   function verifyContacts() {
     document.querySelectorAll('a[href]').forEach((link) => {
       const href = link.getAttribute('href') || '';
@@ -131,7 +120,6 @@
       fixImages();
       enhanceFamilySelection();
       enableDirectRemoval();
-      addMosaicGuidance();
       verifyContacts();
       updateBar();
     });
