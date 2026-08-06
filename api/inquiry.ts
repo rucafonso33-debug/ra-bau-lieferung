@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { buildInquiryMessage, type InquiryData, type InquiryTopic } from '../src/inquiry';
+import type { InquiryData, InquiryTopic } from '../src/inquiry';
 
 type AttachmentPayload = { name: string; type: string; content: string };
 type InquiryPayload = InquiryData & { website?: string; attachment?: AttachmentPayload };
@@ -21,6 +21,30 @@ function safe(value: unknown, max = 500) {
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character);
+}
+
+function buildEmailMessage(data: InquiryData) {
+  return [
+    'Guten Tag RA Bau Lieferung,',
+    '',
+    `Anfrage: ${data.requestTypes.join(', ') || 'Allgemeine Anfrage'}`,
+    `Produktbereiche: ${data.productAreas.join(', ') || 'noch offen'}`,
+    `Produkt / Referenz: ${data.selection || 'Kategorie noch offen'}`,
+    `Kundentyp: ${data.customerType}`,
+    `Name: ${data.name}`,
+    `Unternehmen: ${data.company || '-'}`,
+    `E-Mail: ${data.email || '-'}`,
+    `Telefon: ${data.phone || '-'}`,
+    `Bevorzugter Kontakt: ${data.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail'}`,
+    `Gewünschte Menge: ${data.quantity || '-'}`,
+    `Lieferort: ${data.location || '-'}`,
+    `Gewünschter Lieferzeitraum: ${data.timeline || '-'}`,
+    `Datei zur Anfrage: ${data.attachmentName || '-'}`,
+    '',
+    `Nachricht: ${data.message || '-'}`,
+    '',
+    'Bitte prüfen Sie Preis, Verfügbarkeit, Konditionen und Liefermöglichkeiten für die angefragten Produkte.',
+  ].join('\n');
 }
 
 function validate(body: InquiryPayload) {
@@ -73,7 +97,7 @@ export default async function handler(request: RequestLike, response: ResponseLi
     attachmentName: safe(body.attachmentName, 180),
     preferredChannel: body.preferredChannel,
   };
-  const message = buildInquiryMessage(normalized);
+  const message = buildEmailMessage(normalized);
   const subjectSelection = normalized.selection || normalized.productAreas.join(', ') || 'Produkte';
   const subject = `[Website] ${normalized.requestTypes.join(' + ')} – ${subjectSelection}`.slice(0, 180);
   const resend = new Resend(process.env.RESEND_API_KEY);
