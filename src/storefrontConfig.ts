@@ -7,7 +7,7 @@ export const storefront = {
   phoneDigits: '41782418913',
   email: 'rodrigo@ra-bau-lieferung.com',
   address: 'Schweiz',
-  promise: 'Materialwirkung, Herstellerreferenz und Schweizer Projektlogistik in einer klaren Anfrage.',
+  promise: 'Ausgewählte Baustoffe und Badlösungen für Fachbetriebe und Wiederverkäufer in der Schweiz.',
 } as const;
 
 export type ProjectEntry = {

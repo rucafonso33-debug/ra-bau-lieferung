@@ -7,12 +7,14 @@
     { "source": "/sanitaerkeramik", "destination": "/bad-sanitaer", "permanent": true },
     { "source": "/armaturen-duschen", "destination": "/bad-sanitaer", "permanent": true },
     { "source": "/duschloesungen", "destination": "/bad-sanitaer", "permanent": true },
-    { "source": "/produkte", "destination": "/#sortiment", "permanent": true },
-    { "source": "/raumkonzepte", "destination": "/#sortiment", "permanent": true },
-    { "source": "/projektanfrage", "destination": "/#anfrage", "permanent": true },
-    { "source": "/kontakt", "destination": "/#kontakt", "permanent": true }
+    { "source": "/raumkonzepte", "destination": "/produkte", "permanent": true },
+    { "source": "/projektanfrage", "destination": "/kontakt", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/produkte", "destination": "/produkte/index.html" },
+    { "source": "/kataloge", "destination": "/kataloge/index.html" },
+    { "source": "/ablauf", "destination": "/ablauf/index.html" },
+    { "source": "/kontakt", "destination": "/kontakt/index.html" },
     { "source": "/grossformatplatten", "destination": "/grossformatplatten/index.html" },
     { "source": "/baustellenzubehoer", "destination": "/baustellenzubehoer/index.html" },
     { "source": "/feinsteinzeug", "destination": "/feinsteinzeug/index.html" },

@@ -3,12 +3,16 @@ import path from 'node:path';
 
 const commonImage = '/images/showcase/calacatta-gold.webp';
 const routes = {
-  '/grossformatplatten': ['Grossformatplatten Schweiz | RA Bau Lieferung', 'Fugenarme Keramikplatten bis 120 × 260 cm für Wände, Böden, Duschen und hochwertige Innenräume.', 'Grossformatplatten', commonImage],
-  '/feinsteinzeug': ['Keramik & Feinsteinzeug Schweiz | RA Bau Lieferung', 'Ausgewählte Stein-, Marmor-, Beton- und Holzoptiken für langlebige Bau- und Renovationsprojekte.', 'Keramik & Feinsteinzeug', '/images/showcase/ceramic-travertine.webp'],
-  '/mosaike': ['Premium-Mosaik & Steinfliesen Schweiz | RA Bau Lieferung', 'Mosaike und Fliesen in Travertin-, Kalkstein- und Marmoroptik für hochwertige Wand- und Bodenflächen.', 'Premium-Mosaik und Steinfliesen', '/images/showcase/stone-tile-grand.webp'],
-  '/badmoebel': ['Badmöbel Schweiz | RA Bau Lieferung', 'Ausgewählte Waschtische, Hochschränke und Spiegel für ruhige, hochwertige Badkompositionen.', 'Badmöbel', '/images/showcase/furniture-natural.webp'],
-  '/bad-sanitaer': ['Bad, Sanitär & Armaturen Schweiz | RA Bau Lieferung', 'WCs, Bidets, Waschtische, Armaturen, Duschsysteme, Duschwannen und Badzubehör in einer klaren Sparte.', 'Bad, Sanitär und Armaturen', '/images/showcase/washbasins-modern.webp'],
-  '/spc-vinyl': ['SPC & Vinyl Schweiz | RA Bau Lieferung', 'Pflegeleichte Holz- und Steinoptiken als Ergänzung für Renovationen und belastbare Innenräume.', 'SPC & Vinyl', '/images/showcase/spc-herringbone.webp'],
+  '/produkte': ['Baustoffe & Badlösungen für Fachbetriebe | RA Bau Lieferung', 'Übersicht ausgewählter Fliesen, Grossformatplatten, Mosaike, Badmöbel, Sanitärlösungen, SPC und Baustellenprodukte für Fachkunden.', 'Sortiment für Fachbetriebe', commonImage],
+  '/kataloge': ['Produktkataloge für Fachbetriebe | RA Bau Lieferung', 'Kataloge zu Fliesen, Grossformat, Mosaik, Badmöbeln, Sanitärlösungen und Böden ansehen und konkrete Referenzen anfragen.', 'Produktkataloge', '/images/showcase/stone-tile-grand.webp'],
+  '/ablauf': ['So funktioniert die Produktanfrage | RA Bau Lieferung', 'Produkt oder Referenz, Menge und Lieferort senden. RA Bau Lieferung prüft Preis, Verfügbarkeit, Konditionen und Liefermöglichkeiten.', 'Ablauf der Produktanfrage', commonImage],
+  '/kontakt': ['Preis, Verfügbarkeit & Konditionen anfragen | RA Bau Lieferung', 'Produkt, Referenz, Menge und Lieferort senden und Preis, Verfügbarkeit, Fachkundenkonditionen und Liefermöglichkeiten anfragen.', 'Produkt und Preis anfragen', '/images/showcase/calacatta-vein.webp'],
+  '/grossformatplatten': ['Grossformatplatten für Fachbetriebe Schweiz | RA Bau Lieferung', 'Grossformatige Keramikplatten für Wände, Böden und Bad. Preis, Verfügbarkeit und Lieferung in die Schweiz auf Anfrage.', 'Grossformatplatten', commonImage],
+  '/feinsteinzeug': ['Feinsteinzeug & Fliesen Grosshandel Schweiz | RA Bau Lieferung', 'Feinsteinzeug in Marmor-, Travertin-, Beton-, Stein- und Holzoptik für Fliesenleger, Fachbetriebe und Wiederverkäufer.', 'Keramik & Feinsteinzeug', '/images/showcase/ceramic-travertine.webp'],
+  '/mosaike': ['Mosaik & Steinfliesen für Fachbetriebe Schweiz | RA Bau Lieferung', 'Mosaike und Steinfliesen in Travertin-, Kalkstein- und Marmoroptik für professionelle Wand- und Bodenanwendungen.', 'Premium-Mosaik und Steinfliesen', '/images/showcase/stone-tile-grand.webp'],
+  '/badmoebel': ['Badmöbel Grosshandel Schweiz | RA Bau Lieferung', 'Ausgewählte Badmöbel, Waschtische, Hochschränke und Spiegel für Sanitärbetriebe und Wiederverkäufer.', 'Badmöbel', '/images/showcase/furniture-natural.webp'],
+  '/bad-sanitaer': ['Sanitär Grosshandel Schweiz | RA Bau Lieferung', 'Sanitärkeramik, WCs, Waschtische, Armaturen, Duschsysteme, Duschwannen und Badzubehör für Fachkunden.', 'Bad, Sanitär und Armaturen', '/images/showcase/washbasins-modern.webp'],
+  '/spc-vinyl': ['SPC & Vinyl für Fachbetriebe Schweiz | RA Bau Lieferung', 'Pflegeleichte SPC- und Vinylböden in Holz- und Steinoptik. Konditionen nach Produkt und Menge auf Anfrage.', 'SPC & Vinyl', '/images/showcase/spc-herringbone.webp'],
   '/baustellenzubehoer': ['Baustellenzubehör Schweiz | RA Bau Lieferung', 'Nivellier-, Distanz-, Schutz- und Befestigungslösungen für Fliesen-, Bewehrungs- und Betonarbeiten.', 'Baustellenzubehör', '/images/showcase/construction-site.webp'],
 };
 
