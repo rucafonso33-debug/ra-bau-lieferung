@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { buildInquiryMessage, type InquiryData } from '../src/inquiry';
+import { buildInquiryMessage, type InquiryData, type InquiryTopic } from '../src/inquiry';
 
 type AttachmentPayload = { name: string; type: string; content: string };
 type InquiryPayload = InquiryData & { website?: string; attachment?: AttachmentPayload };
@@ -9,6 +9,7 @@ type RequestLike = { method?: string; body?: unknown; headers: Record<string, st
 const recipient = process.env.INQUIRY_RECIPIENT_EMAIL || 'rodrigo@ra-bau-lieferung.com';
 const sender = process.env.INQUIRY_FROM_EMAIL || 'RA Bau Lieferung <anfrage@ra-bau-lieferung.com>';
 const allowedAttachmentTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
+const allowedRequestTypes = new Set<InquiryTopic>(['Produktanfrage', 'Preisanfrage', 'Händlerkonditionen', 'Kataloganfrage', 'Verfügbarkeit', 'Lieferung', 'Allgemeine Anfrage']);
 
 function fail(response: ResponseLike, code: number, message: string) {
   response.status(code).json({ ok: false, error: message });
@@ -30,7 +31,7 @@ function validate(body: InquiryPayload) {
   if (body.preferredChannel === 'whatsapp' && !safe(body.phone, 80)) return 'phone_required';
   if (body.attachment) {
     if (!allowedAttachmentTypes.has(body.attachment.type)) return 'attachment_type_invalid';
-    if (!safe(body.attachment.name, 180) || body.attachment.content.length > 3_500_000) return 'attachment_invalid';
+    if (!safe(body.attachment.name, 180) || typeof body.attachment.content !== 'string' || body.attachment.content.length > 3_500_000) return 'attachment_invalid';
   }
   return '';
 }
@@ -40,14 +41,24 @@ export default async function handler(request: RequestLike, response: ResponseLi
   if (request.method !== 'POST') return fail(response, 405, 'method_not_allowed');
   if (!process.env.RESEND_API_KEY) return fail(response, 503, 'email_service_not_configured');
 
-  const body = (typeof request.body === 'string' ? JSON.parse(request.body) : request.body) as InquiryPayload;
+  let body: InquiryPayload;
+  try {
+    body = (typeof request.body === 'string' ? JSON.parse(request.body) : request.body) as InquiryPayload;
+  } catch {
+    return fail(response, 400, 'invalid_json');
+  }
   if (!body || typeof body !== 'object') return fail(response, 400, 'invalid_request');
   if (safe(body.website, 200)) return response.status(200).json({ ok: true });
   const validationError = validate(body);
   if (validationError) return fail(response, 400, validationError);
+  const requestTypes = body.requestTypes
+    .map((item) => safe(item, 120))
+    .filter((item): item is InquiryTopic => allowedRequestTypes.has(item as InquiryTopic))
+    .slice(0, 8);
+  if (!requestTypes.length) return fail(response, 400, 'request_type_invalid');
 
   const normalized: InquiryData = {
-    requestTypes: body.requestTypes.slice(0, 8),
+    requestTypes,
     productAreas: Array.isArray(body.productAreas) ? body.productAreas.map((item) => safe(item, 120)).filter(Boolean).slice(0, 12) : [],
     selection: safe(body.selection, 500),
     customerType: safe(body.customerType, 120),
@@ -68,15 +79,19 @@ export default async function handler(request: RequestLike, response: ResponseLi
   const resend = new Resend(process.env.RESEND_API_KEY);
   const attachments = body.attachment ? [{ filename: safe(body.attachment.name, 180), content: Buffer.from(body.attachment.content, 'base64') }] : undefined;
 
-  const { error } = await resend.emails.send({
-    from: sender,
-    to: [recipient],
-    replyTo: normalized.email || undefined,
-    subject,
-    text: message,
-    html: `<div style="font-family:Arial,sans-serif;max-width:720px;color:#17384b"><h1 style="font-size:24px">Neue Website-Anfrage</h1><p style="padding:12px 16px;background:#eef4f7;border-radius:8px"><strong>Bevorzugter Kontakt:</strong> ${normalized.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail'}</p><pre style="white-space:pre-wrap;font-family:Arial,sans-serif;font-size:14px;line-height:1.6">${escapeHtml(message)}</pre></div>`,
-    attachments,
-  });
-  if (error) return fail(response, 502, 'email_delivery_failed');
-  response.status(200).json({ ok: true });
+  try {
+    const { error } = await resend.emails.send({
+      from: sender,
+      to: [recipient],
+      replyTo: normalized.email || undefined,
+      subject,
+      text: message,
+      html: `<div style="font-family:Arial,sans-serif;max-width:720px;color:#17384b"><h1 style="font-size:24px">Neue Website-Anfrage</h1><p style="padding:12px 16px;background:#eef4f7;border-radius:8px"><strong>Bevorzugter Kontakt:</strong> ${normalized.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail'}</p><pre style="white-space:pre-wrap;font-family:Arial,sans-serif;font-size:14px;line-height:1.6">${escapeHtml(message)}</pre></div>`,
+      attachments,
+    });
+    if (error) return fail(response, 502, 'email_delivery_failed');
+    response.status(200).json({ ok: true });
+  } catch {
+    return fail(response, 502, 'email_delivery_failed');
+  }
 }
