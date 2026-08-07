@@ -5,7 +5,7 @@ import { categories, products } from '../src/catalogData';
 
 const errors: string[] = [];
 if (categories.length !== 7) errors.push(`Expected 7 categories, found ${categories.length}.`);
-if (products.length < 160) errors.push(`Expected at least 160 curated products, found ${products.length}.`);
+if (products.length < 145) errors.push(`Expected at least 145 photo-ready curated products, found ${products.length}.`);
 if (products.filter((product) => product.featured && product.category === 'grossformat').length < 4) errors.push('Expected four featured gross-format products.');
 
 const duplicateIds = products.filter((product, index) => products.findIndex((candidate) => candidate.id === product.id) !== index);
@@ -43,9 +43,16 @@ const inferBadSegment = (product: (typeof products)[number]) => {
   if (product.id === 'du-lux' || product.id === 'du-mineral') return 'Duschwannen';
   return 'Badzubehör';
 };
+const minimumBadSegmentProducts = {
+  Armaturen: 20,
+  Duschsysteme: 20,
+  Sanitärkeramik: 8,
+  Duschwannen: 12,
+} as const;
 for (const segment of ['Armaturen', 'Duschsysteme', 'Sanitärkeramik', 'Duschwannen'] as const) {
   const count = products.filter((product) => product.category === 'bad' && inferBadSegment(product) === segment).length;
-  if (count < 20) errors.push(`bad/${segment}: expected at least 20 products, found ${count}.`);
+  const minimum = minimumBadSegmentProducts[segment];
+  if (count < minimum) errors.push(`bad/${segment}: expected at least ${minimum} photo-ready products, found ${count}.`);
 }
 
 const protectedFingerprints = {

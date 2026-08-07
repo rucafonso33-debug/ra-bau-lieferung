@@ -158,6 +158,30 @@ const trays: Product[] = [
   product('bad', 'du-italia', 'Italia', 'Porzellan-Duschwanne in rechteckigen oder gerundeten Ausführungen.', 'tray-italia', ['80–140 cm', 'Porzellan', 'mehrere Formen'], { brand: 'Roca', reference: 'Italia', catalog: 'Roca 2025/26', catalogPage: 124, segment: 'Duschwannen' }),
 ];
 
+// These references stay in the source catalogue, but remain unpublished until a
+// supplier-approved photograph or clean render is available. Their current PDF
+// pages contain only drawings, multi-product tables, or imagery of another item.
+const qualityHoldIds = new Set([
+  'sa-fly-btw-cappuccino',
+  'sa-fly-btw-compact',
+  'sa-elegant-btw-cappuccino',
+  'sa-elegant-btw-dark-grey',
+  'sa-glamic-btw-grey',
+  'sa-glamic-btw-compact',
+  'sa-bohemic-black',
+  'sa-new-retro',
+  'sa-fly-wall-cappuccino',
+  'sa-fly-wall-black',
+  'sa-glamic-wall-grey',
+  'du-concept',
+  'du-aquos',
+  'du-terran',
+  'du-easy',
+  'du-granada-flat',
+  'du-granada-compact',
+  'du-italia',
+]);
+
 export const additionalCatalogProducts: Product[] = [
   ...grossformat,
   ...mosaik,
@@ -166,4 +190,4 @@ export const additionalCatalogProducts: Product[] = [
   ...showers,
   ...sanitary,
   ...trays,
-];
+].filter((item) => !qualityHoldIds.has(item.id));
