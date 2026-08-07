@@ -6,7 +6,8 @@ type ResponseLike = { status: (code: number) => ResponseLike; json: (body: unkno
 type RequestLike = { method?: string; body?: unknown; headers: Record<string, string | string[] | undefined> };
 
 const recipient = process.env.INQUIRY_RECIPIENT_EMAIL || 'rodrigo@ra-bau-lieferung.com';
-const formRecipient = recipient === 'rodrigo@ra-bau-lieferung.com' ? '76906bb8a1c1598dbf4103bf25227949' : encodeURIComponent(recipient);\nconst formEndpoint = process.env.INQUIRY_FORM_ENDPOINT || `https://formsubmit.co/ajax/${formRecipient}`;
+const formRecipient = recipient === 'rodrigo@ra-bau-lieferung.com' ? '76906bb8a1c1598dbf4103bf25227949' : encodeURIComponent(recipient);
+const formEndpoint = process.env.INQUIRY_FORM_ENDPOINT || `https://formsubmit.co/ajax/${formRecipient}`;
 const allowedAttachmentTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
 const allowedRequestTypes = new Set<InquiryTopic>(['Produktanfrage', 'Preisanfrage', 'Händlerkonditionen', 'Kataloganfrage', 'Verfügbarkeit', 'Lieferung', 'Allgemeine Anfrage']);
 
