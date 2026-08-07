@@ -22,9 +22,10 @@ const source = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 for (const [route, [title, description, label, imagePath]] of Object.entries(routes)) {
   const canonical = `https://ra-bau-lieferung.com${route}`;
   const image = `https://ra-bau-lieferung.com${imagePath}`;
+  const pageType = route === '/kontakt' ? 'ContactPage' : route === '/ablauf' ? 'WebPage' : 'CollectionPage';
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
+    '@type': pageType,
     name: title,
     description,
     url: canonical,
