@@ -9,9 +9,10 @@
     "validate:images": "node --import tsx scripts/validate-storefront.ts --images",
     "check:routes": "node --import tsx scripts/check-routes.ts",
     "test:quote": "node --import tsx scripts/test-quote-model.ts",
+    "test:inquiry-api": "node --import tsx scripts/test-inquiry-api.ts",
     "lint": "tsc --noEmit",
-    "build": "npm run validate:data && npm run test:quote && tsc --noEmit && vite build && node scripts/generate-static-routes.mjs",
-    "check:all": "npm run lint && npm run validate:data && npm run validate:images && npm run check:routes && npm run test:quote && npm run build",
+    "build": "npm run validate:data && npm run test:quote && npm run test:inquiry-api && tsc --noEmit && vite build && node scripts/generate-static-routes.mjs",
+    "check:all": "npm run lint && npm run validate:data && npm run validate:images && npm run check:routes && npm run test:quote && npm run test:inquiry-api && npm run build",
     "preview": "vite preview",
     "clean": "rm -rf dist"
   },
@@ -23,7 +24,6 @@
     "motion": "^12.23.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "resend": "^6.18.1",
     "vite": "^6.2.0"
   },
   "devDependencies": {

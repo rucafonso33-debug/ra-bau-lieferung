@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 import type { InquiryData, InquiryTopic } from '../src/inquiry';
 
 type AttachmentPayload = { name: string; type: string; content: string };
@@ -7,7 +6,7 @@ type ResponseLike = { status: (code: number) => ResponseLike; json: (body: unkno
 type RequestLike = { method?: string; body?: unknown; headers: Record<string, string | string[] | undefined> };
 
 const recipient = process.env.INQUIRY_RECIPIENT_EMAIL || 'rodrigo@ra-bau-lieferung.com';
-const sender = process.env.INQUIRY_FROM_EMAIL || 'RA Bau Lieferung <anfrage@ra-bau-lieferung.com>';
+const formEndpoint = process.env.INQUIRY_FORM_ENDPOINT || `https://formsubmit.co/ajax/${encodeURIComponent(recipient)}`;
 const allowedAttachmentTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
 const allowedRequestTypes = new Set<InquiryTopic>(['Produktanfrage', 'Preisanfrage', 'Händlerkonditionen', 'Kataloganfrage', 'Verfügbarkeit', 'Lieferung', 'Allgemeine Anfrage']);
 
@@ -17,10 +16,6 @@ function fail(response: ResponseLike, code: number, message: string) {
 
 function safe(value: unknown, max = 500) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
-}
-
-function escapeHtml(value: string) {
-  return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character);
 }
 
 function buildEmailMessage(data: InquiryData) {
@@ -63,7 +58,6 @@ function validate(body: InquiryPayload) {
 export default async function handler(request: RequestLike, response: ResponseLike) {
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'POST') return fail(response, 405, 'method_not_allowed');
-  if (!process.env.RESEND_API_KEY) return fail(response, 503, 'email_service_not_configured');
 
   let body: InquiryPayload;
   try {
@@ -100,20 +94,39 @@ export default async function handler(request: RequestLike, response: ResponseLi
   const message = buildEmailMessage(normalized);
   const subjectSelection = normalized.selection || normalized.productAreas.join(', ') || 'Produkte';
   const subject = `[Website] ${normalized.requestTypes.join(' + ')} – ${subjectSelection}`.slice(0, 180);
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const attachments = body.attachment ? [{ filename: safe(body.attachment.name, 180), content: Buffer.from(body.attachment.content, 'base64') }] : undefined;
+  const submission = new FormData();
+  submission.set('_subject', subject);
+  submission.set('_template', 'table');
+  submission.set('_captcha', 'false');
+  submission.set('_url', 'https://ra-bau-lieferung.com/kontakt');
+  submission.set('Anfrage', normalized.requestTypes.join(', '));
+  submission.set('Produktbereiche', normalized.productAreas.join(', ') || 'noch offen');
+  submission.set('Produkt / Referenz', normalized.selection || 'Kategorie noch offen');
+  submission.set('Kundentyp', normalized.customerType || '-');
+  submission.set('Name', normalized.name);
+  submission.set('Unternehmen', normalized.company || '-');
+  submission.set('E-Mail', normalized.email || '-');
+  submission.set('Telefon', normalized.phone || '-');
+  submission.set('Bevorzugter Kontakt', normalized.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail');
+  submission.set('Gewünschte Menge', normalized.quantity || '-');
+  submission.set('Lieferort', normalized.location || '-');
+  submission.set('Lieferzeitraum', normalized.timeline || '-');
+  submission.set('Nachricht', normalized.message || '-');
+  submission.set('Vollständige Anfrage', message);
+  if (normalized.email) submission.set('_replyto', normalized.email);
+  if (body.attachment) {
+    const file = Buffer.from(body.attachment.content, 'base64');
+    submission.set('attachment', new Blob([file], { type: body.attachment.type }), safe(body.attachment.name, 180));
+  }
 
   try {
-    const { error } = await resend.emails.send({
-      from: sender,
-      to: [recipient],
-      replyTo: normalized.email || undefined,
-      subject,
-      text: message,
-      html: `<div style="font-family:Arial,sans-serif;max-width:720px;color:#17384b"><h1 style="font-size:24px">Neue Website-Anfrage</h1><p style="padding:12px 16px;background:#eef4f7;border-radius:8px"><strong>Bevorzugter Kontakt:</strong> ${normalized.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail'}</p><pre style="white-space:pre-wrap;font-family:Arial,sans-serif;font-size:14px;line-height:1.6">${escapeHtml(message)}</pre></div>`,
-      attachments,
+    const delivery = await fetch(formEndpoint, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: submission,
     });
-    if (error) return fail(response, 502, 'email_delivery_failed');
+    const result = await delivery.json().catch(() => null) as { success?: boolean | string } | null;
+    if (!delivery.ok || result?.success === false || result?.success === 'false') return fail(response, 502, 'email_delivery_failed');
     response.status(200).json({ ok: true });
   } catch {
     return fail(response, 502, 'email_delivery_failed');
