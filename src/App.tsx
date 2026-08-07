@@ -21,7 +21,7 @@ import { trackConversion } from './analytics';
 import { Logo } from './components/Logo';
 import { storefront } from './storefrontConfig';
 
-const formSubmitEndpoint = 'https://formsubmit.co/ajax/76906bb8a1c1598dbf4103bf25227949';
+const formSubmitEndpoint = 'https://formsubmit.co/76906bb8a1c1598dbf4103bf25227949';
 
 const routeByCategory: Record<CategoryId, string> = {
   grossformat: '/grossformatplatten',
@@ -734,6 +734,19 @@ export default function App() {
   const [error, setError] = useState('');
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
+
+  useEffect(() => {
+    const sent = new URLSearchParams(window.location.search).get('sent');
+    const pendingChannel = window.sessionStorage.getItem('ra-inquiry-submitted');
+    if (window.location.pathname === '/kontakt' && (sent === 'email' || sent === 'whatsapp') && sent === pendingChannel) {
+      setInquiry((current) => ({ ...current, preferredChannel: sent }));
+      setError('');
+      setSubmitStatus('success');
+      window.sessionStorage.removeItem('ra-inquiry-submitted');
+      window.history.replaceState({}, '', '/kontakt');
+    }
+  }, []);
+
   useEffect(() => {
     const onPop = () => {
       const path = window.location.pathname.replace(/\/+$/, '') || '/';
@@ -787,7 +800,8 @@ export default function App() {
       return;
     }
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const file = form.get('attachment');
     const attachment = file instanceof File && file.size > 0 ? file : null;
     if (attachment) {
@@ -802,47 +816,45 @@ export default function App() {
       }
     }
 
+    formElement.querySelectorAll('[data-formsubmit-field]').forEach((field) => field.remove());
+    const appendField = (name: string, value: string) => {
+      const field = document.createElement('input');
+      field.type = 'hidden';
+      field.name = name;
+      field.value = value;
+      field.dataset.formsubmitField = 'true';
+      formElement.appendChild(field);
+    };
     const subjectSelection = inquiry.selection || inquiry.productAreas.join(', ') || 'Produkte';
-    const submission = new FormData();
-    submission.set('_subject', `[Website] ${inquiry.requestTypes.join(' + ')} – ${subjectSelection}`.slice(0, 180));
-    submission.set('_template', 'table');
-    submission.set('_captcha', 'false');
-    submission.set('_url', `${window.location.origin}/kontakt`);
-    submission.set('Anfrage', inquiry.requestTypes.join(', '));
-    submission.set('Produktbereiche', inquiry.productAreas.join(', ') || 'noch offen');
-    submission.set('Produkt / Referenz', inquiry.selection || 'Kategorie noch offen');
-    submission.set('Kundentyp', inquiry.customerType || '-');
-    submission.set('Name', inquiry.name.trim());
-    submission.set('Unternehmen', inquiry.company.trim() || '-');
-    submission.set('E-Mail', inquiry.email.trim() || '-');
-    submission.set('Telefon', inquiry.phone.trim() || '-');
-    submission.set('Bevorzugter Kontakt', inquiry.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail');
-    submission.set('Gewünschte Menge', inquiry.quantity.trim() || '-');
-    submission.set('Lieferort', inquiry.location.trim() || '-');
-    submission.set('Lieferzeitraum', inquiry.timeline.trim() || '-');
-    submission.set('Nachricht', inquiry.message.trim() || '-');
-    submission.set('Vollständige Anfrage', buildInquiryMessage(inquiry));
-    if (inquiry.email.trim()) submission.set('_replyto', inquiry.email.trim());
-    if (attachment) submission.set('attachment', attachment, attachment.name);
+    appendField('_subject', `[Website] ${inquiry.requestTypes.join(' + ')} – ${subjectSelection}`.slice(0, 180));
+    appendField('_template', 'table');
+    appendField('_captcha', 'false');
+    appendField('_url', `${window.location.origin}/kontakt`);
+    appendField('_next', `${window.location.origin}/kontakt?sent=${inquiry.preferredChannel}`);
+    appendField('Anfrage', inquiry.requestTypes.join(', '));
+    appendField('Produktbereiche', inquiry.productAreas.join(', ') || 'noch offen');
+    appendField('Produkt / Referenz', inquiry.selection || 'Kategorie noch offen');
+    appendField('Kundentyp', inquiry.customerType || '-');
+    appendField('Name', inquiry.name.trim());
+    appendField('Unternehmen', inquiry.company.trim() || '-');
+    appendField('E-Mail', inquiry.email.trim() || '-');
+    appendField('Telefon', inquiry.phone.trim() || '-');
+    appendField('Bevorzugter Kontakt', inquiry.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail');
+    appendField('Gewünschte Menge', inquiry.quantity.trim() || '-');
+    appendField('Lieferort', inquiry.location.trim() || '-');
+    appendField('Lieferzeitraum', inquiry.timeline.trim() || '-');
+    appendField('Nachricht', inquiry.message.trim() || '-');
+    appendField('Vollständige Anfrage', buildInquiryMessage(inquiry));
+    if (inquiry.email.trim()) appendField('_replyto', inquiry.email.trim());
 
     setError('');
     setSubmitStatus('submitting');
-    try {
-      const response = await fetch(formSubmitEndpoint, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: submission,
-      });
-      const result = await response.json().catch(() => null) as { success?: boolean | string } | null;
-      if (!response.ok || result?.success === false || result?.success === 'false') throw new Error('submission_failed');
-      const requestTypes = inquiry.requestTypes.join('|');
-      trackConversion('form_submit', { channel: inquiry.preferredChannel, request_type: requestTypes });
-      setSubmitStatus('success');
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    } catch {
-      setSubmitStatus('idle');
-      setError('Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt per Telefon oder WhatsApp.');
-    }
+    trackConversion('form_submit', { channel: inquiry.preferredChannel, request_type: inquiry.requestTypes.join('|') });
+    window.sessionStorage.setItem('ra-inquiry-submitted', inquiry.preferredChannel);
+    formElement.action = formSubmitEndpoint;
+    formElement.method = 'POST';
+    formElement.enctype = 'multipart/form-data';
+    formElement.submit();
   };
 
   let page: ReactNode;
