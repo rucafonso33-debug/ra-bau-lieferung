@@ -9,6 +9,7 @@ mkdir -p "$output_dir"
 trap 'rm -rf "$work_dir"' EXIT
 
 rubicer="$source_root/upload/RA_Bau_Dossier_Rubicer_2026.pdf"
+gresco="$source_root/upload/RA_Bau_Dossier_Gresco_2026.pdf"
 moov_bad="$source_root/output/pdf/Katalog_Moovlux_Bad_2026_ohne_Preise.pdf"
 moov_furniture="$source_root/output/pdf/Katalog_Moovlux_Badmoebel_2024_ohne_Preise.pdf"
 recer="${RECER_CATALOGUE:-$source_root/output/pdf/Katalog_Recer_2026_ohne_Preise.pdf}"
@@ -70,6 +71,28 @@ scene_card "$rubicer" 125 slab-statuario-norwell .045 .505 .91 .445
 scene_card "$rubicer" 127 slab-afyon .045 .045 .91 .445
 scene_card "$rubicer" 127 slab-rockford-grey .045 .505 .91 .445
 scene_card "$rubicer" 129 slab-emporium-beige .045 .045 .91 .445
+scene_card "$rubicer" 133 slab-endless-nordic-nude .03 .05 .94 .88
+scene_card "$rubicer" 135 slab-armani-oro-bianco .03 .05 .94 .88
+scene_card "$rubicer" 137 slab-armani-calacatta-venattino .03 .04 .94 .43
+scene_card "$rubicer" 143 slab-calacatta-titanio .03 .04 .94 .43
+scene_card "$rubicer" 145 slab-serpentine .03 .05 .94 .88
+scene_card "$rubicer" 147 slab-obsidian-emerald .03 .05 .94 .88
+scene_card "$rubicer" 149 slab-obsidian-saphire .03 .04 .94 .43
+scene_card "$rubicer" 151 slab-royal-nero .03 .04 .94 .43
+
+# Gresco/Recer: use the installed scene and remove catalogue tables and margins.
+scene_card "$gresco" 16 ceramic-lotus .015 .08 .55 .84
+scene_card "$gresco" 18 mosaic-play-home-blue .015 .08 .57 .84
+scene_card "$gresco" 22 ceramic-ligna-ornantes .015 .08 .58 .84
+scene_card "$gresco" 26 ceramic-passionis .53 .08 .45 .84
+scene_card "$gresco" 28 ceramic-saluto-grey .015 .10 .62 .80
+scene_card "$gresco" 32 ceramic-mauna-white .53 .08 .45 .84
+scene_card "$gresco" 34 ceramic-manhattan-beige .015 .08 .64 .84
+scene_card "$gresco" 38 ceramic-majestic-beige .56 .08 .42 .84
+scene_card "$gresco" 40 ceramic-tresor-grey .55 .06 .43 .70
+scene_card "$gresco" 46 ceramic-freestone-light-grey .015 .08 .57 .84
+scene_card "$gresco" 52 ceramic-melior-grey .015 .08 .59 .84
+scene_card "$gresco" 58 ceramic-robust-brown .015 .08 .57 .84
 
 # Mosaics: crop the relevant installed scene or, where none exists, the product panel.
 scene_card "$recer" 10 mosaic-vetra-ebony .49 .04 .39 .91
@@ -166,6 +189,5 @@ scene_card "$roca" 126 tray-malta .50 .03 .42 .50
 product_card "$roca" 126 tray-italia .50 .50 .42 .42
 
 count="$(find "$output_dir" -maxdepth 1 -type f -name '*.webp' | wc -l | tr -d ' ')"
-test "$count" = 108
+test "$count" = 128
 echo "Generated $count corrected catalogue images in $output_dir"
-

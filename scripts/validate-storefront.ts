@@ -5,7 +5,7 @@ import { categories, products } from '../src/catalogData';
 
 const errors: string[] = [];
 if (categories.length !== 7) errors.push(`Expected 7 categories, found ${categories.length}.`);
-if (products.length < 145) errors.push(`Expected at least 145 photo-ready curated products, found ${products.length}.`);
+if (products.length < 165) errors.push(`Expected at least 165 photo-ready curated products, found ${products.length}.`);
 if (products.filter((product) => product.featured && product.category === 'grossformat').length < 4) errors.push('Expected four featured gross-format products.');
 
 const duplicateIds = products.filter((product, index) => products.findIndex((candidate) => candidate.id === product.id) !== index);
