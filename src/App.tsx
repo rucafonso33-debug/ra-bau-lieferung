@@ -223,7 +223,7 @@ function WhyUs() {
     { icon: Sparkles, title: 'Ausgewählte Qualität', copy: 'Sorgfältig ausgewählte Produkte von Herstellern aus Portugal und Spanien.' },
     { icon: Handshake, title: 'Konditionen für Fachkunden', copy: 'Individuelle Einkaufskonditionen für Fachbetriebe und Wiederverkäufer.' },
     { icon: ShieldCheck, title: 'Direkter Ansprechpartner', copy: 'Ein zentraler Kontakt für Produkte, Preise, Verfügbarkeit und Lieferung.' },
-    { icon: Truck, title: 'Lieferung in die Schweiz', copy: 'Organisation der Lieferung an Betrieb, Lager oder Baustelle, je nach Produkt und Möglichkeit.' },
+    { icon: Truck, title: 'Lieferung in die Schweiz', copy: 'Organisation der Lieferung an Betrieb, Lager oder Baustelle, je nach Produkt und Liefermöglichkeit.' },
   ];
   return (
     <section className="border-b border-[#dfe4e5] bg-[#fbfaf7]">
@@ -244,11 +244,12 @@ function WhyUs() {
   );
 }
 
-function SectionHeading({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
+function SectionHeading({ eyebrow, title, copy, as = 'h2' }: { eyebrow: string; title: string; copy: string; as?: 'h1' | 'h2' }) {
+  const Heading = as;
   return (
     <div className="max-w-3xl">
       <p className="text-[10px] font-black uppercase tracking-[.22em] text-[#a87828]">{eyebrow}</p>
-      <h2 className="mt-3 font-display text-4xl font-black leading-[1.02] tracking-[-.045em] text-[#17384b] sm:text-5xl">{title}</h2>
+      <Heading className="mt-3 font-display text-4xl font-black leading-[1.02] tracking-[-.045em] text-[#17384b] sm:text-5xl">{title}</Heading>
       <p className="mt-5 text-base leading-7 text-[#66797f]">{copy}</p>
     </div>
   );
@@ -260,7 +261,7 @@ function CategoryGrid({ onSelect }: { onSelect: (id: CategoryId) => void }) {
   return (
     <section id="sortiment" className="scroll-mt-24 bg-[#f2f0e9]">
       <div className="mx-auto max-w-[1500px] px-5 py-18 sm:px-8 lg:px-10 lg:py-24">
-        <SectionHeading eyebrow="Qualitätssortiment für Fachkunden" title="Ausgewählte Produktbereiche. Klar geordnet." copy="Hochwertige Baustoffe, Fliesen, Grossformat, Mosaik, Badmöbel und Sanitärlösungen für Fachbetriebe, Bauunternehmen, Fliesenleger, Sanitärbetriebe und Wiederverkäufer in der Schweiz." />
+        <SectionHeading eyebrow="Qualitätssortiment für Fachkunden" title="Ausgewählte Produktbereiche. Klar geordnet." copy="Hochwertige Baustoffe, Fliesen, Grossformat, Mosaik, Badmöbel und Sanitärlösungen für Fachbetriebe, Bauunternehmen, Fliesenleger, Sanitärbetriebe und Wiederverkäufer in der Schweiz." as="h1" />
         <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {orderedCategories.map((category, index) => (
             <a key={category.id} href={routeByCategory[category.id]} onClick={(event) => { event.preventDefault(); onSelect(category.id); }} className={`group relative overflow-hidden rounded-[22px] bg-[#17384b] text-left ${index === 0 ? 'md:col-span-2 xl:col-span-2' : ''}`}>
@@ -412,9 +413,9 @@ function ProductSelection({ activeCategory, onCategory, onRequest, onCatalog }: 
     <section id="auswahl" className="scroll-mt-24 bg-[#fbfaf7]">
       <div className="mx-auto max-w-[1500px] px-5 py-18 sm:px-8 lg:px-10 lg:py-24">
         {activeCategory === 'baustelle' ? (
-          <SectionHeading eyebrow="Kuratierte Produktauswahl" title="Weniger suchen. Passender auswählen." copy="Diese Auswahl zeigt bewusst nur starke Einstiege in jede Kategorie. Weitere Formate, Farben und Serien liefern wir nach Projekt, Menge und gewünschter Wirkung." />
+          <SectionHeading eyebrow="Kuratierte Produktauswahl" title="Weniger suchen. Passender auswählen." copy="Diese Auswahl zeigt bewusst nur starke Einstiege in jede Kategorie. Weitere Formate, Farben und Serien liefern wir nach Projekt, Menge und gewünschter Wirkung." as="h1" />
         ) : (
-          <SectionHeading eyebrow="Ausgewählte Qualität für Fachbetriebe" title="Produkt auswählen. Qualität vergleichen. Konditionen erhalten." copy="Jeder Einstieg zeigt Materialwirkung, Anwendung und verfügbare Produktangaben. Preis und Verfügbarkeit bestätigen wir passend zur gewünschten Referenz und Menge." />
+          <SectionHeading eyebrow="Ausgewählte Qualität für Fachbetriebe" title="Produkt auswählen. Qualität vergleichen. Konditionen erhalten." copy="Jeder Einstieg zeigt Materialwirkung, Anwendung und verfügbare Produktangaben. Preis und Verfügbarkeit bestätigen wir passend zur gewünschten Referenz und Menge." as="h1" />
         )}
         <div className="mt-9 flex gap-2 overflow-x-auto pb-3">
           {categories.map((category) => (
@@ -461,7 +462,7 @@ function Catalogues({ onCatalog, onReference, onDealer }: { onCatalog: (category
     <section id="kataloge" className="scroll-mt-24 bg-[#f2f0e9]">
       <div className="mx-auto max-w-[1500px] px-5 py-18 sm:px-8 lg:px-10 lg:py-24">
         <div className="flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
-          <SectionHeading eyebrow="Produktkataloge" title="Katalog auswählen. Referenz direkt senden." copy="Kataloge werden gezielt nach Produktbereich bereitgestellt. Preise, Fachkundenkonditionen und interne Preislisten werden nicht öffentlich publiziert, sondern nach Produkt, Menge und Anfrage bestätigt." />
+          <SectionHeading eyebrow="Produktkataloge" title="Katalog auswählen. Referenz direkt senden." copy="Kataloge werden gezielt nach Produktbereich bereitgestellt. Preise, Fachkundenkonditionen und interne Preislisten werden nicht öffentlich publiziert, sondern nach Produkt, Menge und Anfrage bestätigt." as="h1" />
           <button onClick={onDealer} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#004b87] px-6 text-sm font-black text-white">
             <Handshake size={17} /> Händlerkonditionen anfragen
           </button>
@@ -505,7 +506,7 @@ function Process() {
   return (
     <section id="ablauf" className="scroll-mt-24 bg-[#ede9df]">
       <div className="mx-auto max-w-[1500px] px-5 py-18 sm:px-8 lg:px-10 lg:py-24">
-        <SectionHeading eyebrow="So funktioniert es" title="Vom Produkt zur bestätigten Lieferung." copy="Sie nennen Produkt oder Referenz. Wir bestätigen die kommerziellen und logistischen Bedingungen für die konkrete Anfrage." />
+        <SectionHeading eyebrow="So funktioniert es" title="Vom Produkt zur bestätigten Lieferung." copy="Sie nennen Produkt oder Referenz. Wir bestätigen die kommerziellen und logistischen Bedingungen für die konkrete Anfrage." as="h1" />
         <div className="mt-10 grid gap-px overflow-hidden rounded-[22px] bg-[#d5d6cf] md:grid-cols-2 xl:grid-cols-4">
           {steps.map(([number, title, copy]) => (
             <article key={number} className="bg-[#fbfaf7] p-6 lg:p-8">
@@ -561,7 +562,7 @@ function InquiryForm({ data, setData, error, status, onSubmit, onNavigate }: { d
       <div className="mx-auto grid max-w-[1500px] gap-8 px-5 py-12 sm:px-8 lg:grid-cols-[.68fr_1.32fr] lg:px-10 lg:py-18">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[.22em] text-[#d7b46a]">Schnellanfrage für Fachkunden</p>
-          <h2 className="mt-4 max-w-xl font-display text-4xl font-black leading-[1.02] tracking-[-.045em] sm:text-5xl">In rund einer Minute zur passenden Anfrage.</h2>
+          <h1 className="mt-4 max-w-xl font-display text-4xl font-black leading-[1.02] tracking-[-.045em] sm:text-5xl">In rund einer Minute zur passenden Anfrage.</h1>
           <p className="mt-5 max-w-lg text-base leading-7 text-white/65">Mehrere Anliegen und Produktbereiche gleichzeitig wählen. Wir erhalten die nötigen Angaben kompakt und können Preis, Verfügbarkeit, Konditionen und Lieferung gezielt prüfen.</p>
           <div className="mt-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             <a href={`tel:+${storefront.phoneDigits}`} onClick={() => trackConversion('phone_click', { source: 'inquiry' })} className="rounded-2xl border border-white/15 bg-white/5 p-4 transition hover:bg-white/10">
@@ -578,7 +579,7 @@ function InquiryForm({ data, setData, error, status, onSubmit, onNavigate }: { d
         <form onSubmit={onSubmit} className="rounded-[24px] bg-[#fbfaf7] p-5 text-[#17384b] shadow-2xl sm:p-8">
           <label className="absolute -left-[9999px]" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
           <div className="flex items-center justify-between gap-4 border-b border-[#dce3e3] pb-5">
-            <div><p className="text-[10px] font-black uppercase tracking-[.18em] text-[#a87828]">Schritt {step} von 2</p><p className="mt-1 text-sm font-black">{step === 1 ? 'Was benötigen Sie?' : 'Wohin dürfen wir antworten?'}</p></div>
+            <div><p className="text-[10px] font-black uppercase tracking-[.18em] text-[#a87828]">Schritt {step} von 2</p><p className="mt-1 text-sm font-black">{step === 1 ? 'Was benötigen Sie?' : 'Wie dürfen wir Ihnen antworten?'}</p></div>
             <div className="flex gap-2" aria-label={`Schritt ${step} von 2`}><span className="h-1.5 w-9 rounded-full bg-[#d7b46a]" /><span className={`h-1.5 w-9 rounded-full ${step === 2 ? 'bg-[#d7b46a]' : 'bg-[#dce3e3]'}`} /></div>
           </div>
 
@@ -717,7 +718,7 @@ function Footer() {
           <p className="text-xs font-black uppercase tracking-[.15em] text-[#d7b46a]">Rechtliches</p>
           <a href="/impressum.html" className="mt-4 block hover:text-white">Impressum</a>
           <a href="/datenschutz.html" className="mt-2 block hover:text-white">Datenschutz</a>
-          <p className="mt-5 text-xs leading-5 text-white/42">Produktdarstellungen können je Bildschirm abweichen. Preis, Verfügbarkeit, Transport und Liefermöglichkeit werden für jede Anfrage separat bestätigt.</p>
+          <p className="mt-5 text-xs leading-5 text-white/42">Produktdarstellungen können je nach Bildschirm abweichen. Preis, Verfügbarkeit, Transport und Liefermöglichkeit werden für jede Anfrage separat bestätigt.</p>
         </div>
       </div>
       <div className="border-t border-white/10 px-5 py-5 text-center text-[10px] text-white/38">© 2026 RA Bau Lieferung. Alle Rechte vorbehalten.</div>
