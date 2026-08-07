@@ -16,10 +16,12 @@ import {
   X,
 } from 'lucide-react';
 import { categories, categoryById, products, type CategoryId, type Product } from './catalogData';
-import { type InquiryData, type InquiryTopic } from './inquiry';
+import { buildInquiryMessage, type InquiryData, type InquiryTopic } from './inquiry';
 import { trackConversion } from './analytics';
 import { Logo } from './components/Logo';
 import { storefront } from './storefrontConfig';
+
+const formSubmitEndpoint = 'https://formsubmit.co/ajax/76906bb8a1c1598dbf4103bf25227949';
 
 const routeByCategory: Record<CategoryId, string> = {
   grossformat: '/grossformatplatten',
@@ -784,36 +786,55 @@ export default function App() {
       setError('Bitte geben Sie die E-Mail-Adresse an, über die wir Sie kontaktieren dürfen.');
       return;
     }
+
     const form = new FormData(event.currentTarget);
     const file = form.get('attachment');
-    let attachment: { name: string; type: string; content: string } | undefined;
-    if (file instanceof File && file.size > 0) {
-      if (file.size > 2_500_000) {
+    const attachment = file instanceof File && file.size > 0 ? file : null;
+    if (attachment) {
+      if (attachment.size > 2_500_000) {
         setError('Die Datei ist grösser als 2,5 MB. Bitte wählen Sie eine kleinere Datei.');
         return;
       }
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
+      if (!allowedTypes.includes(attachment.type)) {
         setError('Bitte laden Sie eine PDF-, JPG-, PNG- oder WEBP-Datei hoch.');
         return;
       }
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      let binary = '';
-      for (let index = 0; index < bytes.length; index += 0x8000) {
-        binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
-      }
-      attachment = { name: file.name, type: file.type, content: window.btoa(binary) };
     }
+
+    const subjectSelection = inquiry.selection || inquiry.productAreas.join(', ') || 'Produkte';
+    const submission = new FormData();
+    submission.set('_subject', `[Website] ${inquiry.requestTypes.join(' + ')} – ${subjectSelection}`.slice(0, 180));
+    submission.set('_template', 'table');
+    submission.set('_captcha', 'false');
+    submission.set('_url', `${window.location.origin}/kontakt`);
+    submission.set('Anfrage', inquiry.requestTypes.join(', '));
+    submission.set('Produktbereiche', inquiry.productAreas.join(', ') || 'noch offen');
+    submission.set('Produkt / Referenz', inquiry.selection || 'Kategorie noch offen');
+    submission.set('Kundentyp', inquiry.customerType || '-');
+    submission.set('Name', inquiry.name.trim());
+    submission.set('Unternehmen', inquiry.company.trim() || '-');
+    submission.set('E-Mail', inquiry.email.trim() || '-');
+    submission.set('Telefon', inquiry.phone.trim() || '-');
+    submission.set('Bevorzugter Kontakt', inquiry.preferredChannel === 'whatsapp' ? 'WhatsApp' : 'E-Mail');
+    submission.set('Gewünschte Menge', inquiry.quantity.trim() || '-');
+    submission.set('Lieferort', inquiry.location.trim() || '-');
+    submission.set('Lieferzeitraum', inquiry.timeline.trim() || '-');
+    submission.set('Nachricht', inquiry.message.trim() || '-');
+    submission.set('Vollständige Anfrage', buildInquiryMessage(inquiry));
+    if (inquiry.email.trim()) submission.set('_replyto', inquiry.email.trim());
+    if (attachment) submission.set('attachment', attachment, attachment.name);
 
     setError('');
     setSubmitStatus('submitting');
     try {
-      const response = await fetch('/api/inquiry', {
+      const response = await fetch(formSubmitEndpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...inquiry, website: String(form.get('website') ?? ''), attachment }),
+        headers: { Accept: 'application/json' },
+        body: submission,
       });
-      if (!response.ok) throw new Error('submission_failed');
+      const result = await response.json().catch(() => null) as { success?: boolean | string } | null;
+      if (!response.ok || result?.success === false || result?.success === 'false') throw new Error('submission_failed');
       const requestTypes = inquiry.requestTypes.join('|');
       trackConversion('form_submit', { channel: inquiry.preferredChannel, request_type: requestTypes });
       setSubmitStatus('success');
