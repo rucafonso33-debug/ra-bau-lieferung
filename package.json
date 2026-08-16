@@ -7,6 +7,7 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "validate:data": "node --import tsx scripts/validate-storefront.ts",
     "validate:images": "node --import tsx scripts/validate-storefront.ts --images",
+    "catalog:import": "node --import tsx scripts/import-catalog-batch.ts",
     "check:routes": "node --import tsx scripts/check-routes.ts",
     "test:quote": "node --import tsx scripts/test-quote-model.ts",
     "test:inquiry-api": "node --import tsx scripts/test-inquiry-api.ts",

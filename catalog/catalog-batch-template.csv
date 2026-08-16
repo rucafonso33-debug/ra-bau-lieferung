@@ -1,0 +1,2 @@
+batch_id,category,id,name,description,image_name,image_mode,spec_1,spec_2,spec_3,brand,reference,catalog,catalog_page,segment,featured,status
+2026-09-example,keramik,ke-example-stone,Example Stone,"Ruhige Steinoptik für hochwertige Wand- und Bodenflächen.",ceramic-example-stone,room,60 × 120 cm,Feinsteinzeug,matt,Example Brand,EX-60120,Example Catalogue 2026,42,,false,hold

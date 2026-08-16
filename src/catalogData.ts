@@ -1,4 +1,5 @@
 import { additionalCatalogProducts } from './additionalCatalogProducts';
+import { generatedCatalogProducts } from './catalog/generated';
 
 export type CategoryId =
   | 'grossformat'
@@ -36,6 +37,8 @@ export interface Product {
   catalog?: string;
   catalogPage?: number;
   segment?: ProductSegment;
+  visualKind?: 'room' | 'product';
+  batch?: string;
 }
 
 export const categories: Category[] = [
@@ -171,6 +174,6 @@ const baseProducts: Product[] = [
   { id: 'ba-hook', category: 'baustelle', name: 'Drill-Bindehaken', description: 'Mechanischer Bindehaken zum schnellen Verdrillen von Doppeldrahtbindern.', image: '/images/showcase/construction-hook.webp', imageAlt: 'Bindehaken mit Holzgriff für Drahtbinder', specs: ['Holzgriff', 'rotierender Schaft', 'passend zu Drahtbindern'], imageFit: 'contain' },
 ];
 
-export const products: Product[] = [...baseProducts, ...additionalCatalogProducts];
+export const products: Product[] = [...baseProducts, ...additionalCatalogProducts, ...generatedCatalogProducts];
 
 export const categoryById = Object.fromEntries(categories.map((category) => [category.id, category])) as Record<CategoryId, Category>;

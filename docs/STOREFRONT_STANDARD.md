@@ -1,70 +1,63 @@
-# RA Bau Lieferung storefront standard
+# RA Bau Lieferung — catálogo público: padrão obrigatório
 
-This standard applies to Spartes 02–05. Sparte 01 is maintained separately and must not be altered without explicit approval.
+Este documento é a fonte de verdade para qualquer produto novo. O padrão aplica-se ao catálogo atual em `src/catalogData.ts`, `src/additionalCatalogProducts.ts` e `src/catalog/generated/`.
 
-## 1. Product admission rule
+## 1. Regra de admissão
 
-A product may only be published when all required fields are available:
+Um produto só pode ser publicado quando tiver:
 
-- unique product ID;
-- manufacturer and collection;
-- exact or clearly qualified reference;
-- primary room/application image;
-- secondary product, format or technical image;
-- format, finish and application;
-- quote unit (`m²`, `Stk.` or `Set`);
-- no image reused under a different product identity.
+- ID único e estável;
+- categoria correta;
+- nome comercial real;
+- descrição curta em alemão suíço, concreta e sem promessas não comprovadas;
+- exatamente três especificações úteis;
+- fabricante, referência, catálogo e página de origem;
+- uma imagem exclusiva do produto, sem reutilização noutra referência;
+- estado `publish` aprovado; referências incompletas ficam em `hold`.
 
-Products without verified imagery remain outside the public detail cards until the correct assets are available.
+Não publicar para aumentar volume. Um produto novo deve acrescentar uma referência, aplicação, formato, acabamento ou faixa de projeto realmente diferente.
 
-## 2. Gallery order
+## 2. Padrão visual
 
-1. **Im Raum** — spatial effect and real application;
-2. **Produkt & Format** — complete piece, plank, fixture or furniture item;
-3. optional technical detail, finish or coordinated component.
+- formato obrigatório: WebP, 1200 × 900 px, proporção 4:3;
+- sem cabeçalhos, rodapés, tabelas, preços, códigos de barras ou texto do catálogo;
+- sem screenshots de página, margens brancas ou várias referências concorrentes;
+- imagem `room`: aplicação real e identificável; usa `cover`, sem margem no cartão;
+- imagem `product`: produto isolado ou imagem técnica; usa `contain` sobre fundo neutro;
+- não usar uma fotografia de ambiente de outra referência;
+- não usar imagens geradas por IA como prova de produto.
 
-Room concepts may contain 3–5 images, each corresponding to a named real component.
+A qualidade deve ser comparada com as coleções aprovadas: Brescia/Onyx Opal para ambiente, Tube/Quadra para produto isolado e os cartões atuais de SPC/Vinyl e Baustelle como áreas protegidas.
 
-## 3. Category purpose
+## 3. Padrão de dados e texto
 
-- **Sparte 02 — Keramik & Feinsteinzeug:** surfaces and coordinated mosaics;
-- **Sparte 03 — Badezimmer:** furniture, taps, showers, trays, glass and sanitary products;
-- **Sparte 04 — Vinyl, SPC & Kork:** installed floor effect followed by plank/tile construction;
-- **Sparte 05 — Raumkonzepte:** exactly 4–5 demonstrative concepts, not a second catalogue.
+- alemão de mercado suíço: `ss`, `Offerte`, `Fachbetrieb`, `Freundliche Grüsse`;
+- descrição entre uma e duas frases, centrada em material, aplicação e efeito;
+- especificações na ordem: formato/dimensão, material/tipo, acabamento/aplicação;
+- referência exata; quando varia, usar `Serie ...` ou `Referenz je Format`;
+- não afirmar stock, entrega imediata, parceria oficial, exclusividade ou desconto sem prova;
+- preço e disponibilidade continuam dependentes de referência, quantidade e transporte.
 
-## 4. Mobile standard
+## 4. Importação escalável por lote
 
-- 44 px minimum interactive target;
-- one clear primary action per card;
-- quote dock visible only after selection;
-- safe-area spacing for modern phones;
-- card copy limited to what supports the next action;
-- thumbnails remain horizontally scrollable;
-- no content may be hidden behind fixed controls.
+1. Copiar `catalog/catalog-batch-template.csv` e atribuir um `batch_id` no formato `AAAA-MM-nome`.
+2. Preencher uma linha por referência. Usar `status=hold` enquanto dados ou imagem não estiverem aprovados.
+3. Preparar cada imagem em `public-live/images/catalog-2026/<image_name>.webp` com 1200 × 900 px.
+4. Classificar `image_mode` como `room` ou `product`; isto controla automaticamente `cover` ou `contain`.
+5. Executar `npm run catalog:import -- catalog/<lote>.csv`.
+6. Executar `npm run check:all`.
+7. Rever desktop e mobile na preview, incluindo pesquisa, filtros, cartões e pedido de preço.
+8. Só depois publicar e verificar `/produkte`, ativos de imagem e erros de runtime.
 
-## 5. Copy standard
+O importador rejeita cabeçalhos errados, campos obrigatórios vazios, categorias/segmentos inválidos, IDs repetidos, imagens ausentes e estados diferentes de `publish` ou `hold`. O validador global rejeita IDs, nomes e imagens duplicados, metadados incompletos e modo visual incoerente.
 
-Prefer concrete proof over unsupported luxury language:
+## 5. Áreas protegidas
 
-- room effect;
-- manufacturer reference;
-- application and format;
-- personal selection help;
-- written quotation;
-- Swiss transport and customs planning.
+- `SPC & Vinyl` e `Baustellenzubehör` não podem ser alterados sem pedido explícito;
+- não substituir a identidade visual, cores, tipografia ou estrutura geral durante uma importação;
+- não misturar alterações comerciais ou de formulário num commit de catálogo;
+- qualquer lote deve ter um commit próprio e reversível.
 
-Avoid claims such as exclusive distributor, official partner, guaranteed stock, immediate delivery or Swiss market leadership unless documented.
+## 6. Definição de concluído
 
-## 6. Future range workflow
-
-1. add product and images to the structured data source;
-2. confirm gallery order and quote unit;
-3. confirm it adds a genuinely different use case;
-4. validate mobile and desktop cards;
-5. run lint, TypeScript and production build;
-6. preview before merging;
-7. verify the production route and social preview image.
-
-## 7. Central configuration
-
-Business contact data, project-entry cards and shared customer benefits live in `src/storefrontConfig.ts`. Reusable conversion UI lives in `src/ConversionEnhancements.tsx`. Product galleries and assortment curation live in `src/finalData.ts`.
+Um lote só está concluído quando os dados, imagens, build e preview passam; a produção está `READY`; a rota pública responde; todos os novos ativos respondem; e não existem erros de runtime.

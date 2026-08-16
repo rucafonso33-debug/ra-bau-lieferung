@@ -3,6 +3,19 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { categories, products } from '../src/catalogData';
 
+const readWebpDimensions = (file: string) => {
+  const buffer = fs.readFileSync(file);
+  if (buffer.toString('ascii', 0, 4) !== 'RIFF' || buffer.toString('ascii', 8, 12) !== 'WEBP') throw new Error(`${file} is not a valid WebP file.`);
+  const chunk = buffer.toString('ascii', 12, 16);
+  if (chunk === 'VP8X') return { width: 1 + buffer.readUIntLE(24, 3), height: 1 + buffer.readUIntLE(27, 3) };
+  if (chunk === 'VP8 ') return { width: buffer.readUInt16LE(26) & 0x3fff, height: buffer.readUInt16LE(28) & 0x3fff };
+  if (chunk === 'VP8L') {
+    const b1 = buffer[21]; const b2 = buffer[22]; const b3 = buffer[23]; const b4 = buffer[24];
+    return { width: 1 + (((b2 & 0x3f) << 8) | b1), height: 1 + (((b4 & 0x0f) << 10) | (b3 << 2) | ((b2 & 0xc0) >> 6)) };
+  }
+  throw new Error(`${file} uses an unsupported WebP encoding.`);
+};
+
 const errors: string[] = [];
 if (categories.length !== 7) errors.push(`Expected 7 categories, found ${categories.length}.`);
 if (products.length < 165) errors.push(`Expected at least 165 photo-ready curated products, found ${products.length}.`);
@@ -23,14 +36,23 @@ for (const category of categories) {
 }
 
 for (const product of products) {
-  if (!product.name || !product.description || !product.image || !product.specs.length) errors.push(`${product.id}: incomplete product.`);
+  if (!product.name || !product.description || !product.image || product.specs.length !== 3) errors.push(`${product.id}: incomplete product or specs do not contain exactly three values.`);
   if (product.image.startsWith('/images/catalog-2026/') && (!product.brand || !product.catalog || !product.catalogPage)) errors.push(`${product.id}: catalogue source metadata missing.`);
+  if (product.batch) {
+    if (!/^\d{4}-\d{2}-[a-z0-9-]+$/.test(product.batch)) errors.push(`${product.id}: invalid batch identifier ${product.batch}.`);
+    if (!product.visualKind) errors.push(`${product.id}: batch product is missing visualKind.`);
+    if (product.visualKind === 'room' && product.imageFit !== 'cover') errors.push(`${product.id}: room image must use cover.`);
+    if (product.visualKind === 'product' && product.imageFit !== 'contain') errors.push(`${product.id}: isolated product image must use contain.`);
+  }
   if (process.argv.includes('--images')) {
     const absolute = path.resolve('public-live', product.image.replace(/^\//, ''));
     if (!fs.existsSync(absolute)) {
       errors.push(`${product.id}: missing image ${product.image}.`);
     } else if (fs.statSync(absolute).size === 0) {
       errors.push(`${product.id}: empty image ${product.image}.`);
+    } else if (product.image.startsWith('/images/catalog-2026/')) {
+      const dimensions = readWebpDimensions(absolute);
+      if (dimensions.width !== 1200 || dimensions.height !== 900) errors.push(`${product.id}: catalogue image must be 1200 × 900, found ${dimensions.width} × ${dimensions.height}.`);
     }
   }
 }

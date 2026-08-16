@@ -7,6 +7,8 @@ type Meta = {
   catalogPage: number;
   segment?: ProductSegment;
   featured?: boolean;
+  visualKind?: 'room' | 'product';
+  batch?: string;
 };
 
 const product = (
@@ -23,10 +25,24 @@ const product = (
   name,
   description,
   image: `/images/catalog-2026/${imageName}.webp`,
-  imageAlt: `${name} – Produktdarstellung aus dem ${meta.brand}-Katalog`,
+  imageAlt: `${name} – ${meta.visualKind === 'room' ? 'Raumanwendung' : 'Produktdarstellung'} aus dem ${meta.brand}-Katalog`,
   specs,
-  imageFit: 'contain',
+  imageFit: meta.visualKind === 'room' ? 'cover' : 'contain',
   ...meta,
+});
+
+const recentRoomProduct = (
+  category: CategoryId,
+  id: string,
+  name: string,
+  description: string,
+  imageName: string,
+  specs: string[],
+  meta: Meta,
+) => product(category, id, name, description, imageName, specs, {
+  ...meta,
+  visualKind: 'room',
+  batch: '2026-08-rubicer-gresco',
 });
 
 const grossformat: Product[] = [
@@ -42,32 +58,32 @@ const grossformat: Product[] = [
   product('grossformat', 'gf-afyon', 'Afyon', 'Warme Natursteinoptik mit markanten Adern für exklusive Badezimmer und Wandflächen.', 'slab-afyon', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'Afyon Polido', catalog: 'Rubicer 26/27', catalogPage: 207 }),
   product('grossformat', 'gf-rockford-grey', 'Rockford Grey', 'Graue, kontrastreiche Steinzeichnung für moderne Wohn- und Objektbereiche.', 'slab-rockford-grey', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'Rockford Grey Polido', catalog: 'Rubicer 26/27', catalogPage: 207 }),
   product('grossformat', 'gf-emporium-beige', 'Emporium Beige', 'Beige Marmorwirkung mit warmer Aderung für einladende Verkaufs-, Wohn- und Badflächen.', 'slab-emporium-beige', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'Emporium Beige Polido', catalog: 'Rubicer 26/27', catalogPage: 209 }),
-  product('grossformat', 'gf-endless-nordic-nude', 'Endless Nordic Nude', 'Durchlaufende warme Marmorzeichnung über vier Platten für grosszügige, ruhig komponierte Innenflächen.', 'slab-endless-nordic-nude', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'REN60120NNUP', catalog: 'Rubicer 26/27', catalogPage: 211, featured: true }),
-  product('grossformat', 'gf-armani-oro-bianco', 'Armani Oro Bianco', 'Helle Marmoroptik mit feiner goldener Aderung für repräsentative Wohn-, Verkaufs- und Badbereiche.', 'slab-armani-oro-bianco', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'RA60120ORBP', catalog: 'Rubicer 26/27', catalogPage: 213 }),
-  product('grossformat', 'gf-armani-calacatta-venattino', 'Armani Calacatta Venattino', 'Präzise graue Calacatta-Aderung auf hellem Grund für fugenarme Wände und hochwertige Bodenflächen.', 'slab-armani-calacatta-venattino', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'RA60120VTIP', catalog: 'Rubicer 26/27', catalogPage: 215 }),
-  product('grossformat', 'gf-calacatta-titanio', 'Calacatta Titanio', 'Kontrastreiche Titanio-Aderung für markante Akzentwände, Empfangszonen und grosszügige Wohnräume.', 'slab-calacatta-titanio', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'RC60120CALTIT', catalog: 'Rubicer 26/27', catalogPage: 221 }),
-  product('grossformat', 'gf-serpentine', 'Serpentine', 'Intensive grün-blaue Steinwirkung mit warmer Aderung für exklusive Bad- und Boutique-Flächen.', 'slab-serpentine', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RCS60120SERP', catalog: 'Rubicer 26/27', catalogPage: 223, featured: true }),
-  product('grossformat', 'gf-obsidian-emerald', 'Obsidian Emerald', 'Dunkle Edelsteinwirkung mit tiefen Grüntönen für anspruchsvolle Waschtische, Wände und Möbelverkleidungen.', 'slab-obsidian-emerald', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RCO60120EMRP', catalog: 'Rubicer 26/27', catalogPage: 225 }),
-  product('grossformat', 'gf-obsidian-saphire', 'Obsidian Saphire', 'Tiefblaue, lebendige Steinzeichnung für ausdrucksstarke Innenräume und kontrollierte Luxusakzente.', 'slab-obsidian-saphire', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RCO60120SAFP', catalog: 'Rubicer 26/27', catalogPage: 227 }),
-  product('grossformat', 'gf-royal-nero', 'Royal Nero', 'Elegante schwarze Fläche mit feiner heller Aderung für Bäder, Gastronomie und repräsentative Gewerberäume.', 'slab-royal-nero', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RC60120RONR', catalog: 'Rubicer 26/27', catalogPage: 229 }),
+  recentRoomProduct('grossformat', 'gf-endless-nordic-nude', 'Endless Nordic Nude', 'Durchlaufende warme Marmorzeichnung über vier Platten für grosszügige, ruhig komponierte Innenflächen.', 'slab-endless-nordic-nude', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'REN60120NNUP', catalog: 'Rubicer 26/27', catalogPage: 211, featured: true }),
+  recentRoomProduct('grossformat', 'gf-armani-oro-bianco', 'Armani Oro Bianco', 'Helle Marmoroptik mit feiner goldener Aderung für repräsentative Wohn-, Verkaufs- und Badbereiche.', 'slab-armani-oro-bianco', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'RA60120ORBP', catalog: 'Rubicer 26/27', catalogPage: 213 }),
+  recentRoomProduct('grossformat', 'gf-armani-calacatta-venattino', 'Armani Calacatta Venattino', 'Präzise graue Calacatta-Aderung auf hellem Grund für fugenarme Wände und hochwertige Bodenflächen.', 'slab-armani-calacatta-venattino', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'RA60120VTIP', catalog: 'Rubicer 26/27', catalogPage: 215 }),
+  recentRoomProduct('grossformat', 'gf-calacatta-titanio', 'Calacatta Titanio', 'Kontrastreiche Titanio-Aderung für markante Akzentwände, Empfangszonen und grosszügige Wohnräume.', 'slab-calacatta-titanio', ['60 × 120 cm', 'Porzellan', 'poliert'], { brand: 'Rubicer', reference: 'RC60120CALTIT', catalog: 'Rubicer 26/27', catalogPage: 221 }),
+  recentRoomProduct('grossformat', 'gf-serpentine', 'Serpentine', 'Intensive grün-blaue Steinwirkung mit warmer Aderung für exklusive Bad- und Boutique-Flächen.', 'slab-serpentine', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RCS60120SERP', catalog: 'Rubicer 26/27', catalogPage: 223, featured: true }),
+  recentRoomProduct('grossformat', 'gf-obsidian-emerald', 'Obsidian Emerald', 'Dunkle Edelsteinwirkung mit tiefen Grüntönen für anspruchsvolle Waschtische, Wände und Möbelverkleidungen.', 'slab-obsidian-emerald', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RCO60120EMRP', catalog: 'Rubicer 26/27', catalogPage: 225 }),
+  recentRoomProduct('grossformat', 'gf-obsidian-saphire', 'Obsidian Saphire', 'Tiefblaue, lebendige Steinzeichnung für ausdrucksstarke Innenräume und kontrollierte Luxusakzente.', 'slab-obsidian-saphire', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RCO60120SAFP', catalog: 'Rubicer 26/27', catalogPage: 227 }),
+  recentRoomProduct('grossformat', 'gf-royal-nero', 'Royal Nero', 'Elegante schwarze Fläche mit feiner heller Aderung für Bäder, Gastronomie und repräsentative Gewerberäume.', 'slab-royal-nero', ['60 × 120 cm', 'Porzellan', 'Hochglanz'], { brand: 'Rubicer', reference: 'RC60120RONR', catalog: 'Rubicer 26/27', catalogPage: 229 }),
 ];
 
 const grescoCeramics: Product[] = [
-  product('keramik', 'ke-gresco-lotus', 'Lotus Matt', 'Ruhige helle Wandfliese für zeitlose Badezimmer, Küchen und funktionale Projektflächen.', 'ceramic-lotus', ['30 × 60 cm', 'Wandfliese', 'matt'], { brand: 'Gresco', reference: 'Lotus Matt 30x60 Rev', catalog: 'Gresco / Recer 25/26', catalogPage: 12 }),
-  product('keramik', 'ke-gresco-ligna', 'Ligna Ornantes', 'Dekorative Holzoptik im kompakten Format für wohnliche Böden und charaktervolle Renovationen.', 'ceramic-ligna-ornantes', ['33 × 33 cm', 'Feinsteinzeug', 'Holzoptik'], { brand: 'Gresco', reference: 'Ligna Ornantes P11', catalog: 'Gresco / Recer 25/26', catalogPage: 24 }),
-  product('keramik', 'ke-gresco-passionis', 'Passionis', 'Warme Betonoptik in Beige und Taupe für durchgängige Wand- und Bodenlösungen.', 'ceramic-passionis', ['bis 120 × 60 cm', 'Feinsteinzeug', 'natur'], { brand: 'Gresco', reference: 'Passionis Light Beige / Taupe', catalog: 'Gresco / Recer 25/26', catalogPage: 32, featured: true }),
-  product('keramik', 'ke-gresco-saluto-grey', 'Saluto Grey', 'Abgestimmte graue Boden- und Wandserie mit ruhiger Zementwirkung für moderne Innenräume.', 'ceramic-saluto-grey', ['bis 60 × 60 cm', 'Wand & Boden', 'Grey'], { brand: 'Gresco', reference: 'Saluto Grey', catalog: 'Gresco / Recer 25/26', catalogPage: 36 }),
-  product('keramik', 'ke-gresco-mauna-white', 'Mauna White', 'Helle mineralische Oberfläche für klare Wohn-, Küchen- und Objektbereiche.', 'ceramic-mauna-white', ['30 × 60 cm', 'Feinsteinzeug', 'natur'], { brand: 'Gresco', reference: 'Mauna White P17', catalog: 'Gresco / Recer 25/26', catalogPage: 44 }),
-  product('keramik', 'ke-gresco-manhattan-beige', 'Manhattan Beige', 'Warme urbane Steinoptik für wohnliche Küchen, Bäder und offene Projektflächen.', 'ceramic-manhattan-beige', ['30 × 60 / 45 × 45 cm', 'Wand & Boden', 'Beige'], { brand: 'Gresco', reference: 'Manhattan Beige', catalog: 'Gresco / Recer 25/26', catalogPage: 48 }),
-  product('keramik', 'ke-gresco-majestic-beige', 'Majestic Beige', 'Sanfte Marmorwirkung in Beige für elegante Badezimmer und klassische Renovationen.', 'ceramic-majestic-beige', ['30 × 60 / 45 × 45 cm', 'Wand & Boden', 'Marmoroptik'], { brand: 'Gresco', reference: 'Majestic Beige', catalog: 'Gresco / Recer 25/26', catalogPage: 56 }),
-  product('keramik', 'ke-gresco-tresor-grey', 'Tresor Grey', 'Zurückhaltende graue Marmoroptik mit passenden Dekoren für abgestimmte Badkonzepte.', 'ceramic-tresor-grey', ['30 × 60 / 45 × 45 cm', 'Wand & Boden', 'Grey'], { brand: 'Gresco', reference: 'Tresor Grey', catalog: 'Gresco / Recer 25/26', catalogPage: 60 }),
-  product('keramik', 'ke-gresco-freestone', 'Freestone Light Grey', 'Grosszügige Natursteinoptik für Innen- und Aussenbereiche mit koordinierter Wandserie.', 'ceramic-freestone-light-grey', ['bis 60 × 60 cm', 'Feinsteinzeug', 'Light Grey'], { brand: 'Gresco', reference: 'Freestone Light Grey', catalog: 'Gresco / Recer 25/26', catalogPage: 72, featured: true }),
-  product('keramik', 'ke-gresco-melior', 'Melior Grey', 'Kompaktes graues Feinsteinzeug mit natürlicher Oberflächenwirkung für robuste Projektböden.', 'ceramic-melior-grey', ['33 × 33 cm', 'Feinsteinzeug', 'natur / soft'], { brand: 'Gresco', reference: 'Melior Grey P12', catalog: 'Gresco / Recer 25/26', catalogPage: 84 }),
-  product('keramik', 'ke-gresco-robust', 'Robust Brown', 'Strapazierfähige braune Aussenkeramik in Dielenformat für Terrassen, Wege und Poolbereiche.', 'ceramic-robust-brown', ['15 × 60 cm', 'Feinsteinzeug', 'aussen'], { brand: 'Gresco', reference: 'Robust Brown P21', catalog: 'Gresco / Recer 25/26', catalogPage: 96 }),
+  recentRoomProduct('keramik', 'ke-gresco-lotus', 'Lotus Matt', 'Ruhige helle Wandfliese für zeitlose Badezimmer, Küchen und funktionale Projektflächen.', 'ceramic-lotus', ['30 × 60 cm', 'Wandfliese', 'matt'], { brand: 'Gresco', reference: 'Lotus Matt 30x60 Rev', catalog: 'Gresco / Recer 25/26', catalogPage: 12 }),
+  recentRoomProduct('keramik', 'ke-gresco-ligna', 'Ligna Ornantes', 'Dekorative Holzoptik im kompakten Format für wohnliche Böden und charaktervolle Renovationen.', 'ceramic-ligna-ornantes', ['33 × 33 cm', 'Feinsteinzeug', 'Holzoptik'], { brand: 'Gresco', reference: 'Ligna Ornantes P11', catalog: 'Gresco / Recer 25/26', catalogPage: 24 }),
+  recentRoomProduct('keramik', 'ke-gresco-passionis', 'Passionis', 'Warme Betonoptik in Beige und Taupe für durchgängige Wand- und Bodenlösungen.', 'ceramic-passionis', ['bis 120 × 60 cm', 'Feinsteinzeug', 'natur'], { brand: 'Gresco', reference: 'Passionis Light Beige / Taupe', catalog: 'Gresco / Recer 25/26', catalogPage: 32, featured: true }),
+  recentRoomProduct('keramik', 'ke-gresco-saluto-grey', 'Saluto Grey', 'Abgestimmte graue Boden- und Wandserie mit ruhiger Zementwirkung für moderne Innenräume.', 'ceramic-saluto-grey', ['bis 60 × 60 cm', 'Wand & Boden', 'Grey'], { brand: 'Gresco', reference: 'Saluto Grey', catalog: 'Gresco / Recer 25/26', catalogPage: 36 }),
+  recentRoomProduct('keramik', 'ke-gresco-mauna-white', 'Mauna White', 'Helle mineralische Oberfläche für klare Wohn-, Küchen- und Objektbereiche.', 'ceramic-mauna-white', ['30 × 60 cm', 'Feinsteinzeug', 'natur'], { brand: 'Gresco', reference: 'Mauna White P17', catalog: 'Gresco / Recer 25/26', catalogPage: 44 }),
+  recentRoomProduct('keramik', 'ke-gresco-manhattan-beige', 'Manhattan Beige', 'Warme urbane Steinoptik für wohnliche Küchen, Bäder und offene Projektflächen.', 'ceramic-manhattan-beige', ['30 × 60 / 45 × 45 cm', 'Wand & Boden', 'Beige'], { brand: 'Gresco', reference: 'Manhattan Beige', catalog: 'Gresco / Recer 25/26', catalogPage: 48 }),
+  recentRoomProduct('keramik', 'ke-gresco-majestic-beige', 'Majestic Beige', 'Sanfte Marmorwirkung in Beige für elegante Badezimmer und klassische Renovationen.', 'ceramic-majestic-beige', ['30 × 60 / 45 × 45 cm', 'Wand & Boden', 'Marmoroptik'], { brand: 'Gresco', reference: 'Majestic Beige', catalog: 'Gresco / Recer 25/26', catalogPage: 56 }),
+  recentRoomProduct('keramik', 'ke-gresco-tresor-grey', 'Tresor Grey', 'Zurückhaltende graue Marmoroptik mit passenden Dekoren für abgestimmte Badkonzepte.', 'ceramic-tresor-grey', ['30 × 60 / 45 × 45 cm', 'Wand & Boden', 'Grey'], { brand: 'Gresco', reference: 'Tresor Grey', catalog: 'Gresco / Recer 25/26', catalogPage: 60 }),
+  recentRoomProduct('keramik', 'ke-gresco-freestone', 'Freestone Light Grey', 'Grosszügige Natursteinoptik für Innen- und Aussenbereiche mit koordinierter Wandserie.', 'ceramic-freestone-light-grey', ['bis 60 × 60 cm', 'Feinsteinzeug', 'Light Grey'], { brand: 'Gresco', reference: 'Freestone Light Grey', catalog: 'Gresco / Recer 25/26', catalogPage: 72, featured: true }),
+  recentRoomProduct('keramik', 'ke-gresco-melior', 'Melior Grey', 'Kompaktes graues Feinsteinzeug mit natürlicher Oberflächenwirkung für robuste Projektböden.', 'ceramic-melior-grey', ['33 × 33 cm', 'Feinsteinzeug', 'natur / soft'], { brand: 'Gresco', reference: 'Melior Grey P12', catalog: 'Gresco / Recer 25/26', catalogPage: 84 }),
+  recentRoomProduct('keramik', 'ke-gresco-robust', 'Robust Brown', 'Strapazierfähige braune Aussenkeramik in Dielenformat für Terrassen, Wege und Poolbereiche.', 'ceramic-robust-brown', ['15 × 60 cm', 'Feinsteinzeug', 'aussen'], { brand: 'Gresco', reference: 'Robust Brown P21', catalog: 'Gresco / Recer 25/26', catalogPage: 96 }),
 ];
 
 const mosaik: Product[] = [
-  product('mosaik', 'mo-gresco-play-home-blue', 'Play Home Blue', 'Grafisches Dekor in Blau und Weiss für charaktervolle Bäder, Nischen und Gastronomieflächen.', 'mosaic-play-home-blue', ['33 × 33 cm', 'Feinsteinzeug', 'Dekor'], { brand: 'Gresco', reference: 'Play Home Blue P15', catalog: 'Gresco / Recer 25/26', catalogPage: 16 }),
+  recentRoomProduct('mosaik', 'mo-gresco-play-home-blue', 'Play Home Blue', 'Grafisches Dekor in Blau und Weiss für charaktervolle Bäder, Nischen und Gastronomieflächen.', 'mosaic-play-home-blue', ['33 × 33 cm', 'Feinsteinzeug', 'Dekor'], { brand: 'Gresco', reference: 'Play Home Blue P15', catalog: 'Gresco / Recer 25/26', catalogPage: 16 }),
   product('mosaik', 'mo-vetra-ebony', 'Vetra Ebony Black', 'Schmales glasiertes Steinzeug in tiefem Schwarz für vertikale Akzente, Nischen und Rückwände.', 'mosaic-vetra-ebony', ['7,5 × 30 cm', 'glasiertes Steinzeug', 'Wand'], { brand: 'Recer', reference: 'Vetra Ebony Black G33', catalog: 'Recer 2026', catalogPage: 10 }),
   product('mosaik', 'mo-ritmo-pearl', 'Ritmo Pearl', 'Modulares Kleinformat mit ruhiger Oberfläche für koordinierte Bad- und Küchenwände.', 'mosaic-ritmo-pearl', ['10 × 10 cm', 'modular', 'Wand'], { brand: 'Recer', reference: 'Ritmo Pearl M43', catalog: 'Recer 2026', catalogPage: 14 }),
   product('mosaik', 'mo-twist-blue-sky', 'Twist Blue Sky', 'Farbige Kleinformatserie für lebendige Akzentflächen und individuelle Muster.', 'mosaic-twist-blue', ['10 × 10 cm', 'Wandfliese', 'Blue Sky'], { brand: 'Recer', reference: 'Twist Blue Sky', catalog: 'Recer 2026', catalogPage: 18 }),
