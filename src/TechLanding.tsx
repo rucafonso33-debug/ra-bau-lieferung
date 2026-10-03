@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ArrowDown, ArrowRight, Atom, Gauge, Microscope, ShieldAlert, Wrench } from 'lucide-react';
 import { trackConversion } from './analytics';
 
@@ -37,7 +37,7 @@ function Mark() {
   );
 }
 
-function Pill({ children }: { children: React.ReactNode }) {
+function Pill({ children }: { children: ReactNode }) {
   return <span className="rounded-full border border-white/12 bg-white/[.035] px-3 py-2 text-[11px] font-bold text-slate-300">{children}</span>;
 }
 
