@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const commonImage = '/images/showcase/calacatta-gold.webp';
 const routes = {
+  '/tech/cofounder': ['Technical Co-Founder | RA Bau Tech', 'RA Bau Tech is exploring a new approach to hydronic heating and cooling retrofit. We are looking for a Technical Co-Founder to help validate the physics, build the first prototype and determine whether the concept can become a real product.', 'RA Bau Tech — Technical Co-Founder', '/images/showcase/construction-site.webp'],
   '/produkte': ['Baustoffe & Badlösungen für Fachbetriebe | RA Bau Lieferung', 'Übersicht ausgewählter Fliesen, Grossformatplatten, Mosaike, Badmöbel, Sanitärlösungen, SPC und Baustellenprodukte für Fachkunden.', 'Sortiment für Fachbetriebe', commonImage],
   '/kataloge': ['Produktkataloge für Fachbetriebe | RA Bau Lieferung', 'Kataloge zu Fliesen, Grossformat, Mosaik, Badmöbeln, Sanitärlösungen und Böden ansehen und konkrete Referenzen anfragen.', 'Produktkataloge', '/images/showcase/stone-tile-grand.webp'],
   '/ablauf': ['So funktioniert die Produktanfrage | RA Bau Lieferung', 'Produkt oder Referenz, Menge und Lieferort senden. RA Bau Lieferung prüft Preis, Verfügbarkeit, Konditionen und Liefermöglichkeiten.', 'Ablauf der Produktanfrage', commonImage],
