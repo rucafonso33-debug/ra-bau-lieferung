@@ -728,7 +728,12 @@ function Footer() {
 }
 
 export default function App() {
-  if (window.location.pathname.replace(/\/+$/, '') === '/tech/cofounder') return <TechLanding />;
+  const normalizedPath = window.location.pathname.replace(/\/+$/, '');
+  if (normalizedPath === '/tech/cofounder') {
+    window.location.replace('/ra-bau-tech/cofounder');
+    return null;
+  }
+  if (normalizedPath === '/ra-bau-tech' || normalizedPath === '/ra-bau-tech/cofounder') return <TechLanding />;
 
   const initialPath = window.location.pathname.replace(/\/+$/, '') || '/';
   const initialCategory = categoryByPath[initialPath] ?? 'keramik';
