@@ -733,7 +733,11 @@ export default function App() {
     window.location.replace('/ra-bau-tech/cofounder');
     return null;
   }
-  if (normalizedPath === '/ra-bau-tech' || normalizedPath === '/ra-bau-tech/cofounder') return <TechLanding />;
+  if (normalizedPath === '/ra-bau-tech') {
+    window.location.replace('/ra-bau-tech/cofounder');
+    return null;
+  }
+  if (normalizedPath === '/ra-bau-tech/cofounder') return <TechLanding />;
 
   const initialPath = window.location.pathname.replace(/\/+$/, '') || '/';
   const initialCategory = categoryByPath[initialPath] ?? 'keramik';
