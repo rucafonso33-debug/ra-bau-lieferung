@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const commonImage = '/images/showcase/calacatta-gold.webp';
 const routes = {
-  '/tech/cofounder': ['Technical Co-Founder | RA Bau Tech', 'RA Bau Tech is exploring a new approach to hydronic heating and cooling retrofit. We are looking for a Technical Co-Founder to help validate the physics, build the first prototype and determine whether the concept can become a real product.', 'RA Bau Tech — Technical Co-Founder', '/images/showcase/construction-site.webp'],
+  '/ra-bau-tech/cofounder': ['Technical Co-Founder | RA Bau Tech', 'RA Bau Tech is exploring a new approach to hydronic heating and cooling retrofit. We are looking for a Technical Co-Founder to help validate the physics, build the first prototype and determine whether the concept can become a real product.', 'RA Bau Tech — Technical Co-Founder', '/images/showcase/construction-site.webp'],
   '/produkte': ['Baustoffe & Badlösungen für Fachbetriebe | RA Bau Lieferung', 'Übersicht ausgewählter Fliesen, Grossformatplatten, Mosaike, Badmöbel, Sanitärlösungen, SPC und Baustellenprodukte für Fachkunden.', 'Sortiment für Fachbetriebe', commonImage],
   '/kataloge': ['Produktkataloge für Fachbetriebe | RA Bau Lieferung', 'Kataloge zu Fliesen, Grossformat, Mosaik, Badmöbeln, Sanitärlösungen und Böden ansehen und konkrete Referenzen anfragen.', 'Produktkataloge', '/images/showcase/stone-tile-grand.webp'],
   '/ablauf': ['So funktioniert die Produktanfrage | RA Bau Lieferung', 'Produkt oder Referenz, Menge und Lieferort senden. RA Bau Lieferung prüft Preis, Verfügbarkeit, Konditionen und Liefermöglichkeiten.', 'Ablauf der Produktanfrage', commonImage],
@@ -47,7 +47,7 @@ for (const [route, [title, description, label, imagePath]] of Object.entries(rou
     .replace(/<meta name="twitter:description" content="[^"]*"\s*\/>/, `<meta name="twitter:description" content="${description}" />`)
     .replace(/<meta name="twitter:image" content="[^"]*"\s*\/>/, `<meta name="twitter:image" content="${image}" />`)
     .replace('</head>', `    <script type="application/ld+json">${JSON.stringify(schema)}</script>\n  </head>`);
-  if (route === '/tech/cofounder') {
+  if (route === '/ra-bau-tech/cofounder') {
     html = html
       .replace('<html lang="de-CH">', '<html lang="en">')
       .replace('<meta name="theme-color" content="#004b87" />', '<meta name="theme-color" content="#071016" />')
@@ -61,3 +61,11 @@ for (const [route, [title, description, label, imagePath]] of Object.entries(rou
   fs.mkdirSync(target, { recursive: true });
   fs.writeFileSync(path.join(target, 'index.html'), html);
 }
+
+const legacyTechTarget = path.join(dist, 'tech/cofounder');
+fs.mkdirSync(legacyTechTarget, { recursive: true });
+fs.writeFileSync(path.join(legacyTechTarget, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><link rel="canonical" href="https://ra-bau-lieferung.com/ra-bau-tech/cofounder"><meta http-equiv="refresh" content="0;url=/ra-bau-tech/cofounder"><script>location.replace("/ra-bau-tech/cofounder"+location.search+location.hash)</script></head><body></body></html>');
+
+const techRootTarget = path.join(dist, 'ra-bau-tech');
+fs.mkdirSync(techRootTarget, { recursive: true });
+fs.writeFileSync(path.join(techRootTarget, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><link rel="canonical" href="https://ra-bau-lieferung.com/ra-bau-tech/cofounder"><meta http-equiv="refresh" content="0;url=/ra-bau-tech/cofounder"><script>location.replace("/ra-bau-tech/cofounder"+location.search+location.hash)</script></head><body></body></html>');

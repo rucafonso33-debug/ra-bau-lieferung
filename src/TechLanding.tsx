@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ArrowDown, ArrowRight, Atom, Gauge, Microscope, ShieldAlert, Wrench } from 'lucide-react';
 import { trackConversion } from './analytics';
 
-const formSubmitEndpoint = 'https://formsubmit.co/76906bb8a1c1598dbf4103bf25227949';
+const formSubmitEndpoint = 'https://formsubmit.co/ajax/Rodrigo@ra-bau-lieferung.com';
 
 const challenges = [
   'Heat-transfer limitations', 'Natural vs forced convection', 'Dew-point control',
@@ -44,13 +44,15 @@ function Pill({ children }: { children: ReactNode }) {
 export default function TechLanding() {
   const [started, setStarted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     trackConversion('tech_page_view', { page: 'technical_cofounder' });
     const sent = new URLSearchParams(window.location.search).get('sent');
     if (sent === '1') {
       setSubmitted(true);
-      window.history.replaceState({}, '', '/tech/cofounder');
+      window.history.replaceState({}, '', '/ra-bau-tech/cofounder');
     }
   }, []);
 
@@ -66,22 +68,33 @@ export default function TechLanding() {
     }
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (submitting) return;
     const form = event.currentTarget;
-    trackConversion('tech_application_submit', { page: 'technical_cofounder' });
-    const add = (name: string, value: string) => {
-      const el = document.createElement('input');
-      el.type = 'hidden'; el.name = name; el.value = value;
-      form.appendChild(el);
-    };
-    add('_subject', '[RA Bau Tech] Technical Co-Founder interest');
-    add('_template', 'table');
-    add('_captcha', 'false');
-    add('_next', window.location.origin + '/tech/cofounder?sent=1');
-    form.action = formSubmitEndpoint;
-    form.method = 'POST';
-    form.submit();
+    setSubmitting(true);
+    setSubmitError('');
+    const data = new FormData(form);
+    data.set('_subject', '[RA Bau Tech] Technical Co-Founder interest');
+    data.set('_template', 'table');
+    data.set('_captcha', 'false');
+    data.set('_replyto', String(data.get('email') || ''));
+    try {
+      const response = await fetch(formSubmitEndpoint, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: data,
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || result?.success === false) throw new Error('Submission failed');
+      trackConversion('tech_application_submit', { page: 'technical_cofounder' });
+      setSubmitted(true);
+      form.reset();
+    } catch {
+      setSubmitError('Your application could not be sent. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -266,7 +279,8 @@ export default function TechLanding() {
                 <label className="grid gap-2 text-xs font-black text-slate-300">5. Are you interested specifically in joining as a co-founder rather than as an employee or consultant?<select required name="cofounder_interest" className="h-12 rounded-xl border border-white/12 bg-[#09141b] px-4 text-sm font-normal text-white"><option value="">Select…</option><option>YES</option><option>MAYBE</option><option>NO</option></select></label>
                 <label className="grid gap-2 text-xs font-black text-slate-300">6. At this stage there may be no salary and no guarantee that the concept succeeds. Are you comfortable exploring the project under those conditions?<select required name="risk_acceptance" className="h-12 rounded-xl border border-white/12 bg-[#09141b] px-4 text-sm font-normal text-white"><option value="">Select…</option><option>YES</option><option>NEED TO DISCUSS</option><option>NO</option></select></label>
                 <label className="grid gap-2 text-xs font-black text-slate-300">7. How much time could you realistically dedicate during the initial validation phase?<select required name="weekly_time" className="h-12 rounded-xl border border-white/12 bg-[#09141b] px-4 text-sm font-normal text-white"><option value="">Select…</option><option>&lt;5 h/week</option><option>5–10 h/week</option><option>10–20 h/week</option><option>20+ h/week</option></select></label>
-                <button type="submit" className="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-cyan-300 px-6 text-sm font-black text-[#071016] transition hover:bg-cyan-200">Submit interest <ArrowRight size={17}/></button>
+                <button type="submit" disabled={submitting} aria-busy={submitting} className="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-cyan-300 px-6 text-sm font-black text-[#071016] transition hover:bg-cyan-200 disabled:cursor-wait disabled:opacity-60">{submitting ? 'Submitting…' : 'Submit interest'} <ArrowRight size={17}/></button>
+                {submitError ? <p role="alert" className="text-center text-sm font-bold text-red-300">{submitError}</p> : null}
                 <p className="text-center text-[11px] leading-5 text-slate-500">Thank you. Relevant profiles will be contacted directly for an initial founder conversation.</p>
               </form>
             )}
