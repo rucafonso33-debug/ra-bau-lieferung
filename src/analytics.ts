@@ -9,7 +9,11 @@ export type ConversionEvent =
   | 'form_submit'
   | 'email_click'
   | 'phone_click'
-  | 'whatsapp_click';
+  | 'whatsapp_click'
+  | 'tech_page_view'
+  | 'tech_cta_click'
+  | 'tech_application_start'
+  | 'tech_application_submit';
 
 export function trackConversion(event: ConversionEvent, properties: Record<string, string> = {}) {
   track(event, properties);
