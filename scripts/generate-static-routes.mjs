@@ -34,7 +34,7 @@ for (const [route, [title, description, label, imagePath]] of Object.entries(rou
     isPartOf: { '@type': 'WebSite', '@id': 'https://ra-bau-lieferung.com/#website' },
     provider: { '@id': 'https://ra-bau-lieferung.com/#business' },
   };
-  const html = source
+  let html = source
     .replace(/<title>.*?<\/title>/s, `<title>${title}</title>`)
     .replace(/<meta name="description" content="[^"]*"\s*\/>/, `<meta name="description" content="${description}" />`)
     .replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${canonical}" />`)
@@ -47,6 +47,16 @@ for (const [route, [title, description, label, imagePath]] of Object.entries(rou
     .replace(/<meta name="twitter:description" content="[^"]*"\s*\/>/, `<meta name="twitter:description" content="${description}" />`)
     .replace(/<meta name="twitter:image" content="[^"]*"\s*\/>/, `<meta name="twitter:image" content="${image}" />`)
     .replace('</head>', `    <script type="application/ld+json">${JSON.stringify(schema)}</script>\n  </head>`);
+  if (route === '/tech/cofounder') {
+    html = html
+      .replace('<html lang="de-CH">', '<html lang="en">')
+      .replace('<meta name="theme-color" content="#004b87" />', '<meta name="theme-color" content="#071016" />')
+      .replace('<meta name="color-scheme" content="light" />', '<meta name="color-scheme" content="dark" />')
+      .replace('<meta property="og:locale" content="de_CH" />', '<meta property="og:locale" content="en_US" />')
+      .replace('<meta property="og:site_name" content="RA Bau Lieferung" />', '<meta property="og:site_name" content="RA Bau Tech" />')
+      .replace(/    <script type="application\/ld\+json">\{"@context":"https:\/\/schema\.org","@graph":.*?<\/script>\n/s, '')
+      .replace(/<noscript>.*?<\/noscript>/s, '<noscript><main style="max-width:720px;margin:60px auto;padding:24px;font-family:system-ui;color:#e2e8f0;background:#071016"><h1>RA Bau Tech</h1><p>Technical Co-Founder project page. Please enable JavaScript to view the full project brief and interest form.</p></main></noscript>');
+  }
   const target = path.join(dist, route.slice(1));
   fs.mkdirSync(target, { recursive: true });
   fs.writeFileSync(path.join(target, 'index.html'), html);
