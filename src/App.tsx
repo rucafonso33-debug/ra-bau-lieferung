@@ -20,6 +20,7 @@ import { buildInquiryMessage, type InquiryData, type InquiryTopic } from './inqu
 import { trackConversion } from './analytics';
 import { Logo } from './components/Logo';
 import { storefront } from './storefrontConfig';
+import TechLanding from './TechLanding';
 
 const formSubmitEndpoint = 'https://formsubmit.co/76906bb8a1c1598dbf4103bf25227949';
 
@@ -727,6 +728,8 @@ function Footer() {
 }
 
 export default function App() {
+  if (window.location.pathname.replace(/\/+$/, '') === '/tech/cofounder') return <TechLanding />;
+
   const initialPath = window.location.pathname.replace(/\/+$/, '') || '/';
   const initialCategory = categoryByPath[initialPath] ?? 'keramik';
   const [currentPath, setCurrentPath] = useState(initialPath);
